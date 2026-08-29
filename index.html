@@ -3,62 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partiflow - Lista Interactiva</title>
-</head>
-<body style="margin: 0; min-height: 100vh; background-color: #0f172a; color: #ffffff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px;">
+    <title>Partiflow PRO - Cabina DJ</title>
+    <style>
+        /* Estilos Profesionales (Dark Mode + Neon) */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: #05070a; /* Fondo casi negro, tipo vinilo */
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-    <!-- Encabezado con Logo -->
-    <header style="text-align: center; margin-bottom: 20px;">
-        <img src="Logo%20fondo%20blanco.png" alt="Partiflow Logo" style="max-width: 180px; width: 60%; height: auto; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
-        <h1 style="font-size: 1.5rem; margin: 0;">Sala de Música en Vivo</h1>
-        <p style="color: #94a3b8; font-size: 0.9rem;">Vota por tu canción favorita para que suene a continuación</p>
+        /* Encabezado estilo panel de control */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3b82f6; /* Línea azul de señal */
+            padding-bottom: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        header img {
+            max-width: 160px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); /* Brillo neón azul */
+            margin-bottom: 15px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin: 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 900;
+            background: linear-gradient(90deg, #3b82f6, #ffffff, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent; /* Efecto metalizado/neón */
+        }
+
+        header p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Contenedor de la lista estilo "Rack de DJ" */
+        #lista-canciones {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Tarjetas de canción estilo "Vinilo" */
+        .cancion-item {
+            background: linear-gradient(90deg, #111827, #1f2937, #111827); /* Degradado oscuro metálico */
+            padding: 18px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); /* Profundidad */
+            border: 1px solid #374151;
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cancion-item:hover {
+            transform: translateY(-3px);
+            border-color: #60a5fa; /* Borde azul al pasar el mouse */
+        }
+
+        /* Efecto de luz sutil en la tarjeta */
+        .cancion-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139,92,246,0.1) 0%, rgba(0,0,0,0) 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .cancion-item:hover::before {
+            opacity: 1;
+        }
+
+        /* Texto de la canción */
+        .titulo-cancion {
+            margin: 0;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #e5e7eb;
+            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+        }
+
+        .artista-cancion {
+            margin: 5px 0 0 0;
+            color: #9ca3af;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Botón de Votar estilo "Cue/Play" */
+        .boton-votar {
+            background: transparent;
+            border: 2px solid #3b82f6; /* Borde neón */
+            color: #3b82f6;
+            padding: 10px 20px;
+            border-radius: 50px; /* Botón circular */
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1; /* Asegura que esté sobre el efecto de luz */
+        }
+
+        .boton-votar:hover {
+            background: #3b82f6;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.8); /* Resplandor al pasar el mouse */
+        }
+
+        /* Corazón y Contador */
+        .corazon {
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+
+        .boton-votar:hover .corazon {
+            transform: scale(1.2);
+        }
+
+        .contador {
+            font-size: 1.3rem;
+            font-weight: 900;
+        }
+
+        /* Animación sutil de parpadeo en el encabezado */
+        @keyframes blink {
+            50% { opacity: 0.7; }
+        }
+        #live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #10b981; /* Verde neón */
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: blink 1.5s infinite;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado Profesional -->
+    <header>
+        <img src="Logo%20fondo%20blanco.png" alt="Partiflow PRO Logo">
+        <h1>Partiflow <span style="color: #ffffff; font-size: 0.6em; vertical-align: super;">PRO</span></h1>
+        <p><span id="live-indicator"></span>Cabina de Votación en Vivo</p>
     </header>
 
-    <!-- Lista de canciones interactiva -->
-    <div style="width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 12px;">
+    <!-- Lista de canciones estilo "Rack de DJ" -->
+    <div id="lista-canciones">
         
         <!-- Canción 1 -->
-        <div style="background: #1e293b; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div class="cancion-item">
             <div>
-                <p style="margin: 0; font-weight: bold; font-size: 1rem;">Midnight City</p>
-                <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.8rem;">M83</p>
+                <p class="titulo-cancion">Midnight City</p>
+                <p class="artista-cancion">M83</p>
             </div>
-            <button onclick="votar(this)" style="background: #3b82f6; color: white; border: none; padding: 8px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: background 0.2s;">
-                ❤️ <span class="contador">12</span>
+            <button class="boton-votar" onclick="votar(this)">
+                <span class="corazon">❤️</span> <span class="contador">12</span>
             </button>
         </div>
 
         <!-- Canción 2 -->
-        <div style="background: #1e293b; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div class="cancion-item">
             <div>
-                <p style="margin: 0; font-weight: bold; font-size: 1rem;">Get Lucky</p>
-                <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.8rem;">Daft Punk ft. Pharrell Williams</p>
+                <p class="titulo-cancion">Get Lucky</p>
+                <p class="artista-cancion">Daft Punk ft. Pharrell Williams</p>
             </div>
-            <button onclick="votar(this)" style="background: #3b82f6; color: white; border: none; padding: 8px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: background 0.2s;">
-                ❤️ <span class="contador">8</span>
+            <button class="boton-votar" onclick="votar(this)">
+                <span class="corazon">❤️</span> <span class="contador">8</span>
             </button>
         </div>
 
         <!-- Canción 3 -->
-        <div style="background: #1e293b; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div class="cancion-item">
             <div>
-                <p style="margin: 0; font-weight: bold; font-size: 1rem;">Blinding Lights</p>
-                <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.8rem;">The Weeknd</p>
+                <p class="titulo-cancion">Blinding Lights</p>
+                <p class="artista-cancion">The Weeknd</p>
             </div>
-            <button onclick="votar(this)" style="background: #3b82f6; color: white; border: none; padding: 8px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: background 0.2s;">
-                ❤️ <span class="contador">15</span>
+            <button class="boton-votar" onclick="votar(this)">
+                <span class="corazon">❤️</span> <span class="contador">15</span>
+            </button>
+        </div>
+
+         <!-- Canción 4 (Nueva de prueba) -->
+        <div class="cancion-item">
+            <div>
+                <p class="titulo-cancion">Don't Stop Me Now</p>
+                <p class="artista-cancion">Queen</p>
+            </div>
+            <button class="boton-votar" onclick="votar(this)">
+                <span class="corazon">❤️</span> <span class="contador">21</span>
             </button>
         </div>
 
     </div>
 
-    <!-- Script sencillo para que los votos sumen al hacer clic -->
+    <!-- Script de Votación (se mantiene igual) -->
     <script>
         function votar(boton) {
             const spanContador = boton.querySelector('.contador');
             let votosActuales = parseInt(spanContador.textContent);
             spanContador.textContent = votosActuales + 1;
-            boton.style.background = '#10b981'; // Se pone verosito al votar
+            
+            // Feedback visual al votar (destello azul)
+            boton.style.borderColor = '#60a5fa';
+            boton.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+            
+             // Restaura los estilos originales después de un breve momento
+            setTimeout(() => {
+                boton.style.borderColor = '#3b82f6';
+                boton.style.backgroundColor = 'transparent';
+            }, 200);
         }
     </script>
 
