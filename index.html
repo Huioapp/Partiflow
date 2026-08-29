@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Partiflow PRO - Cabina DJ</title>
     <style>
-        /* Estilos Profesionales (Dark Mode + Neon) */
         body {
             margin: 0;
             min-height: 100vh;
-            background-color: #05070a; /* Fondo casi negro, tipo vinilo */
+            background-color: #05070a;
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
@@ -19,11 +18,10 @@
             box-sizing: border-box;
         }
 
-        /* Encabezado estilo panel de control */
         header {
             text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #3b82f6; /* Línea azul de señal */
+            margin-bottom: 25px;
+            border-bottom: 2px solid #3b82f6;
             padding-bottom: 20px;
             width: 100%;
             max-width: 600px;
@@ -33,7 +31,7 @@
             max-width: 160px;
             height: auto;
             border-radius: 8px;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); /* Brillo neón azul */
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
             margin-bottom: 15px;
         }
 
@@ -46,7 +44,7 @@
             background: linear-gradient(90deg, #3b82f6, #ffffff, #3b82f6);
             -webkit-background-clip: text;
             background-clip: text;
-            color: transparent; /* Efecto metalizado/neón */
+            color: transparent;
         }
 
         header p {
@@ -55,7 +53,65 @@
             margin-top: 5px;
         }
 
-        /* Contenedor de la lista estilo "Rack de DJ" */
+        /* Formulario para proponer canciones */
+        #form-cancion {
+            width: 100%;
+            max-width: 600px;
+            background: #111827;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+            border: 1px solid #374151;
+            margin-bottom: 25px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        #form-cancion h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+            color: #60a5fa;
+        }
+
+        .input-grupo {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-grupo input {
+            flex: 1;
+            background: #1f2937;
+            border: 1px solid #4b5563;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-grupo input:focus {
+            border-color: #3b82f6;
+        }
+
+        .btn-agregar {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-agregar:hover {
+            opacity: 0.9;
+        }
+
+        /* Contenedor de la lista */
         #lista-canciones {
             width: 100%;
             max-width: 600px;
@@ -64,50 +120,23 @@
             gap: 15px;
         }
 
-        /* Tarjetas de canción estilo "Vinilo" */
         .cancion-item {
-            background: linear-gradient(90deg, #111827, #1f2937, #111827); /* Degradado oscuro metálico */
+            background: linear-gradient(90deg, #111827, #1f2937, #111827);
             padding: 18px;
             border-radius: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); /* Profundidad */
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
             border: 1px solid #374151;
             transition: transform 0.2s, border-color 0.2s;
-            position: relative;
-            overflow: hidden;
         }
 
-        .cancion-item:hover {
-            transform: translateY(-3px);
-            border-color: #60a5fa; /* Borde azul al pasar el mouse */
-        }
-
-        /* Efecto de luz sutil en la tarjeta */
-        .cancion-item::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(139,92,246,0.1) 0%, rgba(0,0,0,0) 70%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .cancion-item:hover::before {
-            opacity: 1;
-        }
-
-        /* Texto de la canción */
         .titulo-cancion {
             margin: 0;
             font-weight: 800;
             font-size: 1.2rem;
             color: #e5e7eb;
-            text-shadow: 0 0 5px rgba(255,255,255,0.3);
         }
 
         .artista-cancion {
@@ -117,45 +146,36 @@
             font-weight: 500;
         }
 
-        /* Botón de Votar estilo "Cue/Play" */
         .boton-votar {
             background: transparent;
-            border: 2px solid #3b82f6; /* Borde neón */
+            border: 2px solid #3b82f6;
             color: #3b82f6;
-            padding: 10px 20px;
-            border-radius: 50px; /* Botón circular */
+            padding: 8px 16px;
+            border-radius: 50px;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 8px;
-            z-index: 1; /* Asegura que esté sobre el efecto de luz */
+            gap: 6px;
         }
 
         .boton-votar:hover {
             background: #3b82f6;
             color: #ffffff;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.8); /* Resplandor al pasar el mouse */
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
         }
 
-        /* Corazón y Contador */
         .corazon {
-            font-size: 1.2rem;
-            transition: transform 0.2s;
-        }
-
-        .boton-votar:hover .corazon {
-            transform: scale(1.2);
+            font-size: 1.1rem;
         }
 
         .contador {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 900;
         }
 
-        /* Animación sutil de parpadeo en el encabezado */
         @keyframes blink {
             50% { opacity: 0.7; }
         }
@@ -163,28 +183,35 @@
             display: inline-block;
             width: 10px;
             height: 10px;
-            background-color: #10b981; /* Verde neón */
+            background-color: #10b981;
             border-radius: 50%;
             margin-right: 8px;
             animation: blink 1.5s infinite;
             box-shadow: 0 0 10px #10b981;
         }
-
     </style>
 </head>
 <body>
 
-    <!-- Encabezado Profesional -->
     <header>
         <img src="Logo%20fondo%20blanco.png" alt="Partiflow PRO Logo">
         <h1>Partiflow <span style="color: #ffffff; font-size: 0.6em; vertical-align: super;">PRO</span></h1>
         <p><span id="live-indicator"></span>Cabina de Votación en Vivo</p>
     </header>
 
-    <!-- Lista de canciones estilo "Rack de DJ" -->
+    <!-- Formulario para agregar canciones -->
+    <div id="form-cancion">
+        <h3>🎵 Pide tu canción</h3>
+        <div class="input-grupo">
+            <input type="text" id="inputTitulo" placeholder="Título de la canción...">
+            <input type="text" id="inputArtista" placeholder="Artista...">
+            <button class="btn-agregar" onclick="agregarCancion()">Añadir</button>
+        </div>
+    </div>
+
+    <!-- Lista de canciones -->
     <div id="lista-canciones">
         
-        <!-- Canción 1 -->
         <div class="cancion-item">
             <div>
                 <p class="titulo-cancion">Midnight City</p>
@@ -195,7 +222,6 @@
             </button>
         </div>
 
-        <!-- Canción 2 -->
         <div class="cancion-item">
             <div>
                 <p class="titulo-cancion">Get Lucky</p>
@@ -206,7 +232,6 @@
             </button>
         </div>
 
-        <!-- Canción 3 -->
         <div class="cancion-item">
             <div>
                 <p class="titulo-cancion">Blinding Lights</p>
@@ -217,35 +242,51 @@
             </button>
         </div>
 
-         <!-- Canción 4 (Nueva de prueba) -->
-        <div class="cancion-item">
-            <div>
-                <p class="titulo-cancion">Don't Stop Me Now</p>
-                <p class="artista-cancion">Queen</p>
-            </div>
-            <button class="boton-votar" onclick="votar(this)">
-                <span class="corazon">❤️</span> <span class="contador">21</span>
-            </button>
-        </div>
-
     </div>
 
-    <!-- Script de Votación (se mantiene igual) -->
     <script>
         function votar(boton) {
             const spanContador = boton.querySelector('.contador');
             let votosActuales = parseInt(spanContador.textContent);
             spanContador.textContent = votosActuales + 1;
             
-            // Feedback visual al votar (destello azul)
             boton.style.borderColor = '#60a5fa';
             boton.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
-            
-             // Restaura los estilos originales después de un breve momento
             setTimeout(() => {
                 boton.style.borderColor = '#3b82f6';
                 boton.style.backgroundColor = 'transparent';
             }, 200);
+        }
+
+        function agregarCancion() {
+            const tituloInput = document.getElementById('inputTitulo');
+            const artistaInput = document.getElementById('inputArtista');
+            const lista = document.getElementById('lista-canciones');
+
+            if (tituloInput.value.trim() === '' || artistaInput.value.trim() === '') {
+                alert('Por favor escribe el título y el artista.');
+                return;
+            }
+
+            // Crear elemento HTML de la nueva canción
+            const nuevoItem = document.createElement('div');
+            nuevoItem.className = 'cancion-item';
+            nuevoItem.innerHTML = `
+                <div>
+                    <p class="titulo-cancion">${tituloInput.value}</p>
+                    <p class="artista-cancion">${artistaInput.value}</p>
+                </div>
+                <button class="boton-votar" onclick="votar(this)">
+                    <span class="corazon">❤️</span> <span class="contador">1</span>
+                </button>
+            `;
+
+            // Agregar la canción al principio de la lista
+            lista.prepend(nuevoItem);
+
+            // Limpiar los campos
+            tituloInput.value = '';
+            artistaInput.value = '';
         }
     </script>
 
