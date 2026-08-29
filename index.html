@@ -3,21 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partiflow - Música Interactiva</title>
+    <title>Partiflow - Lista Interactiva</title>
 </head>
-<body style="margin: 0; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #0f172a; color: #ffffff; font-family: sans-serif; text-align: center; padding: 20px;">
-    
-    <!-- Tu Logo -->
-    <img src="Logo%20fondo%20blanco.png" alt="Partiflow Logo" style="max-width: 280px; width: 80%; height: auto; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+<body style="margin: 0; min-height: 100vh; background-color: #0f172a; color: #ffffff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px;">
 
-    <!-- Mensaje Principal -->
-    <h1 style="font-size: 1.8rem; margin-bottom: 10px;">La música de tu evento, en tus manos</h1>
-    <p style="color: #94a3b8; max-width: 400px; margin-bottom: 30px; font-size: 1rem;">Conecta, interactúa y controla la atmósfera de la fiesta en tiempo real.</p>
+    <!-- Encabezado con Logo -->
+    <header style="text-align: center; margin-bottom: 20px;">
+        <img src="Logo%20fondo%20blanco.png" alt="Partiflow Logo" style="max-width: 180px; width: 60%; height: auto; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+        <h1 style="font-size: 1.5rem; margin: 0;">Sala de Música en Vivo</h1>
+        <p style="color: #94a3b8; font-size: 0.9rem;">Vota por tu canción favorita para que suene a continuación</p>
+    </header>
 
-    <!-- Botón Interactivo -->
-    <button onclick="alert('¡Próximamente disponible el acceso a salas interactivas!')" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);">
-        Comenzar Fiesta
-    </button>
+    <!-- Lista de canciones interactiva -->
+    <div style="width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 12px;">
+        
+        <!-- Canción 1 -->
+        <div style="background: #1e293b; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div>
+                <p style="margin: 0; font-weight: bold; font-size: 1rem;">Midnight City</p>
+                <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.8rem;">M83</p>
+            </div>
+            <button onclick="votar(this)" style="background: #3b82f6; color: white; border: none; padding: 8px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: background 0.2s;">
+                ❤️ <span class="contador">12</span>
+            </button>
+        </div>
+
+        <!-- Canción 2 -->
+        <div style="background: #1e293b; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div>
+                <p style="margin: 0; font-weight: bold; font-size: 1rem;">Get Lucky</p>
+                <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.8rem;">Daft Punk ft. Pharrell Williams</p>
+            </div>
+            <button onclick="votar(this)" style="background: #3b82f6; color: white; border: none; padding: 8px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: background 0.2s;">
+                ❤️ <span class="contador">8</span>
+            </button>
+        </div>
+
+        <!-- Canción 3 -->
+        <div style="background: #1e293b; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div>
+                <p style="margin: 0; font-weight: bold; font-size: 1rem;">Blinding Lights</p>
+                <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.8rem;">The Weeknd</p>
+            </div>
+            <button onclick="votar(this)" style="background: #3b82f6; color: white; border: none; padding: 8px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: background 0.2s;">
+                ❤️ <span class="contador">15</span>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Script sencillo para que los votos sumen al hacer clic -->
+    <script>
+        function votar(boton) {
+            const spanContador = boton.querySelector('.contador');
+            let votosActuales = parseInt(spanContador.textContent);
+            spanContador.textContent = votosActuales + 1;
+            boton.style.background = '#10b981'; // Se pone verosito al votar
+        }
+    </script>
 
 </body>
 </html>
