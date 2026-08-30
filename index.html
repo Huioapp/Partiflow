@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Partiflow PRO - Cabina DJ</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             margin: 0;
@@ -53,7 +54,6 @@
             margin-top: 5px;
         }
 
-        /* Formulario para proponer canciones */
         #form-cancion {
             width: 100%;
             max-width: 600px;
@@ -111,7 +111,6 @@
             opacity: 0.9;
         }
 
-        /* Contenedor de la lista */
         #lista-canciones {
             width: 100%;
             max-width: 600px;
@@ -129,7 +128,6 @@
             align-items: center;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
             border: 1px solid #374151;
-            transition: transform 0.2s, border-color 0.2s;
         }
 
         .titulo-cancion {
@@ -196,10 +194,9 @@
     <header>
         <img src="Logo%20fondo%20blanco.png" alt="Partiflow PRO Logo">
         <h1>Partiflow <span style="color: #ffffff; font-size: 0.6em; vertical-align: super;">PRO</span></h1>
-        <p><span id="live-indicator"></span>Cabina de Votación en Vivo</p>
+        <p><span id="live-indicator"></span>Cabina de Votación en Vivo (Nube)</p>
     </header>
 
-    <!-- Formulario para agregar canciones -->
     <div id="form-cancion">
         <h3>🎵 Pide tu canción</h3>
         <div class="input-grupo">
@@ -209,84 +206,90 @@
         </div>
     </div>
 
-    <!-- Lista de canciones -->
     <div id="lista-canciones">
-        
-        <div class="cancion-item">
-            <div>
-                <p class="titulo-cancion">Midnight City</p>
-                <p class="artista-cancion">M83</p>
-            </div>
-            <button class="boton-votar" onclick="votar(this)">
-                <span class="corazon">❤️</span> <span class="contador">12</span>
-            </button>
-        </div>
-
-        <div class="cancion-item">
-            <div>
-                <p class="titulo-cancion">Get Lucky</p>
-                <p class="artista-cancion">Daft Punk ft. Pharrell Williams</p>
-            </div>
-            <button class="boton-votar" onclick="votar(this)">
-                <span class="corazon">❤️</span> <span class="contador">8</span>
-            </button>
-        </div>
-
-        <div class="cancion-item">
-            <div>
-                <p class="titulo-cancion">Blinding Lights</p>
-                <p class="artista-cancion">The Weeknd</p>
-            </div>
-            <button class="boton-votar" onclick="votar(this)">
-                <span class="corazon">❤️</span> <span class="contador">15</span>
-            </button>
-        </div>
-
+        <!-- Las canciones se cargarán automáticamente desde Supabase -->
     </div>
 
     <script>
-        function votar(boton) {
-            const spanContador = boton.querySelector('.contador');
-            let votosActuales = parseInt(spanContador.textContent);
-            spanContador.textContent = votosActuales + 1;
-            
-            boton.style.borderColor = '#60a5fa';
-            boton.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
-            setTimeout(() => {
-                boton.style.borderColor = '#3b82f6';
-                boton.style.backgroundColor = 'transparent';
-            }, 200);
+        // --- CONFIGURACIÓN DE SUPABASE ---
+        const SUPABASE_URL = 'https://zfgrewceocnivqglmjqe.supabase.co';
+        const SUPABASE_ANON_KEY = 'PEGA_AQUÍ_TU_LLAVE_PUBLISHABLE'; // Pega tu llave larga aquí entre las comillas
+
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        window.addEventListener('DOMContentLoaded', cargarCanciones);
+
+        async function cargarCanciones() {
+            const { data, error } = await _supabase
+                .from('canciones')
+                .select('*')
+                .order('votos', { ascending: false });
+
+            if (error) {
+                console.error('Error al cargar:', error);
+                return;
+            }
+
+            mostrarEnPantalla(data);
         }
 
-        function agregarCancion() {
+        function mostrarEnPantalla(canciones) {
+            const lista = document.getElementById('lista-canciones');
+            lista.innerHTML = '';
+
+            canciones.forEach(cancion => {
+                const item = document.createElement('div');
+                item.className = 'cancion-item';
+                item.innerHTML = `
+                    <div>
+                        <p class="titulo-cancion">${cancion.titulo}</p>
+                        <p class="artista-cancion">${cancion.artista}</p>
+                    </div>
+                    <button class="boton-votar" onclick="votar(${cancion.id}, ${cancion.votos})">
+                        <span class="corazon">❤️</span> <span class="contador">${cancion.votos}</span>
+                    </button>
+                `;
+                lista.appendChild(item);
+            });
+        }
+
+        async function agregarCancion() {
             const tituloInput = document.getElementById('inputTitulo');
             const artistaInput = document.getElementById('inputArtista');
-            const lista = document.getElementById('lista-canciones');
 
             if (tituloInput.value.trim() === '' || artistaInput.value.trim() === '') {
                 alert('Por favor escribe el título y el artista.');
                 return;
             }
 
-            // Crear elemento HTML de la nueva canción
-            const nuevoItem = document.createElement('div');
-            nuevoItem.className = 'cancion-item';
-            nuevoItem.innerHTML = `
-                <div>
-                    <p class="titulo-cancion">${tituloInput.value}</p>
-                    <p class="artista-cancion">${artistaInput.value}</p>
-                </div>
-                <button class="boton-votar" onclick="votar(this)">
-                    <span class="corazon">❤️</span> <span class="contador">1</span>
-                </button>
-            `;
+            const { error } = await _supabase
+                .from('canciones')
+                .insert([{ titulo: tituloInput.value, artista: artistaInput.value, votos: 1 }]);
 
-            // Agregar la canción al principio de la lista
-            lista.prepend(nuevoItem);
+            if (error) {
+                console.error('Error al agregar:', error);
+                alert('Hubo un error al guardar la canción.');
+                return;
+            }
 
-            // Limpiar los campos
             tituloInput.value = '';
             artistaInput.value = '';
+            cargarCanciones();
+        }
+
+        async function votar(id, votosActuales) {
+            const { error } = await _supabase
+                .from('canciones')
+                .update({ votos: votosActuales + 1 })
+                .eq('id', id);
+
+            if (error) {
+                console.error('Error al votar:', error);
+                return;
+            }
+
+            cargarCanciones();
         }
     </script>
 
