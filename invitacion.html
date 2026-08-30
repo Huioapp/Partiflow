@@ -6,6 +6,8 @@
     <title>Tu Invitación - Partiflow PRO</title>
     <!-- Librería para generar códigos QR automáticamente -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Librería global estable de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             margin: 0;
@@ -109,12 +111,18 @@
         <p class="estado-ingreso">✨ Presenta este código QR en la entrada</p>
     </div>
 
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/module/index.js';
-
+    <script>
         const SUPABASE_URL = 'https://zfgrewceocnivqglmjqe.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_AACRBlmLLP0UqwN1cLbvwg_zUA2_4MhYI9oL';
-        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const SUPABASE_ANON_KEY = 'sb_publishable_tb_8r5kVpbxsuqqjKAvgxA_4MhyI9oL';
+        
+        // Inicializador adaptado para llaves publishable modernas
+        const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false,
+                detectSessionInUrl: false
+            }
+        });
 
         window.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
@@ -148,6 +156,10 @@
                 colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.H
             });
+        });
+    </script>
+</body>
+</html>
         });
     </script>
 </body>
