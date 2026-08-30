@@ -271,17 +271,18 @@
             lista.innerHTML = '';
 
             canciones.forEach(cancion => {
-                const safeId = cancion.id;
+                // Limpiamos el título para usarlo como identificador seguro en el HTML
+                const safeKey = cancion.titulo.replace(/['"\s]/g, '_');
                 const item = document.createElement('div');
                 item.className = 'cancion-item';
-                item.id = `card-${safeId}`;
+                item.id = `card-${safeKey}`;
                 item.innerHTML = `
                     <div>
                         <p class="titulo-cancion">${cancion.titulo}</p>
                         <p class="artista-cancion">${cancion.artista}</p>
                     </div>
-                    <button class="boton-votar" id="btn-${safeId}" onclick="votar(${safeId})">
-                        <span class="corazon">❤️</span> <span class="contador" id="contador-${safeId}">${cancion.votos}</span>
+                    <button class="boton-votar" id="btn-${safeKey}" onclick="votar('${cancion.titulo.replace(/'/g, "\\'")}', ${cancion.votos})">
+                        <span class="corazon">❤️</span> <span class="contador" id="contador-${safeKey}">${cancion.votos}</span>
                     </button>
                 `;
                 lista.appendChild(item);
@@ -312,18 +313,17 @@
             artistaInput.value = '';
         };
 
-        window.votar = async function(id) {
-            const contadorEl = document.getElementById(`contador-${id}`);
-            const btn = document.getElementById(`btn-${id}`);
-            const card = document.getElementById(`card-${id}`);
+        window.votar = async function(tituloCancion, votosActuales) {
+            const safeKey = tituloCancion.replace(/['"\s]/g, '_');
+            const contadorEl = document.getElementById(`contador-${safeKey}`);
+            const btn = document.getElementById(`btn-${safeKey}`);
+            const card = document.getElementById(`card-${safeKey}`);
 
-            // Animación visual del botón al instante
             if (btn) {
                 btn.classList.add('pulgar-animacion');
                 setTimeout(() => btn.classList.remove('pulgar-animacion'), 200);
             }
 
-            // Lanzar corazoncito flotante
             if (card) {
                 const heart = document.createElement('span');
                 heart.className = 'floating-heart';
@@ -332,31 +332,19 @@
                 setTimeout(() => heart.remove(), 700);
             }
 
-            // 1. Consultar el valor actual directo de la base de datos para evitar desincronización
-            const { data: actualData, error: fetchError } = await _supabase
+            const nuevosVotos = votosActuales + 1;
+
+            // Actualizar directamente en Supabase buscando por el TÍTULO de la canción
+            const { error } = await _supabase
                 .from('canciones')
-                .select('votos')
-                .eq('id', id)
-                .single();
+                .update({ votos: nuevosVotos })
+                .eq('titulo', tituloCancion);
 
-            if (fetchError) {
-                console.error('Error al consultar voto actual:', fetchError);
-                return;
-            }
-
-            const nuevoTotal = (actualData.votos || 0) + 1;
-
-            // 2. Guardar el nuevo valor incrementado en Supabase
-            const { error: updateError } = await _supabase
-                .from('canciones')
-                .update({ votos: nuevoTotal })
-                .eq('id', id);
-
-            if (updateError) {
-                console.error('Error al actualizar voto:', updateError);
+            if (error) {
+                console.error('Error al actualizar voto:', error);
+                alert('Error al registrar el voto: ' + error.message);
             } else if (contadorEl) {
-                // Actualizar en pantalla con el valor confirmado de la base de datos
-                contadorEl.innerText = nuevoTotal;
+                contadorEl.innerText = nuevosVotos;
             }
         };
     </script>
