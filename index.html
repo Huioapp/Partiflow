@@ -230,7 +230,7 @@
     </div>
 
     <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/module/index.js';
 
         const SUPABASE_URL = 'https://zfgrewceocnivqglmjqe.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_AACRBlmLLP0UqwN1cLbvwg_zUA2_4MhYI9oL';
@@ -297,8 +297,6 @@
                 return;
             }
 
-            // Insertamos limpiamente solo el título, el artista y los votos iniciales. 
-            // Dejamos que Supabase maneje el ID de forma automática para evitar el error 500.
             const { error } = await _supabase
                 .from('canciones')
                 .insert([{ 
@@ -337,7 +335,6 @@
 
             const nuevosVotos = votosActuales + 1;
 
-            // Actualizamos buscando por el título exacto de la canción, evitando usar IDs conflictivos
             const { error } = await _supabase
                 .from('canciones')
                 .update({ votos: nuevosVotos })
