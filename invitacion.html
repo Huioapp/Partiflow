@@ -1,1 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Invitación - Partiflow PRO</title>
+    <!-- Librería para generar códigos QR automáticamente -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: #05070a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
+        .tarjeta-invitacion {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(135deg, #111827, #1f2937);
+            border: 1px solid #374151;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #3b82f6, #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nombre-invitado {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #60a5fa;
+            margin: 15px 0 5px 0;
+        }
+
+        .subtitulo-evento {
+            color: #9ca3af;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        #qrcode {
+            background: white;
+            padding: 15px;
+            display: inline-block;
+            border-radius: 12px;
+            margin: 15px 0;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+
+        #qrcode img {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .codigo-texto {
+            font-family: monospace;
+            background: #111827;
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: #d1d5db;
+            font-size: 1rem;
+            border: 1px dashed #4b5563;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .estado-ingreso {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #10b981;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="tarjeta-invitacion">
+        <h1>Partiflow PRO</h1>
+        <p class="subtitulo-evento">Pase Exclusivo de Acceso</p>
+        
+        <div class="nombre-invitado" id="txtNombre">Cargando invitación...</div>
+        
+        <!-- Contenedor donde se dibuja el código QR -->
+        <div id="qrcode"></div>
+
+        <div>
+            <span class="codigo-texto" id="txtCodigo">---</span>
+        </div>
+
+        <p class="estado-ingreso">✨ Presenta este código QR en la entrada</p>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://zfgrewceocnivqglmjqe.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_AACRBlmLLP0UqwN1cLbvwg_zUA2_4MhYI9oL';
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Leemos el parámetro de la URL, por ejemplo: invitacion.html?codigo=VIP-001
+            const params = new URLSearchParams(window.location.search);
+            const codigoUrl = params.get('codigo');
+
+            if (!codigoUrl) {
+                document.getElementById('txtNombre').innerText = 'Invitación no especificada';
+                return;
+            }
+
+            // Consultar los datos del invitado en Supabase
+            const { data, error } = await _supabase
+                .from('invitados')
+                .select('*')
+                .eq('codigo', codigoUrl)
+                .single();
+
+            if (error || !data) {
+                document.getElementById('txtNombre').innerText = 'Invitación no encontrada';
+                console.error(error);
+                return;
+            }
+
+            // Mostrar el nombre del invitado en pantalla
+            document.getElementById('txtNombre').innerText = data.nombre;
+            document.getElementById('txtCodigo').innerText = data.codigo;
+
+            // Generar el código QR físico en pantalla usando el texto del código único
+            new QRCode(document.getElementById("qrcode"), {
+                text: data.codigo,
+                width: 180,
+                height: 180,
+                colorDark : "#05070a",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        });
+    </script>
+</body>
+</html>
