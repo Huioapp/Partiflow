@@ -271,7 +271,6 @@
             lista.innerHTML = '';
 
             canciones.forEach(cancion => {
-                // Usamos el id directamente o el título saneado como referencia única
                 const safeId = cancion.id;
                 const item = document.createElement('div');
                 item.className = 'cancion-item';
@@ -293,12 +292,12 @@
             const tituloInput = document.getElementById('inputTitulo');
             const artistaInput = document.getElementById('inputArtista');
 
-            if (!tituloInput || !artistaInput || tituloInput.value.trim() === '' || artistaInput.value.trim() === '') {
+            // Validación flexible relajada para evitar falsos bloqueos
+            if (!tituloInput.value || !artistaInput.value || tituloInput.value.trim() === '') {
                 alert('Por favor escribe el título y el artista.');
                 return;
             }
 
-            // Generar un ID numérico seguro más corto (en segundos en lugar de milisegundos)
             const nuevoId = Math.floor(Date.now() / 1000);
 
             const { error } = await _supabase
@@ -338,7 +337,6 @@
                 setTimeout(() => heart.remove(), 700);
             }
 
-            // Actualización limpia en Supabase buscando por el ID numérico
             const { error } = await _supabase
                 .from('canciones')
                 .update({ votos: nuevosVotos })
@@ -346,7 +344,6 @@
 
             if (error) {
                 console.error('Error al sincronizar voto:', error);
-                alert('No se pudo guardar el voto en la nube: ' + error.message);
             }
         };
     </script>
