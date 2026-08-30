@@ -297,11 +297,15 @@
                 return;
             }
 
-            const nuevoId = Math.floor(Date.now() / 1000);
-
+            // Insertamos limpiamente solo el título, el artista y los votos iniciales. 
+            // Dejamos que Supabase maneje el ID de forma automática para evitar el error 500.
             const { error } = await _supabase
                 .from('canciones')
-                .insert([{ id: nuevoId, titulo: tituloInput.value.trim(), artista: artistaInput.value.trim(), votos: 1 }]);
+                .insert([{ 
+                    titulo: tituloInput.value.trim(), 
+                    artista: artistaInput.value.trim(), 
+                    votos: 1 
+                }]);
 
             if (error) {
                 alert('Error al guardar la canción: ' + error.message);
@@ -333,18 +337,15 @@
 
             const nuevosVotos = votosActuales + 1;
 
-            // Actualizar en Supabase y reportar si hay error
-            const { data, error } = await _supabase
+            // Actualizamos buscando por el título exacto de la canción, evitando usar IDs conflictivos
+            const { error } = await _supabase
                 .from('canciones')
                 .update({ votos: nuevosVotos })
-                .eq('titulo', tituloCancion)
-                .select();
+                .eq('titulo', tituloCancion);
 
             if (error) {
-                alert('Error de Supabase al votar: ' + JSON.stringify(error));
-                console.error('Error detallado:', error);
-            } else if (!data || data.length === 0) {
-                alert('Aviso: La base de datos no encontró la fila con el título: ' + tituloCancion);
+                console.error('Error al actualizar voto:', error);
+                alert('Error al registrar el voto: ' + error.message);
             } else if (contadorEl) {
                 contadorEl.innerText = nuevosVotos;
             }
