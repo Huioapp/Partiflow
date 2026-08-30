@@ -110,14 +110,13 @@
     </div>
 
     <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/module/index.js';
 
         const SUPABASE_URL = 'https://zfgrewceocnivqglmjqe.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_AAcRBlmLLP0UQnw1cLbvwg_zUG4Emvk';
+        const SUPABASE_ANON_KEY = 'sb_publishable_AACRBlmLLP0UqwN1cLbvwg_zUA2_4MhYI9oL';
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         window.addEventListener('DOMContentLoaded', async () => {
-            // Leemos el parámetro de la URL, por ejemplo: invitacion.html?codigo=VIP-001
             const params = new URLSearchParams(window.location.search);
             const codigoUrl = params.get('codigo');
 
@@ -126,7 +125,6 @@
                 return;
             }
 
-            // Consultar los datos del invitado en Supabase
             const { data, error } = await _supabase
                 .from('invitados')
                 .select('*')
@@ -139,11 +137,9 @@
                 return;
             }
 
-            // Mostrar el nombre del invitado en pantalla
             document.getElementById('txtNombre').innerText = data.nombre;
             document.getElementById('txtCodigo').innerText = data.codigo;
 
-            // Generar el código QR físico en pantalla usando el texto del código único
             new QRCode(document.getElementById("qrcode"), {
                 text: data.codigo,
                 width: 180,
