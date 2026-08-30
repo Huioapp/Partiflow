@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Invitados - Partiflow PRO</title>
+    <!-- Librería global estable de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: #05070a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            background: linear-gradient(90deg, #3b82f6, #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .btn-salir {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .card {
+            background: #111827;
+            border: 1px solid #374151;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #60a5fa;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        input {
+            flex: 1;
+            background: #1f2937;
+            border: 1px solid #4b5563;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #3b82f6;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #374151;
+        }
+
+        th {
+            color: #9ca3af;
+            font-weight: 600;
+        }
+
+        .btn-copiar {
+            background: #374151;
+            color: #e5e7eb;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .btn-copiar:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Panel de Invitados</h1>
+            <button class="btn-salir" onclick="cerrarSesion()">Cerrar Sesión</button>
+        </header>
+
+        <!-- Formulario para agregar invitado -->
+        <div class="card">
+            <h3>➕ Registrar Nuevo Invitado</h3>
+            <div class="form-group">
+                <input type="text" id="inputNombre" placeholder="Nombre completo del invitado...">
+                <button class="btn-primary" onclick="agregarInvitado()">Generar Pase</button>
+            </div>
+        </div>
+
+        <!-- Lista de invitados -->
+        <div class="card">
+            <h3>📋 Lista de Pases Activos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Código Único</th>
+                        <th>Acción</th>
+                    </tr>
+                <thead id="tabla-invitados">
+                    <!-- Se cargan dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://zfgrewceocnivqglmjqe.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmZ3Jld2Nlb2NuaXZxZ2xtanFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwNDcxNTEsImV4cCI6MjEwMzYyMzE1MX0.6kB7eC7sh-SpPhyAeVJkPUuvq7PZPoD6PIh8o78k_vY';
+        
+        const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Verificar si hay sesión activa
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html'; // Si no está logueado, lo manda al login
+                return;
+            }
+            cargarInvitados();
+        });
+
+        async function cargarInvitados() {
+            const { data, error } = await _supabase
+                .from('invitados')
+                .select('*')
+                .order('id', { ascending: false });
+
+            const tbody = document.getElementById('tabla-invitados');
+            tbody.innerHTML = '';
+
+            if (error || !data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#9ca3af;">No hay invitados registrados.</td></tr>';
+                return;
+            }
+
+            data.forEach(inv => {
+                const tr = document.createElement('tr');
+                const linkInvitacion = `${window.location.origin}/invitacion.html?codigo=${inv.codigo}`;
+                
+                tr.innerHTML = `
+                    <td>${inv.nombre}</td>
+                    <td><code>${inv.codigo}</code></td>
+                    <td>
+                        <button class="btn-copiar" onclick="copiarEnlace('${linkInvitacion}')">Copiar Enlace QR</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function agregarInvitado() {
+            const input = document.getElementById('inputNombre');
+            const nombreVal = input.value.trim();
+
+            if (!nombreVal) {
+                alert('Escribe el nombre del invitado.');
+                return;
+            }
+
+            // Generar un código aleatorio único (Ej: VIP-7482)
+            const codigoAleatorio = 'VIP-' + Math.floor(1000 + Math.random() * 9000);
+
+            const { error } = await _supabase
+                .from('invitados')
+                .insert([{ nombre: nombreVal, codigo: codigoAleatorio, asistio: false }]);
+
+            if (error) {
+                alert('Error al guardar: ' + error.message);
+                return;
+            }
+
+            input.value = '';
+            cargarInvitados();
+        }
+
+        function copiarEnlace(enlace) {
+            navigator.clipboard.writeText(enlace);
+            alert('¡Enlace de invitación copiado al portapapeles! Ya puedes enviarlo por WhatsApp.');
+        }
+
+        async function cerrarSesion() {
+            await _supabase.auth.signOut();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
