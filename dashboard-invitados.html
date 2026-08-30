@@ -22,25 +22,41 @@
 
         .container {
             width: 100%;
-            max-width: 700px;
+            max-width: 650px;
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #3b82f6;
+            border-bottom: 2px solid #374151;
             padding-bottom: 15px;
             margin-bottom: 25px;
         }
 
-        header h1 {
-            font-size: 1.5rem;
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-box img {
+            max-width: 45px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+        }
+
+        .brand-box h1 {
+            font-size: 1.2rem;
             margin: 0;
-            background: linear-gradient(90deg, #3b82f6, #ffffff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffffff;
+        }
+
+        .brand-box h1 span {
+            color: #3b82f6;
         }
 
         .btn-salir {
@@ -52,10 +68,15 @@
             font-weight: bold;
             cursor: pointer;
             font-size: 0.85rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-salir:hover {
+            opacity: 0.9;
         }
 
         .card {
-            background: #111827;
+            background: linear-gradient(135deg, #111827, #1f2937);
             border: 1px solid #374151;
             padding: 20px;
             border-radius: 15px;
@@ -66,7 +87,7 @@
         .card h3 {
             margin-top: 0;
             color: #60a5fa;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
         }
 
         .form-group {
@@ -77,13 +98,14 @@
 
         input {
             flex: 1;
-            background: #1f2937;
+            background: #111827;
             border: 1px solid #4b5563;
             padding: 10px 15px;
             border-radius: 8px;
             color: white;
             font-size: 0.95rem;
             outline: none;
+            transition: border-color 0.2s;
         }
 
         input:focus {
@@ -98,6 +120,11 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
         }
 
         table {
@@ -118,14 +145,24 @@
             font-weight: 600;
         }
 
+        code {
+            background: #111827;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: #60a5fa;
+            font-family: monospace;
+        }
+
         .btn-copiar {
             background: #374151;
             color: #e5e7eb;
             border: none;
-            padding: 6px 10px;
-            border-radius: 5px;
+            padding: 6px 12px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 0.8rem;
+            font-weight: 600;
+            transition: background 0.2s;
         }
 
         .btn-copiar:hover {
@@ -137,11 +174,14 @@
 
     <div class="container">
         <header>
-            <h1>Panel de Invitados</h1>
+            <div class="brand-box">
+                <img src="Logo_fondo_blanco_solo_icono.png" alt="Logo">
+                <h1>Partiflow <span>PRO</span></h1>
+            </div>
             <button class="btn-salir" onclick="cerrarSesion()">Cerrar Sesión</button>
         </header>
 
-        <!-- Formulario para agregar invitado -->
+        <!-- Formulario para registrar invitado -->
         <div class="card">
             <h3>➕ Registrar Nuevo Invitado</h3>
             <div class="form-group">
@@ -160,7 +200,8 @@
                         <th>Código Único</th>
                         <th>Acción</th>
                     </tr>
-                <thead id="tabla-invitados">
+                </thead>
+                <tbody id="tabla-invitados">
                     <!-- Se cargan dinámicamente -->
                 </tbody>
             </table>
@@ -174,10 +215,9 @@
         const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         window.addEventListener('DOMContentLoaded', async () => {
-            // Verificar si hay sesión activa
             const { data: { session } } = await _supabase.auth.getSession();
             if (!session) {
-                window.location.href = 'login.html'; // Si no está logueado, lo manda al login
+                window.location.href = 'login.html';
                 return;
             }
             cargarInvitados();
@@ -221,7 +261,6 @@
                 return;
             }
 
-            // Generar un código aleatorio único (Ej: VIP-7482)
             const codigoAleatorio = 'VIP-' + Math.floor(1000 + Math.random() * 9000);
 
             const { error } = await _supabase
@@ -239,7 +278,7 @@
 
         function copiarEnlace(enlace) {
             navigator.clipboard.writeText(enlace);
-            alert('¡Enlace de invitación copiado al portapapeles! Ya puedes enviarlo por WhatsApp.');
+            alert('¡Enlace de invitación copiado al portapapeles!');
         }
 
         async function cerrarSesion() {
