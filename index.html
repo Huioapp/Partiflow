@@ -166,12 +166,10 @@
             box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
         }
 
-        /* Animación de zoom limpia en el botón */
         .pulgar-animacion {
             transform: scale(1.15);
         }
 
-        /* Corazones flotantes al votar */
         @keyframes floatUp {
             0% { transform: translateY(0) scale(0.8); opacity: 1; }
             100% { transform: translateY(-50px) scale(1.3); opacity: 0; }
@@ -234,9 +232,8 @@
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        // Credenciales Reales de tu proyecto partiflow-db (la llave limpia)
         const SUPABASE_URL = 'https://zfgrewceocnivqglmjqe.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_AAcRBlmLLP0UQnw1cLbvwg_zUG4Emvk';
+        const SUPABASE_ANON_KEY = 'sb_publishable_AACRBlmLLP0UqwN1cLbvwg_zUA2_4MhYI9oL';
 
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -274,16 +271,18 @@
             lista.innerHTML = '';
 
             canciones.forEach(cancion => {
+                // Usamos el id directamente o el título saneado como referencia única
+                const safeId = cancion.id;
                 const item = document.createElement('div');
                 item.className = 'cancion-item';
-                item.id = `card-${cancion.id}`;
+                item.id = `card-${safeId}`;
                 item.innerHTML = `
                     <div>
                         <p class="titulo-cancion">${cancion.titulo}</p>
                         <p class="artista-cancion">${cancion.artista}</p>
                     </div>
-                    <button class="boton-votar" id="btn-${cancion.id}" onclick="votar(${cancion.id}, ${cancion.votos})">
-                        <span class="corazon">❤️</span> <span class="contador" id="contador-${cancion.id}">${cancion.votos}</span>
+                    <button class="boton-votar" id="btn-${safeId}" onclick="votar(${safeId}, ${cancion.votos})">
+                        <span class="corazon">❤️</span> <span class="contador" id="contador-${safeId}">${cancion.votos}</span>
                     </button>
                 `;
                 lista.appendChild(item);
@@ -299,11 +298,12 @@
                 return;
             }
 
+            // Generar un ID numérico seguro más corto (en segundos en lugar de milisegundos)
             const nuevoId = Math.floor(Date.now() / 1000);
 
             const { error } = await _supabase
                 .from('canciones')
-                .insert([{ id: nuevoId, titulo: tituloInput.value, artista: artistaInput.value, votos: 1 }]);
+                .insert([{ id: nuevoId, titulo: tituloInput.value.trim(), artista: artistaInput.value.trim(), votos: 1 }]);
 
             if (error) {
                 alert('Error al guardar la canción: ' + error.message);
@@ -319,20 +319,17 @@
             const btn = document.getElementById(`btn-${id}`);
             const card = document.getElementById(`card-${id}`);
 
-            // 1. Actualizar el número en pantalla AL INSTANTE
             const nuevosVotos = votosActuales + 1;
             if (contadorEl) {
                 contadorEl.innerText = nuevosVotos;
                 btn.setAttribute('onclick', `votar(${id}, ${nuevosVotos})`);
             }
 
-            // 2. Animación rápida del botón
             if (btn) {
                 btn.classList.add('pulgar-animacion');
                 setTimeout(() => btn.classList.remove('pulgar-animacion'), 200);
             }
 
-            // 3. Lanzar corazoncito flotante
             if (card) {
                 const heart = document.createElement('span');
                 heart.className = 'floating-heart';
@@ -341,7 +338,7 @@
                 setTimeout(() => heart.remove(), 700);
             }
 
-            // 4. Enviar el voto a Supabase por detrás
+            // Actualización limpia en Supabase buscando por el ID numérico
             const { error } = await _supabase
                 .from('canciones')
                 .update({ votos: nuevosVotos })
@@ -349,6 +346,7 @@
 
             if (error) {
                 console.error('Error al sincronizar voto:', error);
+                alert('No se pudo guardar el voto en la nube: ' + error.message);
             }
         };
     </script>
