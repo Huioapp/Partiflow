@@ -280,7 +280,7 @@
                         <p class="titulo-cancion">${cancion.titulo}</p>
                         <p class="artista-cancion">${cancion.artista}</p>
                     </div>
-                    <button class="boton-votar" id="btn-${safeId}" onclick="votar(${safeId}, ${cancion.votos})">
+                    <button class="boton-votar" id="btn-${safeId}" onclick="votar(${safeId})">
                         <span class="corazon">❤️</span> <span class="contador" id="contador-${safeId}">${cancion.votos}</span>
                     </button>
                 `;
@@ -292,7 +292,6 @@
             const tituloInput = document.getElementById('inputTitulo');
             const artistaInput = document.getElementById('inputArtista');
 
-            // Validación flexible relajada para evitar falsos bloqueos
             if (!tituloInput.value || !artistaInput.value || tituloInput.value.trim() === '') {
                 alert('Por favor escribe el título y el artista.');
                 return;
@@ -313,22 +312,18 @@
             artistaInput.value = '';
         };
 
-        window.votar = async function(id, votosActuales) {
+        window.votar = async function(id) {
             const contadorEl = document.getElementById(`contador-${id}`);
             const btn = document.getElementById(`btn-${id}`);
             const card = document.getElementById(`card-${id}`);
 
-            const nuevosVotos = votosActuales + 1;
-            if (contadorEl) {
-                contadorEl.innerText = nuevosVotos;
-                btn.setAttribute('onclick', `votar(${id}, ${nuevosVotos})`);
-            }
-
+            // Animación visual del botón al instante
             if (btn) {
                 btn.classList.add('pulgar-animacion');
                 setTimeout(() => btn.classList.remove('pulgar-animacion'), 200);
             }
 
+            // Lanzar corazoncito flotante
             if (card) {
                 const heart = document.createElement('span');
                 heart.className = 'floating-heart';
@@ -337,13 +332,31 @@
                 setTimeout(() => heart.remove(), 700);
             }
 
-            const { error } = await _supabase
+            // 1. Consultar el valor actual directo de la base de datos para evitar desincronización
+            const { data: actualData, error: fetchError } = await _supabase
                 .from('canciones')
-                .update({ votos: nuevosVotos })
+                .select('votos')
+                .eq('id', id)
+                .single();
+
+            if (fetchError) {
+                console.error('Error al consultar voto actual:', fetchError);
+                return;
+            }
+
+            const nuevoTotal = (actualData.votos || 0) + 1;
+
+            // 2. Guardar el nuevo valor incrementado en Supabase
+            const { error: updateError } = await _supabase
+                .from('canciones')
+                .update({ votos: nuevoTotal })
                 .eq('id', id);
 
-            if (error) {
-                console.error('Error al sincronizar voto:', error);
+            if (updateError) {
+                console.error('Error al actualizar voto:', updateError);
+            } else if (contadorEl) {
+                // Actualizar en pantalla con el valor confirmado de la base de datos
+                contadorEl.innerText = nuevoTotal;
             }
         };
     </script>
