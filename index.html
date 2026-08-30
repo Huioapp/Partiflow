@@ -213,11 +213,14 @@
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
         const SUPABASE_URL = 'https://zfgrewceocnivqglmjqe.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_AAcRBlmLLP0UQnw1cLbvwg_zUG4Emvk';
+        const SUPABASE_ANON_KEY = 'sb_publishable_AACRBlmLLP0UqwN1cLbvwg_zU...'; // Reemplaza con tu llave partiflow_live completa
 
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        window.addEventListener('DOMContentLoaded', cargarCanciones);
+        window.addEventListener('DOMContentLoaded', () => {
+            cargarCanciones();
+            suscripcionRealtime();
+        });
 
         async function cargarCanciones() {
             const { data, error } = await _supabase
@@ -231,6 +234,15 @@
             }
 
             mostrarEnPantalla(data);
+        }
+
+        function suscripcionRealtime() {
+            _supabase
+                .channel('cambios-canciones')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'canciones' }, payload => {
+                    cargarCanciones(); // Recarga la lista automáticamente al haber cualquier cambio
+                })
+                .subscribe();
         }
 
         function mostrarEnPantalla(canciones) {
@@ -270,14 +282,12 @@
                 .insert([{ id: nuevoId, titulo: tituloInput.value, artista: artistaInput.value, votos: 1 }]);
 
             if (error) {
-                console.error('Error detallado:', JSON.stringify(error, null, 2));
-                alert('Error de Supabase: ' + (error.message || JSON.stringify(error)));
+                alert('Error al guardar la canción: ' + error.message);
                 return;
             }
 
             tituloInput.value = '';
             artistaInput.value = '';
-            cargarCanciones();
         };
 
         window.votar = async function(id, votosActuales) {
@@ -288,10 +298,7 @@
 
             if (error) {
                 console.error('Error al votar:', error);
-                return;
             }
-
-            cargarCanciones();
         };
     </script>
 </body>
