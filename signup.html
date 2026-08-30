@@ -32,23 +32,35 @@
             box-sizing: border-box;
         }
 
-        h1 {
-            font-size: 1.6rem;
-            margin-top: 0;
+        .brand-header {
             text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            background: linear-gradient(90deg, #3b82f6, #ffffff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            margin-bottom: 25px;
         }
 
-        p.sub {
-            text-align: center;
+        .brand-header img {
+            max-width: 65px;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+            margin-bottom: 10px;
+        }
+
+        .brand-header h2 {
+            font-size: 1.3rem;
+            margin: 0;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .brand-header h2 span {
+            color: #3b82f6;
+        }
+
+        .brand-header p {
             color: #9ca3af;
-            font-size: 0.9rem;
-            margin-bottom: 25px;
+            font-size: 0.85rem;
+            margin-top: 4px;
         }
 
         .form-group {
@@ -150,8 +162,11 @@
 <body>
 
     <div class="auth-card">
-        <h1>Partiflow PRO</h1>
-        <p class="sub">Crea tu cuenta de organizador</p>
+        <div class="brand-header">
+            <img src="Logo_fondo_blanco_solo_icono.png" alt="Partiflow Isotipo">
+            <h2>Partiflow <span>PRO</span></h2>
+            <p>Crear cuenta de organizador</p>
+        </div>
 
         <div class="form-group">
             <label for="email">Correo Electrónico</label>
@@ -189,12 +204,11 @@
         
         const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Función para mostrar/ocultar contraseña con el ícono del ojito
         function togglePassword(fieldId, btn) {
             const input = document.getElementById(fieldId);
             if (input.type === 'password') {
                 input.type = 'text';
-                btn.textContent = ' ocultar ';
+                btn.textContent = 'ocultar';
                 btn.style.fontSize = '0.75rem';
             } else {
                 input.type = 'password';
@@ -232,7 +246,6 @@
 
             alerta.textContent = 'Registrando cuenta y enviando correo de confirmación...';
 
-            // Registro con Supabase Auth (automáticamente enviará correo de confirmación si está activo en el panel)
             const { data, error } = await _supabase.auth.signUp({
                 email: email,
                 password: password,
@@ -248,7 +261,7 @@
             }
 
             alerta.className = 'msg success';
-            alerta.textContent = '¡Registro exitoso! Te hemos enviado un correo de confirmación. Revisa tu bandeja para activar tu cuenta.';
+            alerta.textContent = '¡Registro exitoso! Te hemos enviado un correo de confirmación. Revisa tu bandeja.';
         }
     </script>
 </body>
