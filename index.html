@@ -271,7 +271,6 @@
             lista.innerHTML = '';
 
             canciones.forEach(cancion => {
-                // Limpiamos el título para usarlo como identificador seguro en el HTML
                 const safeKey = cancion.titulo.replace(/['"\s]/g, '_');
                 const item = document.createElement('div');
                 item.className = 'cancion-item';
@@ -334,15 +333,18 @@
 
             const nuevosVotos = votosActuales + 1;
 
-            // Actualizar directamente en Supabase buscando por el TÍTULO de la canción
-            const { error } = await _supabase
+            // Actualizar en Supabase y reportar si hay error
+            const { data, error } = await _supabase
                 .from('canciones')
                 .update({ votos: nuevosVotos })
-                .eq('titulo', tituloCancion);
+                .eq('titulo', tituloCancion)
+                .select();
 
             if (error) {
-                console.error('Error al actualizar voto:', error);
-                alert('Error al registrar el voto: ' + error.message);
+                alert('Error de Supabase al votar: ' + JSON.stringify(error));
+                console.error('Error detallado:', error);
+            } else if (!data || data.length === 0) {
+                alert('Aviso: La base de datos no encontró la fila con el título: ' + tituloCancion);
             } else if (contadorEl) {
                 contadorEl.innerText = nuevosVotos;
             }
