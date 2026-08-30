@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Partiflow PRO - Cabina DJ</title>
+    <!-- Cargamos Supabase mediante la versión global UMD estable -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             margin: 0;
@@ -229,13 +231,12 @@
         <!-- Las canciones se cargarán automáticamente desde Supabase -->
     </div>
 
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/module/index.js';
-
+    <script>
         const SUPABASE_URL = 'https://zfgrewceocnivqglmjqe.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_AACRBlmLLP0UqwN1cLbvwg_zUA2_4MhYI9oL';
 
-        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Inicializamos Supabase usando el objeto global limpio
+        const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         window.addEventListener('DOMContentLoaded', () => {
             cargarCanciones();
