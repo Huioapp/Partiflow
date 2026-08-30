@@ -162,35 +162,28 @@
         }
 
         .boton-votar:hover {
-            background: #3b82f6;
-            color: #ffffff;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
+            background: rgba(59, 130, 246, 0.15);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
         }
 
-        /* Animación de pulso al hacer clic */
+        /* Animación de zoom limpia en el botón */
         .pulgar-animacion {
-            animation: pulseEffect 0.3s ease;
-        }
-
-        @keyframes pulseEffect {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.25); background: #3b82f6; color: #fff; }
-            100% { transform: scale(1); }
+            transform: scale(1.15);
         }
 
         /* Corazones flotantes al votar */
         @keyframes floatUp {
             0% { transform: translateY(0) scale(0.8); opacity: 1; }
-            100% { transform: translateY(-60px) scale(1.4); opacity: 0; }
+            100% { transform: translateY(-50px) scale(1.3); opacity: 0; }
         }
 
         .floating-heart {
             position: absolute;
-            right: 30px;
-            bottom: 20px;
-            font-size: 1.2rem;
+            right: 40px;
+            bottom: 25px;
+            font-size: 1.3rem;
             pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards;
+            animation: floatUp 0.7s ease-out forwards;
         }
 
         .corazon {
@@ -288,8 +281,8 @@
                         <p class="titulo-cancion">${cancion.titulo}</p>
                         <p class="artista-cancion">${cancion.artista}</p>
                     </div>
-                    <button class="boton-votar" id="btn-${cancion.id}" onclick="votar(${cancion.id}, ${cancion.votos}, event)">
-                        <span class="corazon">❤️</span> <span class="contador">${cancion.votos}</span>
+                    <button class="boton-votar" id="btn-${cancion.id}" onclick="votar(${cancion.id}, ${cancion.votos})">
+                        <span class="corazon">❤️</span> <span class="contador" id="contador-${cancion.id}">${cancion.votos}</span>
                     </button>
                 `;
                 lista.appendChild(item);
@@ -320,30 +313,42 @@
             artistaInput.value = '';
         };
 
-        window.votar = async function(id, votosActuales, event) {
-            // 1. Efecto visual inmediato en el botón
+        window.votar = async function(id, votosActuales) {
+            const contadorEl = document.getElementById(`contador-${id}`);
             const btn = document.getElementById(`btn-${id}`);
+            const card = document.getElementById(`card-${id}`);
+
+            // 1. Actualizar el número en pantalla AL INSTANTE
+            const nuevosVotos = votosActuales + 1;
+            if (contadorEl) {
+                contadorEl.innerText = nuevosVotos;
+                // Actualizar también el onclick del botón con el nuevo valor para votaciones seguidas
+                btn.setAttribute('onclick', `votar(${id}, ${nuevosVotos})`);
+            }
+
+            // 2. Animación rápida del botón
             if (btn) {
                 btn.classList.add('pulgar-animacion');
-                setTimeout(() => btn.classList.remove('pulgar-animacion'), 300);
+                setTimeout(() => btn.classList.remove('pulgar-animacion'), 200);
+            }
 
-                // 2. Generar corazón flotante
-                const card = document.getElementById(`card-${id}`);
+            // 3. Lanzar corazoncito flotante
+            if (card) {
                 const heart = document.createElement('span');
                 heart.className = 'floating-heart';
                 heart.innerHTML = '💖';
                 card.appendChild(heart);
-                setTimeout(() => heart.remove(), 800);
+                setTimeout(() => heart.remove(), 700);
             }
 
-            // 3. Enviar actualización a Supabase
+            // 4. Enviar el voto a Supabase por detrás
             const { error } = await _supabase
                 .from('canciones')
-                .update({ votos: votosActuales + 1 })
+                .update({ votos: nuevosVotos })
                 .eq('id', id);
 
             if (error) {
-                console.error('Error al votar:', error);
+                console.error('Error al sincronizar voto:', error);
             }
         };
     </script>
