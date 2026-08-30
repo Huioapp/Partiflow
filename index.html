@@ -235,7 +235,7 @@
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
         const SUPABASE_URL = 'https://zfgrewceocnivqglmjqe.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_AACRBlmLLP0UqwN1cLbvwg_zU...'; // Recuerda poner tu llave partiflow_live completa
+        const SUPABASE_ANON_KEY = 'sb_publishable_AACRBlmLLP0UqwN1cLbvwg_zUA2_4MhYI9oL';
 
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -322,7 +322,6 @@
             const nuevosVotos = votosActuales + 1;
             if (contadorEl) {
                 contadorEl.innerText = nuevosVotos;
-                // Actualizar también el onclick del botón con el nuevo valor para votaciones seguidas
                 btn.setAttribute('onclick', `votar(${id}, ${nuevosVotos})`);
             }
 
