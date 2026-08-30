@@ -16,6 +16,7 @@
             align-items: center;
             padding: 20px;
             box-sizing: border-box;
+            overflow-x: hidden;
         }
 
         header {
@@ -127,6 +128,7 @@
             align-items: center;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
             border: 1px solid #374151;
+            position: relative;
         }
 
         .titulo-cancion {
@@ -152,16 +154,43 @@
             font-weight: bold;
             font-size: 1rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             gap: 6px;
+            position: relative;
         }
 
         .boton-votar:hover {
             background: #3b82f6;
             color: #ffffff;
             box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
+        }
+
+        /* Animación de pulso al hacer clic */
+        .pulgar-animacion {
+            animation: pulseEffect 0.3s ease;
+        }
+
+        @keyframes pulseEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.25); background: #3b82f6; color: #fff; }
+            100% { transform: scale(1); }
+        }
+
+        /* Corazones flotantes al votar */
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.8); opacity: 1; }
+            100% { transform: translateY(-60px) scale(1.4); opacity: 0; }
+        }
+
+        .floating-heart {
+            position: absolute;
+            right: 30px;
+            bottom: 20px;
+            font-size: 1.2rem;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
         }
 
         .corazon {
@@ -213,7 +242,7 @@
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
         const SUPABASE_URL = 'https://zfgrewceocnivqglmjqe.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_AAcRBlmLLP0UQnw1cLbvwg_zUG4Emvk';
+        const SUPABASE_ANON_KEY = 'sb_publishable_AACRBlmLLP0UqwN1cLbvwg_zU...'; // Recuerda poner tu llave partiflow_live completa
 
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -240,7 +269,7 @@
             _supabase
                 .channel('cambios-canciones')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'canciones' }, payload => {
-                    cargarCanciones(); // Recarga la lista automáticamente al haber cualquier cambio
+                    cargarCanciones();
                 })
                 .subscribe();
         }
@@ -253,12 +282,13 @@
             canciones.forEach(cancion => {
                 const item = document.createElement('div');
                 item.className = 'cancion-item';
+                item.id = `card-${cancion.id}`;
                 item.innerHTML = `
                     <div>
                         <p class="titulo-cancion">${cancion.titulo}</p>
                         <p class="artista-cancion">${cancion.artista}</p>
                     </div>
-                    <button class="boton-votar" onclick="votar(${cancion.id}, ${cancion.votos})">
+                    <button class="boton-votar" id="btn-${cancion.id}" onclick="votar(${cancion.id}, ${cancion.votos}, event)">
                         <span class="corazon">❤️</span> <span class="contador">${cancion.votos}</span>
                     </button>
                 `;
@@ -290,7 +320,23 @@
             artistaInput.value = '';
         };
 
-        window.votar = async function(id, votosActuales) {
+        window.votar = async function(id, votosActuales, event) {
+            // 1. Efecto visual inmediato en el botón
+            const btn = document.getElementById(`btn-${id}`);
+            if (btn) {
+                btn.classList.add('pulgar-animacion');
+                setTimeout(() => btn.classList.remove('pulgar-animacion'), 300);
+
+                // 2. Generar corazón flotante
+                const card = document.getElementById(`card-${id}`);
+                const heart = document.createElement('span');
+                heart.className = 'floating-heart';
+                heart.innerHTML = '💖';
+                card.appendChild(heart);
+                setTimeout(() => heart.remove(), 800);
+            }
+
+            // 3. Enviar actualización a Supabase
             const { error } = await _supabase
                 .from('canciones')
                 .update({ votos: votosActuales + 1 })
