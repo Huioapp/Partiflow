@@ -292,21 +292,27 @@
             const tituloInput = document.getElementById('inputTitulo');
             const artistaInput = document.getElementById('inputArtista');
 
-            if (!tituloInput.value || !artistaInput.value || tituloInput.value.trim() === '') {
+            const tituloVal = tituloInput.value ? tituloInput.value.trim() : '';
+            const artistaVal = artistaInput.value ? artistaInput.value.trim() : '';
+
+            if (tituloVal === '' || artistaVal === '') {
                 alert('Por favor escribe el título y el artista.');
                 return;
             }
 
             const { error } = await _supabase
                 .from('canciones')
-                .insert([{ 
-                    titulo: tituloInput.value.trim(), 
-                    artista: artistaInput.value.trim(), 
-                    votos: 1 
-                }]);
+                .insert([
+                    { 
+                        titulo: tituloVal, 
+                        artista: artistaVal, 
+                        votos: 1 
+                    }
+                ]);
 
             if (error) {
                 alert('Error al guardar la canción: ' + error.message);
+                console.error('Detalle del error:', error);
                 return;
             }
 
