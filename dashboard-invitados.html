@@ -47,20 +47,20 @@
         }
 
         .btn-nav {
-            background: #1f2937;
-            color: #d1d5db;
+            background: #374151;
+            color: #ffffff;
             border: 1px solid #4b5563;
-            padding: 8px 14px;
+            padding: 8px 16px;
             border-radius: 8px;
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .btn-nav:hover {
-            background: #374151;
-            color: white;
+            background: #4b5563;
             border-color: #60a5fa;
         }
 
@@ -76,44 +76,7 @@
         }
         .btn-logout:hover { opacity: 0.9; }
 
-        /* Tarjeta de Información de la Fiesta (Con Histórico) */
-        .card-fiesta {
-            width: 100%;
-            max-width: 700px;
-            background: #111827;
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid #374151;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .fiesta-info h2 {
-            margin: 0 0 5px 0;
-            font-size: 1.3rem;
-            color: #ffffff;
-        }
-
-        .fiesta-info p {
-            margin: 0;
-            color: #9ca3af;
-            font-size: 0.9rem;
-        }
-
-        .badge-estado {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .badge-activo { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; }
-        .badge-historico { background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid #4b5563; }
-
-        /* Secciones del Panel */
+        /* Panel Principal */
         .panel-box {
             width: 100%;
             max-width: 700px;
@@ -133,11 +96,17 @@
 
         .input-grupo {
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
         }
 
-        .input-grupo input {
-            flex: 1;
+        .input-grupo label {
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .input-grupo input, .input-grupo select {
             background: #1f2937;
             border: 1px solid #4b5563;
             padding: 10px 15px;
@@ -151,11 +120,25 @@
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
+            font-size: 1rem;
         }
+        .btn-generar:hover { opacity: 0.9; }
+
+        .badge-estado {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+        .badge-activo { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; }
+        .badge-historico { background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid #4b5563; }
 
         table {
             width: 100%;
@@ -175,7 +158,7 @@
 </head>
 <body>
 
-    <!-- Barra Superior con Botón de Regreso -->
+    <!-- Barra Superior con el Botón de Regreso -->
     <div class="top-bar">
         <div class="brand-title">Partiflow <span style="color: white;">PRO</span></div>
         <div class="btn-acciones-top">
@@ -184,56 +167,74 @@
         </div>
     </div>
 
-    <!-- Tarjeta del Nombre y Fecha de la Fiesta (Control de Histórico) -->
-    <div class="card-fiesta">
-        <div class="fiesta-info">
-            <h2 id="lblNombreFiesta">Cumpleaños / Reunión Principal</h2>
-            <p>📅 Fecha del Evento: <span id="lblFechaFiesta">2026-09-15</span></p>
-        </div>
-        <div>
-            <span id="badgeEstado" class="badge-estado badge-activo">Activa en Vivo</span>
-        </div>
-    </div>
-
-    <!-- Registrar Invitado -->
+    <!-- Configuración de la Fiesta y Datos del QR -->
     <div class="panel-box">
-        <h3>➕ Registrar Nuevo Invitado</h3>
+        <h3>🎉 Configuración de la Fiesta y Evento</h3>
         <div class="input-grupo">
-            <input type="text" id="inputNombre" placeholder="Nombre completo del invitado...">
-            <button class="btn-generar" onclick="generarPase()">Generar Pase</button>
+            <label>Nombre de la Fiesta o Motivo:</label>
+            <input type="text" id="txtNombreFiesta" value="Cumpleaños / Reunión Principal">
+            
+            <label>Fecha de la Fiesta:</label>
+            <input type="date" id="txtFechaFiesta" value="2026-09-15">
+
+            <label>Ubicación (Enlace de Google Maps para el QR):</label>
+            <input type="text" id="txtUbicacion" value="https://maps.google.com">
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span id="lblEstadoFiesta" class="badge-estado badge-activo">Activa en Vivo</span>
+            <button class="btn-nav" onclick="guardarConfigFiesta()">Actualizar Evento</button>
         </div>
     </div>
 
-    <!-- Lista de Pases Activos -->
+    <!-- Registrar Invitado para el QR -->
     <div class="panel-box">
-        <h3>📋 Lista de Pases Activos</h3>
+        <h3>➕ Registrar Invitado (Genera Pase y QR)</h3>
+        <div class="input-grupo">
+            <label>Nombre del Invitado, Pareja o Familia:</label>
+            <input type="text" id="inputNombre" placeholder="Ej. Carlos Ganoza y Familia...">
+        </div>
+        <button class="btn-generar" onclick="generarPase()">Generar Pase y Enlace QR</button>
+    </div>
+
+    <!-- Lista de Pases Activos / Histórico -->
+    <div class="panel-box">
+        <h3>📋 Lista de Pases Generados</h3>
         <table>
             <thead>
                 <tr>
-                    <th>Nombre</th>
+                    <th>Nombre / Grupo</th>
                     <th>Código Único</th>
-                    <th>Acción</th>
+                    <th>Acción QR</th>
                 </tr>
             </thead>
             <tbody id="tablaInvitados">
-                <tr><td colspan="3" style="text-align:center; color:#9ca3af;">No hay invitados registrados.</td></tr>
+                <tr><td colspan="3" style="text-align:center; color:#9ca3af;">No hay invitados registrados todavía.</td></tr>
             </tbody>
         </table>
     </div>
 
     <script>
-        // Simulación temporal de datos de la fiesta (luego se conectará con Supabase)
-        const fechaFiestaStr = "2026-09-15"; // Aquí cambiará según la fecha que configure el usuario
-        const hoy = new Date().toISOString().split('T')[0];
+        // Control de fecha y estado histórico automático
+        const inputFecha = document.getElementById('txtFechaFiesta');
+        const badgeEstado = document.getElementById('lblEstadoFiesta');
 
-        // Lógica de transición a Histórico
-        const badge = document.getElementById('badgeEstado');
-        if (fechaFiestaStr < hoy) {
-            badge.textContent = "Histórico (Archivado)";
-            badge.className = "badge-estado badge-historico";
-        } else {
-            badge.textContent = "Activa en Vivo";
-            badge.className = "badge-estado badge-activo";
+        function verificarHistorico() {
+            const hoy = new Date().toISOString().split('T')[0];
+            if (inputFecha.value && inputFecha.value < hoy) {
+                badgeEstado.textContent = "Histórico (Archivado)";
+                badgeEstado.className = "badge-estado badge-historico";
+            } else {
+                badgeEstado.textContent = "Activa en Vivo";
+                badgeEstado.className = "badge-estado badge-activo";
+            }
+        }
+
+        inputFecha.addEventListener('change', verificarHistorico);
+        verificarHistorico();
+
+        function guardarConfigFiesta() {
+            alert('¡Configuración de la fiesta guardada con éxito!');
+            verificarHistorico();
         }
 
         function cerrarSesion() {
@@ -246,8 +247,23 @@
                 alert('Escribe el nombre del invitado.');
                 return;
             }
-            alert('Pase generado con éxito para: ' + nombreInput.value);
+
+            const codigoVIP = 'VIP-' + Math.floor(1000 + Math.random() * 9000);
+            const tabla = document.getElementById('tablaInvitados');
+            
+            if (tabla.querySelector('td[colspan]')) {
+                tabla.innerHTML = ''; // Limpiar mensaje de vacío
+            }
+
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td>${nombreInput.value}</td>
+                <td><code style="color:#60a5fa;">${codigoVIP}</code></td>
+                <td><a href="invitacion.html?codigo=${codigoVIP}" target="_blank" class="btn-nav" style="padding:4px 8px; font-size:0.8rem;">Ver Pase QR</a></td>
+            `;
+            tabla.appendChild(fila);
             nombreInput.value = '';
+            alert('¡Pase y QR generado con éxito!');
         }
     </script>
 </body>
