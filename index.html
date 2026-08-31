@@ -250,10 +250,8 @@
 </head>
 <body>
 
-    <!-- Notificador Flotante -->
     <div id="toastNotification">Notificación</div>
 
-    <!-- ================= PANTALLA 1: LOGIN ================= -->
     <div id="authScreen">
         <div class="login-card">
             <img src="Logo_fondo_blanco_solo_icono.png" alt="Partiflow PRO" class="brand-logo">
@@ -279,10 +277,10 @@
         </div>
     </div>
 
-    <!-- ================= PANTALLA 2: CENTRO DE CONTROL MAESTRO ================= -->
     <div id="appScreen">
         <nav class="hub-nav">
             <button class="hub-tab active" onclick="switchTab('tab-cabina', this)">🎶 Cabina & DJ</button>
+            <button class="hub-tab" onclick="switchTab('tab-playlists', this)">📚 Playlists de Mezclas</button>
             <button class="hub-tab" onclick="switchTab('tab-evento', this)">🎉 Configurar Fiesta</button>
             <button class="hub-tab" onclick="switchTab('tab-invitados', this)">👥 Invitados & QR</button>
             <button class="hub-tab" onclick="switchTab('tab-hardware', this)">💡 Luces y Pantallas</button>
@@ -291,12 +289,10 @@
             <button class="hub-tab" style="color:#ef4444;" onclick="cerrarSesion()">🚪 Salir</button>
         </nav>
 
-        <!-- 1. SECCIÓN: CABINA & DJ CON IA Y PROTECCIÓN ANTI-LLAMADAS -->
         <div id="tab-cabina" class="section-container active">
             <div class="card">
                 <h2>🎧 Cabina Inteligente con IA & Karaoke</h2>
                 
-                <!-- Selector de Dispositivo / Modo Anti-Interrupciones -->
                 <div style="background:#1f2937; border:1px solid #374151; border-radius:12px; padding:12px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                     <div>
                         <p style="font-size:0.85rem; color:#60a5fa; font-weight:bold;">🛡️ Control Anti-Interrupciones (Llamadas / Push)</p>
@@ -315,21 +311,18 @@
                     Los invitados pueden votar y pedir canciones mediante voz o texto desde sus teléfonos escaneando el QR general.
                 </p>
 
-                <!-- Caja QR Modo Personal -->
                 <div id="personalQrBox" class="dynamic-box">
                     <p style="color:#60a5fa; font-size:0.9rem; font-weight:bold; margin-bottom:8px;">🔗 Tu Enlace / QR Privado de Mezcla</p>
                     <p style="color:#9ca3af; font-size:0.8rem; margin-bottom:12px;">Comparte este acceso exclusivo con otra persona para que agregue canciones a tu sesión privada.</p>
                     <button class="btn btn-secondary" style="font-size:0.85rem; padding:8px 12px;" onclick="copiarEnlacePersonal()">📋 Copiar Enlace Privado</button>
                 </div>
 
-                <!-- Caja QR Modo Taxi -->
                 <div id="taxiQrBox" class="dynamic-box">
                     <p style="color:#34d399; font-size:0.9rem; font-weight:bold; margin-bottom:8px;">🚕 QR Único del Pasajero en el Auto</p>
                     <p style="color:#9ca3af; font-size:0.8rem; margin-bottom:12px;">Muestra este código en el asiento trasero para que el pasajero elija su música por voz o texto.</p>
                     <button class="btn btn-secondary" style="font-size:0.85rem; padding:8px 12px;" onclick="copiarEnlaceTaxi()">📋 Copiar QR / Enlace del Taxi</button>
                 </div>
 
-                <!-- Buscador Inteligente con Reconocimiento de Voz por IA -->
                 <div class="input-group">
                     <label>🔍 Buscador Inteligente (Escribe o usa el Micrófono de IA):</label>
                     <div style="display:flex; gap:10px;">
@@ -339,20 +332,17 @@
                     </div>
                 </div>
 
-                <!-- Sugerencias en Vivo -->
                 <div id="resultadosBusqueda" style="background:#1f2937; border-radius:10px; padding:10px; margin-bottom:15px; display:none;">
                     <p style="font-size:0.85rem; color:#60a5fa; margin-bottom:6px; font-weight:bold;">Sugerencias encontradas:</p>
                     <div id="listaSugerencias" style="display:flex; flex-direction:column; gap:6px;"></div>
                 </div>
 
-                <!-- Controles Principales, DJ IA y Karaoke -->
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px;">
                     <button class="btn btn-success" onclick="iniciarReproduccionGeneral()">▶️ Iniciar</button>
                     <button class="btn btn-ai" onclick="sugerenciaDJVirtualIA()">🤖 DJ Virtual IA</button>
                     <button class="btn btn-warning" id="btnModoKaraoke" onclick="toggleModoKaraoke()">🎤 Karaoke</button>
                 </div>
 
-                <!-- Monitor de Letras de Karaoke -->
                 <div id="karaokeMonitor" style="display:none; background:#111827; border:2px solid #f59e0b; border-radius:12px; padding:15px; margin-bottom:15px; text-align:center;">
                     <p style="color:#f59e0b; font-size:0.8rem; font-weight:bold; text-transform:uppercase; margin-bottom:5px;">🌟 MODO KARAOKE ACTIVO (Instrumental + Letras)</p>
                     <p id="letraKaraoke" style="font-size:1.1rem; color:#ffffff; font-style:italic; margin-top:5px;">♪♪ [Esperando voz o pista para cantar...] ♪♪</p>
@@ -372,7 +362,38 @@
             </div>
         </div>
 
-        <!-- 2. SECCIÓN: CONFIGURAR FIESTA -->
+        <div id="tab-playlists" class="section-container">
+            <div class="card">
+                <h2>📚 Playlists de Mezclas del DJ</h2>
+                <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">Crea, califica y vincula sets completos (incluyendo enlaces de Spotify o streaming) guardados en memoria.</p>
+                
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Nombre del Playlist / Set:</label>
+                        <input type="text" id="inputNombrePlaylist" placeholder="Ej. Set Electrónica Verano...">
+                    </div>
+                    <div class="input-group">
+                        <label>Enlace de Spotify / Streaming (Opcional):</label>
+                        <input type="text" id="inputSpotifyLink" placeholder="https://open.spotify.com/playlist/...">
+                    </div>
+                </div>
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label>Pistas / Artistas Principales del Set:</label>
+                    <input type="text" id="inputPistasPlaylist" placeholder="Ej. Shakira, Don Omar, Tiesto...">
+                </div>
+                <button class="btn" style="margin-bottom: 20px;" onclick="guardarNuevoPlaylist()">💾 Guardar Set de Mezclas en Memoria</button>
+
+                <h3 style="font-size:1rem; color:#e5e7eb; margin-top:10px; margin-bottom:10px;">🎧 Tus Sets Guardados (Calificación y Enlace)</h3>
+                <table>
+                    <thead>
+                        <tr><th>Set / Playlist</th><th>Pistas / Enlace</th><th>Calificación</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody id="tablaPlaylistsGuardados">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
         <div id="tab-evento" class="section-container">
             <div class="card">
                 <h2>⚙️ Configuración del Evento y Fechas</h2>
@@ -404,7 +425,6 @@
             </div>
         </div>
 
-        <!-- 3. SECCIÓN: INVITADOS & QR -->
         <div id="tab-invitados" class="section-container">
             <div class="card">
                 <h2>🎫 Control de Accesos y Pases QR del Evento</h2>
@@ -427,7 +447,6 @@
             </div>
         </div>
 
-        <!-- 4. SECCIÓN: LUCES Y PANTALLAS -->
         <div id="tab-hardware" class="section-container">
             <div class="card">
                 <h2>💡 Conectividad Multi-Equipo, Micrófonos y Luces</h2>
@@ -445,7 +464,7 @@
                     <div class="hardware-card">
                         <div>
                             <h3>📺 Pantallas y TVs (Wi-Fi)</h3>
-                            <p>Transmite las visuales musicales, letras de karaoke y ranking a proyectores o televisores inteligentes (Con modo privacidad anti-notificaciones).</p>
+                            <p>Transmite las visuales musicales, letras de karaoke y ranking a proyectores o televisores inteligentes.</p>
                         </div>
                         <button class="btn" onclick="mostrarNotificacion('Buscando pantallas compatibles en la red Wi-Fi...')">📺 Conectar Pantallas (Wi-Fi)</button>
                     </div>
@@ -460,14 +479,12 @@
             </div>
         </div>
 
-        <!-- 5. SECCIÓN: PLANES Y BILLING -->
         <div id="tab-billing" class="section-container">
             <div class="card">
                 <h2>💳 Suscripción y Facturación (Billing)</h2>
                 <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">Elige o renueva tu plan de forma segura mediante dLocal Go.</p>
                 
                 <div class="plans-grid">
-                    <!-- Plan Básico -->
                     <div class="plan-card">
                         <div>
                             <h3 style="color:#9ca3af; font-size:1.1rem; margin-bottom:4px;">Plan Básico</h3>
@@ -477,12 +494,11 @@
                         <button class="btn btn-secondary" style="padding:10px 16px; font-size:0.85rem;" onclick="mostrarNotificacion('Seleccionando Plan Básico...')">Elegir Plan Básico</button>
                     </div>
 
-                    <!-- Plan PRO -->
                     <div class="plan-card active-plan">
                         <div>
                             <h3 style="color:#60a5fa; font-size:1.1rem; margin-bottom:4px;">Plan PRO</h3>
                             <p style="color:#34d399; font-weight:bold; font-size:1.15rem; margin-bottom:6px;">$19.90 <span style="font-size:0.75rem; color:#9ca3af;">+ IGV / mes</span></p>
-                            <p style="color:#9ca3af; font-size:0.85rem;">Cabina ilimitada con IA, modo anti-interrupciones, votación QR, modo taxi, karaoke y luces LED.</p>
+                            <p style="color:#9ca3af; font-size:0.85rem;">Cabina ilimitada con IA, librería de mezclas con Spotify, modo taxi, karaoke y luces LED.</p>
                         </div>
                         <div>
                             <span style="display:inline-block; background:#3b82f6; color:white; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:bold; margin-bottom:8px; text-align:center;">PLAN ACTIVO</span>
@@ -494,7 +510,6 @@
             </div>
         </div>
 
-        <!-- 6. SECCIÓN: MI PERFIL -->
         <div id="tab-perfil" class="section-container">
             <div class="card">
                 <h2>👤 Mi Perfil</h2>
@@ -524,7 +539,6 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="footer-links">
             <a href="#" onclick="mostrarNotificacion('Términos y Condiciones...')">Términos y Condiciones</a>
             <span>•</span>
@@ -553,6 +567,98 @@
             "Despacito - Luis Fonsi": "♪ Despacito... quiero respirar tu cuello despacito... ♪",
             "Hips Don't Lie - Shakira": "♪ Oh baby when you talk like that... you make a woman go mad... ♪",
             "Levitating - Dua Lipa": "♪ If you wanna run away with me, I know a galaxy... ♪"
+        };
+
+        // --- GESTIÓN DE PLAYLISTS DE MEZCLAS, CALIFICACIÓN Y SPOTIFY ---
+        let playlistsGuardados = JSON.parse(localStorage.getItem('partiflow_sets_dj')) || [
+            { nombre: "Set Fiesta Pro 2026", pistas: "Shakira, Dua Lipa, Fonsi", spotify: "https://open.spotify.com/playlist/demo1", calificacion: 5 },
+            { nombre: "Set Nocturno Taxi / Viaje", pistas: "The Weeknd, Don Omar, Bruno Mars", spotify: "", calificacion: 4 }
+        ];
+
+        function renderizarPlaylists() {
+            const tabla = document.getElementById('tablaPlaylistsGuardados');
+            tabla.innerHTML = '';
+            if (playlistsGuardados.length === 0) {
+                tabla.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#9ca3af;">No hay sets de mezclas guardados.</td></tr>';
+                return;
+            }
+            playlistsGuardados.forEach((pl, index) => {
+                let estrellasHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    let color = i <= pl.calificacion ? '#f59e0b' : '#4b5563';
+                    estrellasHTML += `<span style="cursor:pointer; color:${color}; font-size:1.1rem;" onclick="calificarPlaylist(${index}, ${i})">★</span>`;
+                }
+
+                let spotifyBadge = pl.spotify ? `<br><a href="${pl.spotify}" target="_blank" style="color:#34d399; font-size:0.75rem; text-decoration:none;">🟢 Spotify / Stream Link</a>` : '';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${pl.nombre}</strong></td>
+                    <td style="color:#9ca3af; font-size:0.85rem;">${pl.pistas} ${spotifyBadge}</td>
+                    <td>${estrellasHTML}</td>
+                    <td>
+                        <button class="btn btn-success" style="padding:5px 10px; font-size:0.75rem; width:auto;" onclick="cargarPlaylistEnCabina('${pl.nombre}')">▶️ Cargar</button>
+                        <button class="btn btn-secondary" style="padding:5px 10px; font-size:0.75rem; width:auto;" onclick="compartirPlaylist('${pl.nombre}')">🔗 Compartir</button>
+                        <button class="btn btn-danger" style="padding:5px 10px; font-size:0.75rem; width:auto;" onclick="eliminarPlaylist(${index})">🗑️</button>
+                    </td>
+                `;
+                tabla.appendChild(row);
+            });
+        }
+
+        function guardarNuevoPlaylist() {
+            const inputNombre = document.getElementById('inputNombrePlaylist');
+            const inputPistas = document.getElementById('inputPistasPlaylist');
+            const inputSpotify = document.getElementById('inputSpotifyLink');
+            
+            const nombre = inputNombre.value.trim();
+            const pistas = inputPistas.value.trim();
+            const spotify = inputSpotify.value.trim();
+
+            if (!nombre || !pistas) {
+                mostrarNotificacion('Ingresa el nombre del set y las pistas incluidas.');
+                return;
+            }
+
+            playlistsGuardados.push({ nombre: nombre, pistas: pistas, spotify: spotify, calificacion: 5 });
+            localStorage.setItem('partiflow_sets_dj', JSON.stringify(playlistsGuardados));
+            inputNombre.value = '';
+            inputPistas.value = '';
+            inputSpotify.value = '';
+            renderizarPlaylists();
+            mostrarNotificacion(`💾 Set de mezclas "${nombre}" guardado.`);
+        }
+
+        function calificarPlaylist(index, nuevaEstrella) {
+            playlistsGuardados[index].calificacion = nuevaEstrella;
+            localStorage.setItem('partiflow_sets_dj', JSON.stringify(playlistsGuardados));
+            renderizarPlaylists();
+            mostrarNotificacion(`⭐ Set calificado con ${nuevaEstrella} estrellas.`);
+        }
+
+        function compartirPlaylist(nombre) {
+            const enlaceCompartido = window.location.href + '#set-dj-' + encodeURIComponent(nombre.toLowerCase().replace(/\s+/g, '-'));
+            navigator.clipboard.writeText(enlaceCompartido);
+            mostrarNotificacion(`🔗 Enlace del set "${nombre}" copiado para compartir.`);
+        }
+
+        function eliminarPlaylist(index) {
+            playlistsGuardados.splice(index, 1);
+            localStorage.setItem('partiflow_sets_dj', JSON.stringify(playlistsGuardados));
+            renderizarPlaylists();
+            mostrarNotificacion('🗑️ Set de mezclas eliminado.');
+        }
+
+        function cargarPlaylistEnCabina(nombre) {
+            document.getElementById('txtEstadoCancion').textContent = `Set Activo: ${nombre}`;
+            document.getElementById('txtEstadoBadge').textContent = 'Reproduciendo 🔊';
+            document.getElementById('txtEstadoBadge').style.color = '#34d399';
+            switchTab('tab-cabina', document.querySelector('.hub-tab'));
+            mostrarNotificacion(`🎵 Set "${nombre}" cargado en la cabina.`);
+        }
+
+        window.onload = function() {
+            renderizarPlaylists();
         };
 
         function mostrarNotificacion(mensaje) {
@@ -608,7 +714,7 @@
             document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
             document.querySelectorAll('.hub-tab').forEach(tab => tab.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            btnElement.classList.add('active');
+            if (btnElement) btnElement.classList.add('active');
         }
 
         function cambiarModo(modo) {
