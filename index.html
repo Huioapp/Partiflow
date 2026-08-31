@@ -3,381 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partiflow PRO - Cabina DJ con Voz</title>
-    <!-- Librería global de Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Partiflow PRO - El DJ Virtual con IA</title>
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            margin: 0;
             min-height: 100vh;
-            background-color: #05070a;
+            background-color: #030712;
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #3b82f6;
-            padding-bottom: 20px;
-            width: 100%;
-            max-width: 600px;
-        }
-
-        header img {
-            max-width: 160px;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-            margin-bottom: 15px;
-        }
-
-        header h1 {
-            font-size: 2rem;
-            margin: 0;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: 900;
-            background: linear-gradient(90deg, #3b82f6, #ffffff, #3b82f6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        header p {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-
-        #form-cancion {
-            width: 100%;
-            max-width: 600px;
-            background: #111827;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.5);
-            border: 1px solid #374151;
-            margin-bottom: 25px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        #form-cancion h3 {
-            margin: 0 0 5px 0;
-            font-size: 1.1rem;
-            color: #60a5fa;
-        }
-
-        .input-grupo {
-            display: flex;
-            gap: 10px;
-            position: relative;
-        }
-
-        .input-grupo input {
-            flex: 1;
-            background: #1f2937;
-            border: 1px solid #4b5563;
-            padding: 12px 15px;
-            border-radius: 8px;
-            color: white;
-            font-size: 0.95rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .input-grupo input:focus {
-            border-color: #3b82f6;
-        }
-
-        /* Botón de Micrófono Inteligente */
-        .btn-mic {
-            background: #1f2937;
-            border: 1px solid #4b5563;
-            color: #9ca3af;
-            padding: 0 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
             justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 20px;
         }
 
-        .btn-mic:hover {
-            border-color: #ec4899;
-            color: #ec4899;
-            background: rgba(236, 72, 153, 0.1);
+        .stage-lights {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 1; overflow: hidden;
+        }
+        .light-beam {
+            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.55;
+            mix-blend-mode: screen; animation: moveLight 8s infinite alternate ease-in-out;
+        }
+        .light-1 { width: 380px; height: 380px; background: radial-gradient(circle, #3b82f6, transparent 70%); top: -50px; left: 10%; animation-duration: 6s; }
+        .light-2 { width: 420px; height: 420px; background: radial-gradient(circle, #ec4899, transparent 70%); bottom: -50px; right: 10%; animation-duration: 7s; animation-delay: -2s; }
+        .light-3 { width: 320px; height: 320px; background: radial-gradient(circle, #8b5cf6, transparent 70%); top: 40%; left: 50%; transform: translate(-50%, -50%); animation: pulseStrobe 3s infinite ease-in-out; }
+
+        @keyframes moveLight {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(80px, 60px) scale(1.25); }
+            100% { transform: translate(-60px, 100px) scale(0.9); }
+        }
+        @keyframes pulseStrobe {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.9); }
+            50% { opacity: 0.75; transform: translate(-50%, -50%) scale(1.3); }
         }
 
-        .btn-mic.ascoltando {
-            background: #ef4444;
-            color: white;
-            border-color: #ef4444;
-            animation: pulseMic 1.2s infinite ease-in-out;
+        .hero-card {
+            position: relative; z-index: 10; width: 100%; max-width: 520px;
+            background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 24px;
+            padding: 35px 25px; text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(59, 130, 246, 0.2);
         }
+        .logo-box img {
+            max-width: 75px; height: auto; border-radius: 14px;
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.6);
+            animation: logoFloat 4s ease-in-out infinite alternate;
+        }
+        @keyframes logoFloat { 0% { transform: translateY(0); } 100% { transform: translateY(-8px); } }
 
-        @keyframes pulseMic {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
-            50% { transform: scale(1.08); box-shadow: 0 0 15px rgba(239, 68, 68, 0.8); }
+        h1 {
+            font-size: 1.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900;
+            background: linear-gradient(90deg, #60a5fa, #ffffff, #ec4899);
+            -webkit-background-clip: text; background-clip: text; color: transparent; margin: 10px 0 5px 0;
         }
+        .tagline { color: #9ca3af; font-size: 0.9rem; margin-bottom: 20px; }
 
-        .btn-agregar {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.2s;
+        .equalizer {
+            display: flex; justify-content: center; align-items: flex-end; gap: 5px; height: 24px; margin-bottom: 20px;
         }
+        .bar { width: 5px; background: linear-gradient(to top, #3b82f6, #ec4899); border-radius: 3px; animation: bounceBar 1.2s infinite ease-in-out alternate; }
+        .bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+        .bar:nth-child(2) { height: 80%; animation-delay: 0.3s; }
+        .bar:nth-child(3) { height: 60%; animation-delay: 0.2s; }
+        .bar:nth-child(4) { height: 100%; animation-delay: 0.4s; }
+        @keyframes bounceBar { 0% { height: 20%; } 100% { height: 100%; } }
 
-        .btn-agregar:hover {
-            opacity: 0.9;
+        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .btn {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 12px 18px; border-radius: 12px; font-size: 0.95rem; font-weight: 700;
+            text-decoration: none; cursor: pointer; transition: all 0.25s ease; border: none;
         }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #ffffff; box-shadow: 0 8px 18px rgba(59, 130, 246, 0.4); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 22px rgba(59, 130, 246, 0.6); }
+        .btn-secondary { background: rgba(31, 41, 55, 0.8); color: #e5e7eb; border: 1px solid #4b5563; }
+        .btn-secondary:hover { background: #374151; border-color: #60a5fa; color: #ffffff; }
+        .btn-accent { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid #059669; }
+        .btn-accent:hover { background: rgba(16, 185, 129, 0.3); color: #ffffff; }
 
-        #lista-canciones {
-            width: 100%;
-            max-width: 600px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        .btn-audio {
+            background: transparent; border: 1px solid #374151; color: #9ca3af;
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
         }
-
-        .cancion-item {
-            background: linear-gradient(90deg, #111827, #1f2937, #111827);
-            padding: 18px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.5);
-            border: 1px solid #374151;
-        }
-
-        .titulo-cancion {
-            margin: 0;
-            font-weight: 800;
-            font-size: 1.2rem;
-            color: #e5e7eb;
-        }
-
-        .artista-cancion {
-            margin: 5px 0 0 0;
-            color: #9ca3af;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .boton-votar {
-            background: transparent;
-            border: 2px solid #3b82f6;
-            color: #3b82f6;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .boton-votar:hover {
-            background: #3b82f6;
-            color: #ffffff;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
-        }
-
-        .contador {
-            font-size: 1.2rem;
-            font-weight: 900;
-        }
-
-        #live-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background-color: #10b981;
-            border-radius: 50%;
-            margin-right: 8px;
-            box-shadow: 0 0 10px #10b981;
-        }
+        .btn-audio:hover { color: #ffffff; border-color: #ec4899; }
     </style>
 </head>
 <body>
 
-    <header>
-        <img src="Logo_fondo_blanco_solo_icono.png" alt="Partiflow PRO Logo">
-        <h1>Partiflow <span style="color: #ffffff; font-size: 0.6em; vertical-align: super;">PRO</span></h1>
-        <p><span id="live-indicator"></span>Cabina de Votación en Vivo con Voz</p>
-    </header>
-
-    <!-- Formulario con Micrófono Inteligente -->
-    <div id="form-cancion">
-        <h3>🎙️ Pide tu música por voz o texto</h3>
-        <div class="input-grupo">
-            <input type="text" id="inputTitulo" placeholder="Ej. Vives o Romeo Santos...">
-            <button type="button" id="btnMic" class="btn-mic" onclick="activarMicrofono()" title="Hablar para pedir música">🎤</button>
-            <input type="text" id="inputArtista" placeholder="Artista...">
-        </div>
-        <button class="btn-agregar" onclick="agregarCancion()">Añadir a la Cabina</button>
+    <div class="stage-lights">
+        <div class="light-beam light-1"></div>
+        <div class="light-beam light-2"></div>
+        <div class="light-beam light-3"></div>
     </div>
 
-    <!-- Lista en tiempo real -->
-    <div id="lista-canciones"></div>
+    <div class="hero-card">
+        <div class="logo-box">
+            <img src="Logo_fondo_blanco_solo_icono.png" alt="Partiflow PRO">
+        </div>
+
+        <h1>Partiflow <span style="color: #3b82f6;">PRO</span></h1>
+        <p class="tagline">El DJ virtual inteligente que mezcla la música de tu fiesta y conecta a tus invitados.</p>
+
+        <div class="equalizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+
+        <!-- Botones de Navegación del Sistema -->
+        <div class="btn-group">
+            <a href="dashboard-invitados.html" class="btn btn-primary">
+                📋 Panel de Organizador (Gestionar Invitados)
+            </a>
+            <a href="login.html" class="btn btn-secondary">
+                🔑 Iniciar Sesión / Registrarse
+            </a>
+            <a href="cabina.html" class="btn btn-accent" style="display:none;">
+                🎶 Ir a la Cabina en Vivo
+            </a>
+        </div>
+
+        <button id="audioToggle" class="btn-audio" onclick="toggleClubAudio()">
+            🔊 Encender Sonido de Cabina
+        </button>
+    </div>
 
     <script>
-        const SUPABASE_URL = 'https://zfgrewceocnivqglmjqe.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmZ3Jld2Nlb2NuaXZxZ2xtanFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwNDcxNTEsImV4cCI6MjEwMzYyMzE1MX0.6kB7eC7sh-SpPhyAeVJkPUuvq7PZPoD6PIh8o78k_vY';
-        
-        const { createClient } = window.supabase;
-        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        window.addEventListener('DOMContentLoaded', cargarCanciones);
-
-        async function cargarCanciones() {
-            const { data, error } = await _supabase
-                .from('canciones')
-                .select('*')
-                .order('votos', { ascending: false });
-
-            if (error) {
-                console.error('Error al cargar:', error);
-                return;
+        let audioCtx = null, isPlaying = false, beatInterval = null;
+        function toggleClubAudio() {
+            const btn = document.getElementById('audioToggle');
+            if (!isPlaying) {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                startBeat(); isPlaying = true;
+                btn.textContent = '⏸️ Silenciar Cabina';
+                btn.style.borderColor = '#10b981'; btn.style.color = '#10b981';
+            } else {
+                stopBeat(); isPlaying = false;
+                btn.textContent = '🔊 Encender Sonido de Cabina';
+                btn.style.borderColor = '#374151'; btn.style.color = '#9ca3af';
             }
-            mostrarEnPantalla(data);
         }
-
-        function mostrarEnPantalla(canciones) {
-            const lista = document.getElementById('lista-canciones');
-            lista.innerHTML = '';
-
-            if (!canciones || canciones.length === 0) {
-                lista.innerHTML = '<p style="text-align:center; color:#9ca3af;">No hay canciones aún. ¡Pide la primera!</p>';
-                return;
-            }
-
-            canciones.forEach(cancion => {
-                const item = document.createElement('div');
-                item.className = 'cancion-item';
-                item.innerHTML = `
-                    <div>
-                        <p class="titulo-cancion">${cancion.titulo}</p>
-                        <p class="artista-cancion">${cancion.artista}</p>
-                    </div>
-                    <button class="boton-votar" onclick="votar(${cancion.id}, ${cancion.votos})">
-                        <span>❤️</span> <span class="contador">${cancion.votos}</span>
-                    </button>
-                `;
-                lista.appendChild(item);
-            });
+        function playKick(t) {
+            const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+            osc.type = 'sine'; osc.frequency.setValueAtTime(140, t);
+            osc.frequency.exponentialRampToValueAtTime(30, t + 0.15);
+            g.gain.setValueAtTime(1, t); g.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+            osc.connect(g); g.connect(audioCtx.destination);
+            osc.start(t); osc.stop(t + 0.15);
         }
-
-        async function agregarCancion() {
-            const tituloInput = document.getElementById('inputTitulo');
-            const artistaInput = document.getElementById('inputArtista');
-            
-            const tituloVal = tituloInput.value.trim();
-            const artistaVal = artistaInput.value.trim() || 'Petición por Voz / IA';
-
-            if (!tituloVal) {
-                alert('Por favor escribe o di el nombre de la canción.');
-                return;
-            }
-
-            const { error } = await _supabase
-                .from('canciones')
-                .insert([{ titulo: tituloVal, artista: artistaVal, votos: 1, estado: 'pendiente' }]);
-
-            if (error) {
-                console.error('Error al agregar:', error);
-                alert('Hubo un error al guardar la canción.');
-                return;
-            }
-
-            tituloInput.value = '';
-            artistaInput.value = '';
-            cargarCanciones();
+        function startBeat() {
+            let step = 0;
+            beatInterval = setInterval(() => {
+                const now = audioCtx.currentTime;
+                if (step % 2 === 0) playKick(now);
+                step++;
+            }, 450);
         }
-
-        async function votar(id, votosActuales) {
-            const { error } = await _supabase
-                .from('canciones')
-                .update({ votos: votosActuales + 1 })
-                .eq('id', id);
-
-            if (error) {
-                console.error('Error al votar:', error);
-                return;
-            }
-            cargarCanciones();
-        }
-
-        // --- INTEGRACIÓN DE RECONOCIMIENTO DE VOZ (MICROFONO INTELIGENTE) ---
-        function activarMicrofono() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            
-            if (!SpeechRecognition) {
-                alert('Tu navegador no soporta el reconocimiento de voz. Usa Chrome o Safari.');
-                return;
-            }
-
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'es-ES'; // Configurado en español para Latam y España
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-
-            const btnMic = document.getElementById('btnMic');
-            const inputTitulo = document.getElementById('inputTitulo');
-
-            recognition.onstart = () => {
-                btnMic.classList.add('ascoltando');
-                btnMic.textContent = '🔴';
-                inputTitulo.placeholder = 'Escuchando tu pedido...';
-            };
-
-            recognition.onresult = (event) => {
-                const speechResult = event.results[0][0].transcript;
-                inputTitulo.value = speechResult;
-            };
-
-            recognition.onerror = (event) => {
-                console.error('Error de voz:', event.error);
-                alert('No se pudo reconocer la voz. Inténtalo de nuevo.');
-            };
-
-            recognition.onspeechend = () => {
-                recognition.stop();
-            };
-
-            recognition.onend = () => {
-                btnMic.classList.remove('ascoltando');
-                btnMic.textContent = '🎤';
-                inputTitulo.placeholder = 'Ej. Vives o Romeo Santos...';
-            };
-
-            recognition.start();
-        }
-
-        // Sincronización en tiempo real con Supabase
-        _supabase
-            .channel('cambios-canciones')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'canciones' }, () => {
-                cargarCanciones();
-            })
-            .subscribe();
+        function stopBeat() { if (beatInterval) { clearInterval(beatInterval); beatInterval = null; } }
     </script>
 </body>
 </html>
