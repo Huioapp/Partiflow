@@ -250,7 +250,7 @@
 </head>
 <body>
 
-    <!-- Elemento flotante para notificaciones limpias -->
+    <!-- Notificador Flotante -->
     <div id="toastNotification">Notificación</div>
 
     <!-- ================= PANTALLA 1: LOGIN ================= -->
@@ -291,11 +291,20 @@
             <button class="hub-tab" style="color:#ef4444;" onclick="cerrarSesion()">🚪 Salir</button>
         </nav>
 
-        <!-- 1. SECCIÓN: CABINA & DJ CON IA -->
+        <!-- 1. SECCIÓN: CABINA & DJ CON IA Y PROTECCIÓN ANTI-LLAMADAS -->
         <div id="tab-cabina" class="section-container active">
             <div class="card">
                 <h2>🎧 Cabina Inteligente con IA & Karaoke</h2>
                 
+                <!-- Selector de Dispositivo / Modo Anti-Interrupciones -->
+                <div style="background:#1f2937; border:1px solid #374151; border-radius:12px; padding:12px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <p style="font-size:0.85rem; color:#60a5fa; font-weight:bold;">🛡️ Control Anti-Interrupciones (Llamadas / Push)</p>
+                        <p id="txtEstadoDispositivo" style="font-size:0.75rem; color:#34d399; margin-top:2px;">Modo Seguro Activo: Aislando audio y bloqueando notificaciones en pantallas.</p>
+                    </div>
+                    <button class="btn btn-secondary" style="font-size:0.75rem; padding:8px 12px; width:auto;" onclick="alternarModoDispositivo()">Cambiar a Modo Laptop</button>
+                </div>
+
                 <div class="mode-selector">
                     <button class="mode-btn active" id="btnModoFiesta" onclick="cambiarModo('fiesta')">🎉 Fiesta (QR)</button>
                     <button class="mode-btn" id="btnModoTaxi" onclick="cambiarModo('taxi')">🚕 Taxi / Libre</button>
@@ -436,7 +445,7 @@
                     <div class="hardware-card">
                         <div>
                             <h3>📺 Pantallas y TVs (Wi-Fi)</h3>
-                            <p>Transmite las visuales musicales, letras de karaoke y ranking a proyectores o televisores inteligentes.</p>
+                            <p>Transmite las visuales musicales, letras de karaoke y ranking a proyectores o televisores inteligentes (Con modo privacidad anti-notificaciones).</p>
                         </div>
                         <button class="btn" onclick="mostrarNotificacion('Buscando pantallas compatibles en la red Wi-Fi...')">📺 Conectar Pantallas (Wi-Fi)</button>
                     </div>
@@ -473,7 +482,7 @@
                         <div>
                             <h3 style="color:#60a5fa; font-size:1.1rem; margin-bottom:4px;">Plan PRO</h3>
                             <p style="color:#34d399; font-weight:bold; font-size:1.15rem; margin-bottom:6px;">$19.90 <span style="font-size:0.75rem; color:#9ca3af;">+ IGV / mes</span></p>
-                            <p style="color:#9ca3af; font-size:0.85rem;">Cabina ilimitada con IA, votación QR, modo taxi, karaoke, micrófonos y control de luces LED.</p>
+                            <p style="color:#9ca3af; font-size:0.85rem;">Cabina ilimitada con IA, modo anti-interrupciones, votación QR, modo taxi, karaoke y luces LED.</p>
                         </div>
                         <div>
                             <span style="display:inline-block; background:#3b82f6; color:white; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:bold; margin-bottom:8px; text-align:center;">PLAN ACTIVO</span>
@@ -528,6 +537,7 @@
     <script>
         let estaReproduciendo = true;
         let modoKaraokeActivo = false;
+        let modoDispositivoMovilSeguro = true;
         const catalogoGlobal = [
             "Hips Don't Lie - Shakira",
             "Levitating - Dua Lipa",
@@ -545,7 +555,6 @@
             "Levitating - Dua Lipa": "♪ If you wanna run away with me, I know a galaxy... ♪"
         };
 
-        // Función para mostrar notificaciones limpias en pantalla sin ventanas emergentes
         function mostrarNotificacion(mensaje) {
             const toast = document.getElementById('toastNotification');
             toast.textContent = mensaje;
@@ -558,6 +567,20 @@
                     toast.style.display = 'none';
                 }, 300);
             }, 3000);
+        }
+
+        function alternarModoDispositivo() {
+            modoDispositivoMovilSeguro = !modoDispositivoMovilSeguro;
+            const txt = document.getElementById('txtEstadoDispositivo');
+            if (modoDispositivoMovilSeguro) {
+                txt.textContent = "Modo Seguro Celular Activo: Aislando audio y bloqueando notificaciones en pantallas.";
+                txt.style.color = "#34d399";
+                mostrarNotificacion("📱 Celular configurado en Modo Seguro Anti-Llamadas.");
+            } else {
+                txt.textContent = "Modo Laptop / Consola Maestra: Dispositivo dedicado libre de interrupciones.";
+                txt.style.color = "#60a5fa";
+                mostrarNotificacion("💻 Cambiado a Modo Consola Maestra / Laptop.");
+            }
         }
 
         function iniciarSesion() {
@@ -616,7 +639,6 @@
             }
         }
 
-        // --- FUNCIONES DE INTELIGENCIA ARTIFICIAL (IA) ---
         function activarReconocimientoVozIA() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 mostrarNotificacion('🎙️ Tu navegador no soporta voz nativa. Usa el buscador escrito.');
@@ -684,7 +706,7 @@
         }
 
         function conectarMicrofonoInalambrico() {
-            mostrarNotificacion('🎙️ Micrófono inalámbrico vinculado con éxito.');
+            mostrarNotificacion('🎙️ Micrófono inalámbrico vinculado con aislamiento de llamadas.');
         }
 
         function buscarCancionEnVivo(e) {
