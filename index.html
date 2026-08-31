@@ -236,8 +236,8 @@
             <div class="input-group">
                 <label>Seleccionar Tipo de Cuenta (Plan):</label>
                 <select id="selectPlanLogin">
-                    <option value="pro">Plan PRO ($19.90 / mes)</option>
-                    <option value="basico">Plan Básico ($9.90 / mes)</option>
+                    <option value="pro">Plan PRO</option>
+                    <option value="basico">Plan Básico</option>
                 </select>
             </div>
 
@@ -308,7 +308,6 @@
                     </div>
                 </div>
 
-                <!-- Buscador con Voz o Texto para pedidos de música o mezcla -->
                 <div class="input-group" style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151;">
                     <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🎙️ Pide tu música o tu mezcla por voz o texto:</label>
                     <div style="display:flex; gap:10px;">
@@ -411,7 +410,7 @@
             <div class="card">
                 <h2>🎫 Control de Accesos y Pases QR</h2>
                 <div id="bloqueInvitadosRestringido" style="display:none; text-align:center; padding:30px;">
-                    <p style="color:#f59e0b; font-weight:bold; margin-bottom:10px;">🔒 Exclusivo Plan PRO ($19.90)</p>
+                    <p style="color:#f59e0b; font-weight:bold; margin-bottom:10px;" id="lblRestriccionInv">🔒 Exclusivo Plan PRO</p>
                     <button class="btn" onclick="switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5])">Actualizar a PRO</button>
                 </div>
                 <div id="bloqueInvitadosActivo">
@@ -440,7 +439,7 @@
             <div class="card">
                 <h2>💡 Conectividad Hardware</h2>
                 <div id="bloqueHardwareRestringido" style="display:none; text-align:center; padding:30px;">
-                    <p style="color:#f59e0b; font-weight:bold; margin-bottom:10px;">🔒 Exclusivo Plan PRO ($19.90)</p>
+                    <p style="color:#f59e0b; font-weight:bold; margin-bottom:10px;" id="lblRestriccionHard">🔒 Exclusivo Plan PRO</p>
                     <button class="btn" onclick="switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5])">Actualizar a PRO</button>
                 </div>
                 <div id="bloqueHardwareActivo" class="hardware-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
@@ -461,18 +460,20 @@
             </div>
         </div>
 
-        <!-- 6. PLANES Y BILLING -->
+        <!-- 6. PLANES Y BILLING (Con precios dinámicos según fecha: Oferta hasta Dic 2026, Regular desde Ene 2027) -->
         <div id="tab-billing" class="section-container">
             <div class="card">
                 <h2>💳 Suscripción y Facturación Recurrente</h2>
-                <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">
-                    Gestión de pagos mediante <strong>dLocal Go</strong>. Las suscripciones son de <strong>renovación automática mensual</strong> y se cobran al mes siguiente, a menos que decidas no continuar.
+                <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;" id="txtBillingInfo">
+                    Gestión de pagos mediante <strong>dLocal Go</strong>. Las suscripciones son de <strong>renovación automática mensual</strong> (se cobran al mes siguiente).
                 </p>
                 <div class="plans-grid">
                     <div class="plan-card" id="cardPlanBasico">
                         <div>
                             <h3 style="color:#9ca3af;">Plan Básico</h3>
-                            <p style="color:#ffffff; font-weight:bold; font-size:1.15rem;">$9.90 <span style="font-size:0.75rem; color:#9ca3af;">/ mes</span></p>
+                            <p style="color:#ffffff; font-weight:bold; font-size:1.15rem;" id="precioBasicoContainer">
+                                <!-- Se actualiza por JS -->
+                            </p>
                             <p style="color:#9ca3af; font-size:0.85rem; line-height: 1.5;">
                                 <strong>Incluye:</strong> Cabina musical personal y almacenamiento de playlists.<br>
                                 <strong>Límite:</strong> 1 fiesta semanal. Sin invitados QR, sin karaoke, sin mini consola IA y sin luces.<br>
@@ -485,7 +486,9 @@
                     <div class="plan-card active-plan" id="cardPlanPro">
                         <div>
                             <h3 style="color:#60a5fa;">Plan PRO</h3>
-                            <p style="color:#34d399; font-weight:bold; font-size:1.15rem;">$19.90 <span style="font-size:0.75rem; color:#9ca3af;">+ IGV / mes</span></p>
+                            <p style="color:#34d399; font-weight:bold; font-size:1.15rem;" id="precioProContainer">
+                                <!-- Se actualiza por JS -->
+                            </p>
                             <p style="color:#9ca3af; font-size:0.85rem; line-height: 1.5;">
                                 <strong>Incluye:</strong> Acceso total, eventos ilimitados semanales, invitados QR enlazados, modo karaoke, micrófonos, pantallas, luces inteligentes y <strong>Mini Consola Táctil con IA Copiloto</strong>.<br>
                                 <em>Renovación automática mensual.</em>
@@ -548,6 +551,11 @@
         let modoIaActivo = true;
         let intervaloMixIA = null;
 
+        // Comprobación de fechas para los precios automáticos
+        const fechaActual = new Date();
+        const fechaLimitePromo = new Date('2027-01-01'); // 1 de enero de 2027
+        const esOfertaLanzamiento = fechaActual < fechaLimitePromo;
+
         const catalogoGlobal = [
             "Hips Don't Lie - Shakira", "Levitating - Dua Lipa",
             "I Gotta Feeling - Black Eyed Peas", "Despacito - Luis Fonsi",
@@ -559,6 +567,45 @@
         ];
 
         let pasesInvitados = JSON.parse(localStorage.getItem('partiflow_pases')) || [];
+
+        function inicializarPreciosDinamicos() {
+            const containerBasico = document.getElementById('precioBasicoContainer');
+            const containerPro = document.getElementById('precioProContainer');
+            const txtInfo = document.getElementById('txtBillingInfo');
+
+            if (esOfertaLanzamiento) {
+                containerBasico.innerHTML = `
+                    <span style="text-decoration: line-through; color: #9ca3af; font-size: 0.95rem; margin-right: 6px;">$12.38</span>
+                    $9.90 + IGV <span style="font-size:0.75rem; color:#34d399;">/ mes (Oferta Lanzamiento)</span>
+                `;
+                containerPro.innerHTML = `
+                    <span style="text-decoration: line-through; color: #9ca3af; font-size: 0.95rem; margin-right: 6px;">$24.88</span>
+                    $19.90 + IGV <span style="font-size:0.75rem; color:#34d399;">/ mes (Oferta Lanzamiento)</span>
+                `;
+                txtInfo.innerHTML = `
+                    Gestión de pagos mediante <strong>dLocal Go</strong>. Las suscripciones son de <strong>renovación automática mensual</strong> (se cobran al mes siguiente). 
+                    Cuenta con <strong>oferta especial de lanzamiento (20% de descuento válido hasta diciembre de 2026)</strong>.
+                `;
+            } else {
+                containerBasico.innerHTML = `$12.38 + IGV <span style="font-size:0.75rem; color:#60a5fa;">/ mes</span>`;
+                containerPro.innerHTML = `$24.88 + IGV <span style="font-size:0.75rem; color:#60a5fa;">/ mes</span>`;
+                txtInfo.innerHTML = `
+                    Gestión de pagos mediante <strong>dLocal Go</strong>. Las suscripciones son de <strong>renovación automática mensual</strong> (se cobran al mes siguiente).
+                `;
+            }
+
+            // Actualizar opciones del Login
+            const selectLogin = document.getElementById('selectPlanLogin');
+            if (selectLogin) {
+                selectLogin.innerHTML = esOfertaLanzamiento ? `
+                    <option value="pro">Plan PRO ($19.90 + IGV / mes - Oferta)</option>
+                    <option value="basico">Plan Básico ($9.90 + IGV / mes - Oferta)</option>
+                ` : `
+                    <option value="pro">Plan PRO ($24.88 + IGV / mes)</option>
+                    <option value="basico">Plan Básico ($12.38 + IGV / mes)</option>
+                `;
+            }
+        }
 
         function iniciarSesion() {
             planActual = document.getElementById('selectPlanLogin').value;
@@ -587,10 +634,16 @@
             const cardPro = document.getElementById('cardPlanPro');
             const btnBasico = document.getElementById('btnElegirBasico');
             const btnPro = document.getElementById('btnElegirPro');
+            const lblInv = document.getElementById('lblRestriccionInv');
+            const lblHard = document.getElementById('lblRestriccionHard');
+
+            const textoPrecioPro = esOfertaLanzamiento ? "$19.90 + IGV" : "$24.88 + IGV";
 
             if (planActual === 'basico') {
                 btnKaraoke.className = "btn btn-locked";
                 btnKaraoke.innerHTML = "🔒 Karaoke (PRO)";
+                lblInv.innerHTML = `🔒 Control de invitados QR exclusivo para Plan PRO (${textoPrecioPro})`;
+                lblHard.innerHTML = `🔒 Hardware y Pantallas exclusivo para Plan PRO (${textoPrecioPro})`;
                 bloqueInvRest.style.display = 'block';
                 bloqueInvAct.style.display = 'none';
                 bloqueHardRest.style.display = 'block';
@@ -620,7 +673,8 @@
 
         function toggleModoIA() {
             if (planActual === 'basico') {
-                mostrarNotificacion('🔒 La consola táctil con IA Copiloto requiere Plan PRO.');
+                const precioTxt = esOfertaLanzamiento ? "$19.90 + IGV" : "$24.88 + IGV";
+                mostrarNotificacion(`🔒 La consola táctil con IA Copiloto requiere Plan PRO (${precioTxt}).`);
                 return;
             }
             modoIaActivo = !modoIaActivo;
@@ -653,6 +707,7 @@
         }
 
         window.onload = function() {
+            inicializarPreciosDinamicos();
             renderizarPlaylists();
             actualizarSelectorEventos();
             renderizarPases();
@@ -673,7 +728,8 @@
             if (!nombreFiesta) { mostrarNotificacion('Ingresa el nombre de la fiesta.'); return; }
 
             if (planActual === 'basico' && fiestasCreadas.length >= 1 && !fiestasCreadas.includes(nombreFiesta)) {
-                mostrarNotificacion('❌ El Plan Básico solo permite 1 fiesta semanal.');
+                const precioTxt = esOfertaLanzamiento ? "$19.90 + IGV" : "$24.88 + IGV";
+                mostrarNotificacion(`❌ El Plan Básico solo permite 1 fiesta semanal. Actualiza a PRO (${precioTxt}) para eventos ilimitados.`);
                 return;
             }
 
@@ -748,7 +804,8 @@
 
         function toggleModoKaraoke() {
             if (planActual === 'basico') {
-                mostrarNotificacion('🔒 Karaoke requiere Plan PRO.');
+                const precioTxt = esOfertaLanzamiento ? "$19.90 + IGV" : "$24.88 + IGV";
+                mostrarNotificacion(`🔒 Karaoke requiere Plan PRO (${precioTxt}).`);
                 return;
             }
             modoKaraokeActivo = !modoKaraokeActivo;
