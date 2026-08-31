@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tu Invitación - Partiflow PRO</title>
-    <!-- Librería para generar códigos QR automáticamente -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>Pase de Invitación - Partiflow PRO</title>
     <!-- Librería global estable de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -23,133 +21,160 @@
             box-sizing: border-box;
         }
 
-        .tarjeta-invitacion {
+        .invitation-card {
             width: 100%;
-            max-width: 400px;
+            max-width: 480px;
             background: linear-gradient(135deg, #111827, #1f2937);
             border: 1px solid #374151;
-            border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+            border-radius: 20px;
             text-align: center;
-            box-sizing: border-box;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            position: relative;
+            overflow: hidden;
         }
 
-        h1 {
-            font-size: 1.8rem;
-            margin-top: 0;
+        .brand-logo {
+            max-width: 65px;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            color: #60a5fa;
+            margin: 0 0 5px 0;
             text-transform: uppercase;
             letter-spacing: 1px;
-            background: linear-gradient(90deg, #3b82f6, #ffffff);
+        }
+
+        .guest-name {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #ffffff;
+            margin: 10px 0 20px 0;
+            background: linear-gradient(90deg, #60a5fa, #ffffff, #ec4899);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
 
-        .nombre-invitado {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #60a5fa;
-            margin: 15px 0 5px 0;
+        .event-details {
+            background: #111827;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #374151;
+            margin-bottom: 25px;
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #d1d5db;
         }
 
-        .subtitulo-evento {
-            color: #9ca3af;
-            font-size: 0.95rem;
+        .event-details strong {
+            color: #60a5fa;
+        }
+
+        .code-box {
+            background: #030712;
+            border: 2px dashed #3b82f6;
+            padding: 12px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: #60a5fa;
+            letter-spacing: 2px;
             margin-bottom: 25px;
         }
 
-        #qrcode {
-            background: white;
-            padding: 15px;
-            display: inline-block;
-            border-radius: 12px;
-            margin: 15px 0;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        #qrcode img {
+        .btn {
             display: block;
-            margin: 0 auto;
-        }
-
-        .codigo-texto {
-            font-family: monospace;
-            background: #111827;
-            padding: 8px 12px;
-            border-radius: 6px;
-            color: #d1d5db;
-            font-size: 1rem;
-            border: 1px dashed #4b5563;
-            margin-top: 10px;
-            display: inline-block;
-        }
-
-        .estado-ingreso {
-            margin-top: 20px;
-            font-size: 0.85rem;
-            color: #10b981;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
             font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            box-sizing: border-box;
+            font-size: 1rem;
+            border: none;
+        }
+
+        .btn-map {
+            background: #374151;
+            color: #ffffff;
+            border: 1px solid #4b5563;
+        }
+
+        .btn-map:hover {
+            background: #4b5563;
+        }
+
+        .btn-cabina {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-cabina:hover {
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
 
-    <div class="tarjeta-invitacion">
-        <h1>Partiflow PRO</h1>
-        <p class="subtitulo-evento">Pase Exclusivo de Acceso</p>
-        
-        <div class="nombre-invitado" id="txtNombre">Cargando invitación...</div>
-        
-        <!-- Contenedor donde se dibuja el código QR -->
-        <div id="qrcode"></div>
+    <div class="invitation-card">
+        <img src="Logo_fondo_blanco_solo_icono.png" alt="Logo" class="brand-logo">
+        <h2>Invitación Exclusiva</h2>
+        <div id="nombreInvitado" class="guest-name">Cargando invitado...</div>
 
-        <div>
-            <span class="codigo-texto" id="txtCodigo">---</span>
+        <div class="event-details">
+            <p><strong>Motivo:</strong> Celebración Especial</p>
+            <p><strong>Dress Code:</strong> Casual / Elegante</p>
+            <p><strong>Fecha y Hora:</strong> Sábado a las 9:00 PM</p>
+            <p><strong>Ubicación:</strong> Local Principal (Haz clic abajo para abrir el mapa)</p>
         </div>
 
-        <p class="estado-ingreso">✨ Presenta este código QR en la entrada</p>
+        <div id="codigoUnico" class="code-box">VIP-----</div>
+
+        <div class="btn-group">
+            <!-- Botón de Google Maps -->
+            <a id="btnMapa" href="https://maps.google.com" target="_blank" class="btn btn-map">
+                📍 Ver Ubicación en Google Maps
+            </a>
+
+            <!-- Botón de Acceso Libre a la Cabina de Música -->
+            <a href="index.html" class="btn btn-cabina">
+                🎶 Ir a la Cabina y Pedir Música
+            </a>
+        </div>
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://zfgrewceocnivqglmjqe.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_tb_8r5kVpbxsuqqjKAvgxA_4MhyI9oL';
-        
-        // Inicializador estándar con la llave anon clásica
-        const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Capturar el código de la URL (ej. invitacion.html?codigo=VIP-4125)
+        const urlParams = new URLSearchParams(window.location.search);
+        const codigoPase = urlParams.get('codigo');
 
-        window.addEventListener('DOMContentLoaded', async () => {
-            const params = new URLSearchParams(window.location.search);
-            const codigoUrl = params.get('codigo');
-
-            if (!codigoUrl) {
-                document.getElementById('txtNombre').innerText = 'Invitación no especificada';
-                return;
-            }
-
-            const { data, error } = await _supabase
-                .from('invitados')
-                .select('*')
-                .eq('codigo', codigoUrl)
-                .single();
-
-            if (error || !data) {
-                document.getElementById('txtNombre').innerText = 'Invitación no encontrada';
-                console.error(error);
-                return;
-            }
-
-            document.getElementById('txtNombre').innerText = data.nombre;
-            document.getElementById('txtCodigo').innerText = data.codigo;
-
-            new QRCode(document.getElementById("qrcode"), {
-                text: data.codigo,
-                width: 180,
-                height: 180,
-                colorDark : "#05070a",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
+        if (codigoPase) {
+            document.getElementById('codigoUnico').textContent = codigoPase;
+            // Aquí puedes personalizar dinámicamente si deseas conectar con Supabase para buscar el nombre real del invitado por su código
+            document.getElementById('nombreInvitado').textContent = "Invitado Especial";
+        } else {
+            document.getElementById('nombreInvitado').textContent = "Invitado General";
+            document.getElementById('codigoUnico').textContent = "GENERAL-PASS";
+        }
+    </script>
+</body>
+</html>
         });
     </script>
 </body>
