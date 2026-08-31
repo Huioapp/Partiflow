@@ -18,7 +18,6 @@
             padding: 20px;
         }
 
-        /* --- PANTALLA DE LOGIN --- */
         #authScreen {
             display: flex;
             flex-direction: column;
@@ -91,7 +90,6 @@
             margin-top: 10px;
         }
 
-        /* --- CENTRO DE CONTROL --- */
         #appScreen {
             display: none;
             width: 100%;
@@ -155,7 +153,6 @@
         .btn-danger { background: #7f1d1d; border: 1px solid #991b1b; color: #fca5a5; }
         .btn-danger:hover { background: #991b1b; color: #ffffff; }
 
-        /* Selector de Modos */
         .mode-selector { display: flex; gap: 8px; margin-bottom: 20px; background: #1f2937; padding: 6px; border-radius: 12px; flex-wrap: wrap; }
         .mode-btn { flex: 1; min-width: 140px; background: transparent; border: none; color: #9ca3af; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
         .mode-btn.active { background: #3b82f6; color: white; box-shadow: 0 2px 8px rgba(59,130,246,0.4); }
@@ -170,7 +167,6 @@
             text-align: center;
         }
 
-        /* Controles de Reproducción y Master */
         .master-controls {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -210,7 +206,6 @@
 </head>
 <body>
 
-    <!-- ================= PANTALLA 1: LOGIN ================= -->
     <div id="authScreen">
         <div class="login-card">
             <img src="Logo_fondo_blanco_solo_icono.png" alt="Partiflow PRO" class="brand-logo">
@@ -230,7 +225,6 @@
         </div>
     </div>
 
-    <!-- ================= PANTALLA 2: CENTRO DE CONTROL MAESTRO ================= -->
     <div id="appScreen">
         <nav class="hub-nav">
             <button class="hub-tab active" onclick="switchTab('tab-cabina', this)">🎶 Cabina & DJ</button>
@@ -241,7 +235,6 @@
             <button class="hub-tab" style="color:#ef4444;" onclick="cerrarSesion()">🚪 Salir</button>
         </nav>
 
-        <!-- 1. SECCIÓN: CABINA & DJ -->
         <div id="tab-cabina" class="section-container active">
             <div class="card">
                 <h2>🎧 Cabina de Música Inteligente</h2>
@@ -277,7 +270,6 @@
                     <span id="txtEstadoBadge" style="color:#34d399; font-weight:bold;">Reproduciendo 🔊</span>
                 </div>
 
-                <!-- Controles de Reproducción y Gestión Global -->
                 <div class="master-controls">
                     <button class="btn btn-secondary" id="btnPlayPause" onclick="togglePlayPause()">⏸️ Pausar Música</button>
                     <button class="btn btn-secondary" onclick="cambiarTodo()">⏭️ Cambiar Todo</button>
@@ -286,7 +278,6 @@
             </div>
         </div>
 
-        <!-- 2. SECCIÓN: CONFIGURAR FIESTA -->
         <div id="tab-evento" class="section-container">
             <div class="card">
                 <h2>⚙️ Configuración del Evento y Fechas</h2>
@@ -318,7 +309,6 @@
             </div>
         </div>
 
-        <!-- 3. SECCIÓN: INVITADOS & QR -->
         <div id="tab-invitados" class="section-container">
             <div class="card">
                 <h2>🎫 Control de Accesos y Pases QR</h2>
@@ -340,7 +330,6 @@
             </div>
         </div>
 
-        <!-- 4. SECCIÓN: LUCES Y PANTALLAS -->
         <div id="tab-hardware" class="section-container">
             <div class="card">
                 <h2>💡 Conectividad Multi-Equipo (Wi-Fi y Bluetooth)</h2>
@@ -366,7 +355,6 @@
             </div>
         </div>
 
-        <!-- 5. SECCIÓN: PLANES Y BILLING -->
         <div id="tab-billing" class="section-container">
             <div class="card">
                 <h2>💳 Suscripción y Facturación (Billing)</h2>
@@ -389,7 +377,6 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="footer-links">
             <a href="#" onclick="alert('Términos y Condiciones...')">Términos y Condiciones</a>
             <span>•</span>
