@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pase de Invitación - Partiflow PRO</title>
-    <!-- Librería global estable de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
@@ -19,6 +18,26 @@
             justify-content: center;
             padding: 20px;
             box-sizing: border-box;
+            position: relative;
+        }
+
+        .btn-volver {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #1f2937;
+            color: #9ca3af;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border: 1px solid #374151;
+            transition: all 0.2s;
+        }
+
+        .btn-volver:hover {
+            color: #ffffff;
+            border-color: #3b82f6;
         }
 
         .invitation-card {
@@ -30,8 +49,6 @@
             border-radius: 20px;
             text-align: center;
             box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-            position: relative;
-            overflow: hidden;
         }
 
         .brand-logo {
@@ -132,6 +149,8 @@
 </head>
 <body>
 
+    <a href="index.html" class="btn-volver">← Volver al Inicio</a>
+
     <div class="invitation-card">
         <img src="Logo_fondo_blanco_solo_icono.png" alt="Logo" class="brand-logo">
         <h2>Invitación Exclusiva</h2>
@@ -147,12 +166,9 @@
         <div id="codigoUnico" class="code-box">VIP-----</div>
 
         <div class="btn-group">
-            <!-- Botón de Google Maps -->
             <a id="btnMapa" href="https://maps.google.com" target="_blank" class="btn btn-map">
                 📍 Ver Ubicación en Google Maps
             </a>
-
-            <!-- Botón de Acceso Libre a la Cabina de Música -->
             <a href="index.html" class="btn btn-cabina">
                 🎶 Ir a la Cabina y Pedir Música
             </a>
@@ -160,22 +176,16 @@
     </div>
 
     <script>
-        // Capturar el código de la URL (ej. invitacion.html?codigo=VIP-4125)
         const urlParams = new URLSearchParams(window.location.search);
         const codigoPase = urlParams.get('codigo');
 
         if (codigoPase) {
             document.getElementById('codigoUnico').textContent = codigoPase;
-            // Aquí puedes personalizar dinámicamente si deseas conectar con Supabase para buscar el nombre real del invitado por su código
             document.getElementById('nombreInvitado').textContent = "Invitado Especial";
         } else {
             document.getElementById('nombreInvitado').textContent = "Invitado General";
             document.getElementById('codigoUnico').textContent = "GENERAL-PASS";
         }
-    </script>
-</body>
-</html>
-        });
     </script>
 </body>
 </html>
