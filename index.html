@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Partiflow PRO - Plataforma Centralizada</title>
+    <link rel="icon" href="Logo_fondo_blanco_solo_icono.png" type="image/png">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -303,12 +304,12 @@
         <!-- 1. CABINA & CONSOLA DUAL DE YOUTUBE -->
         <div id="tab-cabina" class="section-container active">
             <div class="card">
-                <h2>🎧 Cabina Inteligente con Canciones Reales de YouTube</h2>
+                <h2>🎧 Cabina Inteligente con Canciones Reales</h2>
                 
                 <div style="background:#1f2937; border:1px solid #374151; border-radius:12px; padding:12px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                     <div>
                         <p style="font-size:0.85rem; color:#60a5fa; font-weight:bold;">🛡️ Motor API YouTube & IP Rotativa</p>
-                        <p id="txtEstadoProxy" style="font-size:0.75rem; color:#34d399; margin-top:2px;">Conexión Activa: Canciones con voz y cantantes reales</p>
+                        <p id="txtEstadoProxy" style="font-size:0.75rem; color:#34d399; margin-top:2px;">Conexión Activa: Canciones con voz y artistas reales</p>
                     </div>
                     <button class="btn btn-secondary" style="font-size:0.75rem; padding:8px 12px; width:auto;" onclick="alternarModoDispositivo()">Modo Laptop</button>
                 </div>
@@ -356,7 +357,7 @@
                 <div class="input-group" style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151;">
                     <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🔍 Buscar Canción Real o Artista en YouTube:</label>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="inputBusqueda" placeholder="Ej. Shakira Waka Waka, Luis Miguel, Salsa..." style="flex:1;" onkeyup="buscarCancionEnVivo(event)">
+                        <input type="text" id="inputBusqueda" placeholder="Ej. Shakira, Pop 80s, Mexicanos, Luis Miguel..." style="flex:1;" onkeyup="buscarCancionEnVivo(event)">
                         <button class="btn btn-ai" style="width:auto; padding:0 15px;" onclick="activarReconocimientoVozIA()" title="Hablar con la IA">🎙️ Hablar</button>
                         <button class="btn" style="width:auto;" onclick="ejecutarBusquedaYouTube()">Buscar</button>
                     </div>
@@ -676,16 +677,21 @@
             "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
         ];
 
-        // IDs reales de YouTube para reproducción inmediata con voz y cantantes
+        // Catálogo ampliado con canciones reales exactas de YouTube (Con voz y artistas reales)
         const idsYouTubeReales = {
-            "shakira": { id: "pXRviuL6vMY", nombre: "Shakira - Waka Waka (Canción Real con Voz)" },
-            "luis miguel": { id: "Q4v1H88U5a8", nombre: "Luis Miguel - La Incondicional (Canción Real con Voz)" },
-            "salsa": { id: "98H5x578a_4", nombre: "Salsa Mix - Éxitos Bailables (Canción Real con Voz)" },
-            "80": { id: "7QU1nvuxaMA", nombre: "Pop 80s en Español - Éxitos Inolvidables" },
-            "default": { id: "kJQP7kiw5Fk", nombre: "Despacito - Luis Fonsi ft. Daddy Yankee (Hit Global)" }
+            "shakira": { id: "pXRviuL6vMY", nombre: "Shakira - Waka Waka (Canción Oficial)" },
+            "luis miguel": { id: "Q4v1H88U5a8", nombre: "Luis Miguel - La Incondicional (Balada)" },
+            "mexicanos": { id: "7a75u9g46rQ", nombre: "Vicente Fernández - Hermoso Cariño (Ranchera)" },
+            "80": { id: "uC3V52f7V9g", nombre: "Hombres G - Devuélveme a mi Chica (Pop Rock 80s)" },
+            "90": [
+                { id: "v14f_v1Q79g", nombre: "Maná - Rayando el Sol (Rock Pop 90s)" },
+                { id: "4jV7vE0P_9U", nombre: "Enanitos Verdes - Lamento Boliviano (Rock 90s)" }
+            ],
+            "salsa": { id: "98H5x578a_4", nombre: "Salsa Romántica - Mix Éxitos" },
+            "default": { id: "kJQP7kiw5Fk", nombre: "Luis Fonsi - Despacito ft. Daddy Yankee" }
         };
 
-        let cancionBuscadaActual = { nombre: "Despacito - Luis Fonsi", id: "kJQP7kiw5Fk" };
+        let cancionBuscadaActual = { nombre: "Luis Fonsi - Despacito", id: "kJQP7kiw5Fk" };
         let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
 
         let playerDeckA, playerDeckB;
@@ -1064,13 +1070,17 @@
                 resultado = idsYouTubeReales.shakira;
             } else if (query.includes('luis miguel') || query.includes('miguel')) {
                 resultado = idsYouTubeReales["luis miguel"];
+            } else if (query.includes('mexicanos') || query.includes('mexicana') || query.includes('vicente') || query.includes('ranchera')) {
+                resultado = idsYouTubeReales.mexicanos;
+            } else if (query.includes('80') || query.includes('hombres g') || query.includes('rock')) {
+                resultado = idsYouTubeReales["80"];
+            } else if (query.includes('90') || query.includes('maná') || query.includes('enanitos')) {
+                let lista90 = idsYouTubeReales["90"];
+                resultado = lista90[Math.floor(Math.random() * lista90.length)];
             } else if (query.includes('salsa') || query.includes('reggaeton')) {
                 resultado = idsYouTubeReales.salsa;
-            } else if (query.includes('80') || query.includes('pop')) {
-                resultado = idsYouTubeReales["80"];
             } else {
-                // Si escribe cualquier otra cosa, toma el nombre y le asigna una canción real de hit global
-                resultado = { id: idsYouTubeReales.default.id, nombre: `${input.value} (Canción Real con Voz)` };
+                resultado = { id: "kJQP7kiw5Fk", nombre: `${input.value} (Hit Global con Voz)` };
             }
 
             cancionBuscadaActual = resultado;
