@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partiflow PRO - El DJ Virtual con IA</title>
+    <title>Partiflow PRO - Centro de Control</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -20,6 +20,33 @@
             padding: 20px;
         }
 
+        /* Barra de Navegación Global */
+        .global-nav {
+            position: absolute;
+            top: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+            background: rgba(17, 24, 39, 0.8);
+            padding: 8px 15px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        .global-nav a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .global-nav a:hover, .global-nav a.active {
+            background: #3b82f6;
+            color: #ffffff;
+        }
+
         .stage-lights {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none; z-index: 1; overflow: hidden;
@@ -30,75 +57,57 @@
         }
         .light-1 { width: 380px; height: 380px; background: radial-gradient(circle, #3b82f6, transparent 70%); top: -50px; left: 10%; animation-duration: 6s; }
         .light-2 { width: 420px; height: 420px; background: radial-gradient(circle, #ec4899, transparent 70%); bottom: -50px; right: 10%; animation-duration: 7s; animation-delay: -2s; }
-        .light-3 { width: 320px; height: 320px; background: radial-gradient(circle, #8b5cf6, transparent 70%); top: 40%; left: 50%; transform: translate(-50%, -50%); animation: pulseStrobe 3s infinite ease-in-out; }
 
         @keyframes moveLight {
             0% { transform: translate(0, 0) scale(1); }
             50% { transform: translate(80px, 60px) scale(1.25); }
             100% { transform: translate(-60px, 100px) scale(0.9); }
         }
-        @keyframes pulseStrobe {
-            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.9); }
-            50% { opacity: 0.75; transform: translate(-50%, -50%) scale(1.3); }
-        }
 
         .hero-card {
-            position: relative; z-index: 10; width: 100%; max-width: 520px;
-            background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(16px);
+            position: relative; z-index: 10; width: 100%; max-width: 480px;
+            background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 24px;
             padding: 35px 25px; text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            margin-top: 50px;
         }
         .logo-box img {
             max-width: 75px; height: auto; border-radius: 14px;
             box-shadow: 0 0 25px rgba(59, 130, 246, 0.6);
-            animation: logoFloat 4s ease-in-out infinite alternate;
+            margin-bottom: 15px;
         }
-        @keyframes logoFloat { 0% { transform: translateY(0); } 100% { transform: translateY(-8px); } }
 
         h1 {
             font-size: 1.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900;
             background: linear-gradient(90deg, #60a5fa, #ffffff, #ec4899);
-            -webkit-background-clip: text; background-clip: text; color: transparent; margin: 10px 0 5px 0;
+            -webkit-background-clip: text; background-clip: text; color: transparent; margin: 5px 0;
         }
-        .tagline { color: #9ca3af; font-size: 0.9rem; margin-bottom: 20px; }
+        .tagline { color: #9ca3af; font-size: 0.9rem; margin-bottom: 25px; }
 
-        .equalizer {
-            display: flex; justify-content: center; align-items: flex-end; gap: 5px; height: 24px; margin-bottom: 20px;
-        }
-        .bar { width: 5px; background: linear-gradient(to top, #3b82f6, #ec4899); border-radius: 3px; animation: bounceBar 1.2s infinite ease-in-out alternate; }
-        .bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
-        .bar:nth-child(2) { height: 80%; animation-delay: 0.3s; }
-        .bar:nth-child(3) { height: 60%; animation-delay: 0.2s; }
-        .bar:nth-child(4) { height: 100%; animation-delay: 0.4s; }
-        @keyframes bounceBar { 0% { height: 20%; } 100% { height: 100%; } }
-
-        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .btn-group { display: flex; flex-direction: column; gap: 12px; }
         .btn {
             display: flex; align-items: center; justify-content: center; gap: 10px;
-            padding: 12px 18px; border-radius: 12px; font-size: 0.95rem; font-weight: 700;
+            padding: 14px 18px; border-radius: 12px; font-size: 0.95rem; font-weight: 700;
             text-decoration: none; cursor: pointer; transition: all 0.25s ease; border: none;
         }
         .btn-primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #ffffff; box-shadow: 0 8px 18px rgba(59, 130, 246, 0.4); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 22px rgba(59, 130, 246, 0.6); }
-        .btn-secondary { background: rgba(31, 41, 55, 0.8); color: #e5e7eb; border: 1px solid #4b5563; }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-secondary { background: rgba(31, 41, 55, 0.9); color: #e5e7eb; border: 1px solid #4b5563; }
         .btn-secondary:hover { background: #374151; border-color: #60a5fa; color: #ffffff; }
-        .btn-accent { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid #059669; }
-        .btn-accent:hover { background: rgba(16, 185, 129, 0.3); color: #ffffff; }
-
-        .btn-audio {
-            background: transparent; border: 1px solid #374151; color: #9ca3af;
-            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
-        }
-        .btn-audio:hover { color: #ffffff; border-color: #ec4899; }
     </style>
 </head>
 <body>
 
+    <!-- Puente de Navegación Global -->
+    <nav class="global-nav">
+        <a href="index.html" class="active">🏠 Inicio</a>
+        <a href="dashboard-invitados.html">⚙️ Panel Organizador</a>
+    </nav>
+
     <div class="stage-lights">
         <div class="light-beam light-1"></div>
         <div class="light-beam light-2"></div>
-        <div class="light-beam light-3"></div>
     </div>
 
     <div class="hero-card">
@@ -107,66 +116,16 @@
         </div>
 
         <h1>Partiflow <span style="color: #3b82f6;">PRO</span></h1>
-        <p class="tagline">El DJ virtual inteligente que mezcla la música de tu fiesta y conecta a tus invitados.</p>
+        <p class="tagline">Elige a dónde deseas ir:</p>
 
-        <div class="equalizer">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-        </div>
-
-        <!-- Botones de Navegación del Sistema -->
         <div class="btn-group">
             <a href="dashboard-invitados.html" class="btn btn-primary">
-                📋 Panel de Organizador (Gestionar Invitados)
+                ⚙️ Ir al Panel de Organizador (Configurar Fiesta y Pases)
             </a>
-            <a href="login.html" class="btn btn-secondary">
-                🔑 Iniciar Sesión / Registrarse
-            </a>
-            <a href="cabina.html" class="btn btn-accent" style="display:none;">
-                🎶 Ir a la Cabina en Vivo
+            <a href="cabina.html" class="btn btn-secondary" onclick="alert('Redirigiendo a la cabina de música...');">
+                🎶 Ir a la Cabina de Votación y Voz
             </a>
         </div>
-
-        <button id="audioToggle" class="btn-audio" onclick="toggleClubAudio()">
-            🔊 Encender Sonido de Cabina
-        </button>
     </div>
-
-    <script>
-        let audioCtx = null, isPlaying = false, beatInterval = null;
-        function toggleClubAudio() {
-            const btn = document.getElementById('audioToggle');
-            if (!isPlaying) {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                startBeat(); isPlaying = true;
-                btn.textContent = '⏸️ Silenciar Cabina';
-                btn.style.borderColor = '#10b981'; btn.style.color = '#10b981';
-            } else {
-                stopBeat(); isPlaying = false;
-                btn.textContent = '🔊 Encender Sonido de Cabina';
-                btn.style.borderColor = '#374151'; btn.style.color = '#9ca3af';
-            }
-        }
-        function playKick(t) {
-            const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
-            osc.type = 'sine'; osc.frequency.setValueAtTime(140, t);
-            osc.frequency.exponentialRampToValueAtTime(30, t + 0.15);
-            g.gain.setValueAtTime(1, t); g.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
-            osc.connect(g); g.connect(audioCtx.destination);
-            osc.start(t); osc.stop(t + 0.15);
-        }
-        function startBeat() {
-            let step = 0;
-            beatInterval = setInterval(() => {
-                const now = audioCtx.currentTime;
-                if (step % 2 === 0) playKick(now);
-                step++;
-            }, 450);
-        }
-        function stopBeat() { if (beatInterval) { clearInterval(beatInterval); beatInterval = null; } }
-    </script>
 </body>
 </html>
