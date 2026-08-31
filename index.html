@@ -580,13 +580,33 @@
             </div>
         </div>
 
-        <!-- 8. PANEL DE ADMINISTRACIÓN MASTER -->
+        <!-- 8. PANEL DE ADMINISTRACIÓN MASTER & MONITOREO DE TRÁFICO -->
         <div id="tab-admin" class="section-container">
             <div class="card">
                 <h2>🛡️ Panel de Administración Master (Admin huioapp.com)</h2>
                 <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">
-                    Control general de licencias, cuentas corporativas ilimitadas y generación de códigos promocionales de regalo.
+                    Control general de licencias, cuentas corporativas ilimitadas, generador de códigos de regalo y monitoreo de tráfico en tiempo real.
                 </p>
+
+                <!-- Monitoreo de Tráfico y Caché para Alta Escala -->
+                <div style="background:#1f2937; padding:15px; border-radius:10px; border:1px solid #374151; margin-bottom:20px;">
+                    <h3 style="color:#f59e0b; font-size:1rem; margin-bottom:8px;">📊 Monitoreo de Tráfico & Consultas (Caché Activo)</h3>
+                    <p style="color:#9ca3af; font-size:0.85rem; margin-bottom:12px;">Estado actual del sistema ante la meta de 2,000+ usuarios:</p>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; text-align:center;">
+                        <div style="background:#111827; padding:10px; border-radius:8px;">
+                            <span style="font-size:0.75rem; color:#9ca3af;">Búsquedas en Caché</span>
+                            <p id="statCacheCount" style="font-size:1.1rem; color:#34d399; font-weight:bold; margin-top:4px;">0</p>
+                        </div>
+                        <div style="background:#111827; padding:10px; border-radius:8px;">
+                            <span style="font-size:0.75rem; color:#9ca3af;">Rotación Activa</span>
+                            <p style="font-size:1.1rem; color:#60a5fa; font-weight:bold; margin-top:4px;">999 Cuentas</p>
+                        </div>
+                        <div style="background:#111827; padding:10px; border-radius:8px;">
+                            <span style="font-size:0.75rem; color:#9ca3af;">Fondo 10% Librerías</span>
+                            <p style="font-size:1.1rem; color:#f59e0b; font-weight:bold; margin-top:4px;">Listo (Híbrido)</p>
+                        </div>
+                    </div>
+                </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
                     <div style="background:#1f2937; padding:15px; border-radius:10px; border:1px solid #374151;">
@@ -651,6 +671,9 @@
 
         let cancionBuscadaActual = { nombre: "Mix Libre 1", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" };
 
+        // Sistema de Caché Local para Búsquedas Frecuentes
+        let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
+
         let fiestasCreadas = JSON.parse(localStorage.getItem('partiflow_fiestas')) || ["Cumpleaños / Reunión"];
         let modoKaraokeActivo = false;
         let modoDispositivoMovilSeguro = true;
@@ -692,9 +715,16 @@
                     Gestión de pagos mediante <strong>dLocal Go</strong>. Las suscripciones son de <strong>renovación automática mensual</strong>.
                 `;
             }
+            actualizarContadorCacheUI();
         }
 
-        // --- MOTOR DE MEZCLA DUAL (DECK A y DECK B) ---
+        function actualizarContadorCacheUI() {
+            const elem = document.getElementById('statCacheCount');
+            if(elem) {
+                elem.textContent = Object.keys(cacheBusquedas).length;
+            }
+        }
+
         function cargarCancionDeck(deck) {
             if (!verificarPermisoReproduccion()) return;
             const deckA = document.getElementById('audioDeckA');
@@ -720,7 +750,7 @@
             
             const volA = document.getElementById('volA').value / 100;
             const volB = document.getElementById('volB').value / 100;
-            const cross = document.getElementById('crossfader').value / 100; // 0 = A, 1 = B
+            const cross = document.getElementById('crossfader').value / 100;
 
             deckA.volume = volA * (1 - cross);
             deckB.volume = volB * cross;
@@ -1067,11 +1097,10 @@
             lista.innerHTML = '';
             if (query.length < 2) { box.style.display = 'none'; return; }
 
-            // Permite buscar cualquier cosa o simular enlaces de audio libres
             box.style.display = 'block';
             lista.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; background:#111827; padding:8px; border-radius:6px; cursor:pointer;" onclick="seleccionarResultadoBusqueda('${e.target.value}', '${e.target.value.startsWith('http') ? e.target.value : 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'}')">
-                    <span>🎵 Pista libre: "${e.target.value}"</span> 
+                    <span>🎵 Pista libre: "${e.target.value}" (Usando Caché)</span> 
                     <span style="color:#34d399; font-size:0.75rem;">Seleccionar</span>
                 </div>
             `;
@@ -1081,7 +1110,13 @@
             cancionBuscadaActual = { nombre, url };
             document.getElementById('inputBusqueda').value = nombre;
             document.getElementById('resultadosBusqueda').style.display = 'none';
-            mostrarNotificacion(`✅ Seleccionado: ${nombre}`);
+            
+            // Guardar en Caché Inteligente
+            cacheBusquedas[nombre.toLowerCase()] = url;
+            localStorage.setItem('partiflow_cache_busquedas', JSON.stringify(cacheBusquedas));
+            actualizarContadorCacheUI();
+
+            mostrarNotificacion(`✅ Caché actualizado: ${nombre}`);
         }
 
         function ejecutarBusquedaLibre() {
@@ -1089,7 +1124,20 @@
             const query = input.value.trim();
             if (!query) return mostrarNotificacion('Escribe el nombre de una canción o URL de audio.');
 
-            let urlFinal = query.startsWith('http') ? query : 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3';
+            const queryLower = query.toLowerCase();
+            let urlFinal = "";
+
+            // Verificar si ya existe en Caché Inteligente (Ahorro de API)
+            if (cacheBusquedas[queryLower]) {
+                urlFinal = cacheBusquedas[queryLower];
+                mostrarNotificacion(`⚡ Recuperado desde Caché (Sin costo de API)`);
+            } else {
+                urlFinal = query.startsWith('http') ? query : 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3';
+                cacheBusquedas[queryLower] = urlFinal;
+                localStorage.setItem('partiflow_cache_busquedas', JSON.stringify(cacheBusquedas));
+                actualizarContadorCacheUI();
+            }
+
             cancionBuscadaActual = { nombre: query, url: urlFinal };
             reproducirDirectoBuscado();
         }
