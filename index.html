@@ -184,10 +184,6 @@
         .btn-ai { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; }
         .btn-locked { background: #374151; color: #9ca3af; border: 1px dashed #4b5563; cursor: not-allowed; }
 
-        .mode-selector { display: flex; gap: 8px; margin-bottom: 20px; background: #1f2937; padding: 6px; border-radius: 12px; flex-wrap: wrap; }
-        .mode-btn { flex: 1; min-width: 140px; background: transparent; border: none; color: #9ca3af; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
-        .mode-btn.active { background: #3b82f6; color: white; box-shadow: 0 2px 8px rgba(59,130,246,0.4); }
-
         .mixer-console {
             background: #1a2333; border: 1px solid #374151; border-radius: 14px; padding: 15px; margin-top: 15px; margin-bottom: 15px;
         }
@@ -290,10 +286,10 @@
             <button class="hub-tab" style="color:#ef4444;" onclick="cerrarSesion()">🚪 Salir</button>
         </nav>
 
-        <!-- 1. CABINA & CONSOLA -->
+        <!-- 1. CABINA & CONSOLA CON MOTOR DE AUDIO REAL -->
         <div id="tab-cabina" class="section-container active">
             <div class="card">
-                <h2>🎧 Cabina Inteligente & Consola DJ Móvil</h2>
+                <h2>🎧 Cabina Inteligente & Motor de Audio Real</h2>
                 
                 <div style="background:#1f2937; border:1px solid #374151; border-radius:12px; padding:12px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                     <div>
@@ -305,7 +301,7 @@
 
                 <div class="mixer-console">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <span style="font-size:0.9rem; color:#60a5fa; font-weight:bold;">🎛️ Consola de Mezclas Táctil</span>
+                        <span style="font-size:0.9rem; color:#60a5fa; font-weight:bold;">🎛️ Consola de Mezclas (Motor Real Web Audio)</span>
                         <div>
                             <button id="btnModoIA" class="btn btn-ai" style="padding:4px 10px; font-size:0.75rem; width:auto;" onclick="toggleModoIA()">🤖 IA Copiloto: ON</button>
                         </div>
@@ -314,18 +310,18 @@
                     <div class="mixer-grid">
                         <div class="mixer-channel">
                             <h4>Deck A</h4>
-                            <div class="slider-group"><label>Agudos (High)</label><input type="range" id="eqHighA" min="0" max="100" value="75"></div>
-                            <div class="slider-group"><label>Medios (Mid)</label><input type="range" id="eqMidA" min="0" max="100" value="65"></div>
-                            <div class="slider-group"><label>Graves (Low)</label><input type="range" id="eqLowA" min="0" max="100" value="80"></div>
-                            <div class="slider-group"><label>Volumen Fader</label><input type="range" id="volA" min="0" max="100" value="90"></div>
+                            <div class="slider-group"><label>Agudos (High)</label><input type="range" id="eqHighA" min="0" max="100" value="75" oninput="actualizarFiltrosAudio()"></div>
+                            <div class="slider-group"><label>Medios (Mid)</label><input type="range" id="eqMidA" min="0" max="100" value="65" oninput="actualizarFiltrosAudio()"></div>
+                            <div class="slider-group"><label>Graves (Low)</label><input type="range" id="eqLowA" min="0" max="100" value="80" oninput="actualizarFiltrosAudio()"></div>
+                            <div class="slider-group"><label>Volumen Fader</label><input type="range" id="volA" min="0" max="100" value="90" oninput="actualizarFiltrosAudio()"></div>
                         </div>
 
                         <div class="mixer-channel">
                             <h4>Deck B</h4>
-                            <div class="slider-group"><label>Agudos (High)</label><input type="range" id="eqHighB" min="0" max="100" value="70"></div>
-                            <div class="slider-group"><label>Medios (Mid)</label><input type="range" id="eqMidB" min="0" max="100" value="60"></div>
-                            <div class="slider-group"><label>Graves (Low)</label><input type="range" id="eqLowB" min="0" max="100" value="85"></div>
-                            <div class="slider-group"><label>Volumen Fader</label><input type="range" id="volB" min="0" max="100" value="85"></div>
+                            <div class="slider-group"><label>Agudos (High)</label><input type="range" id="eqHighB" min="0" max="100" value="70" oninput="actualizarFiltrosAudio()"></div>
+                            <div class="slider-group"><label>Medios (Mid)</label><input type="range" id="eqMidB" min="0" max="100" value="60" oninput="actualizarFiltrosAudio()"></div>
+                            <div class="slider-group"><label>Graves (Low)</label><input type="range" id="eqLowB" min="0" max="100" value="85" oninput="actualizarFiltrosAudio()"></div>
+                            <div class="slider-group"><label>Volumen Fader</label><input type="range" id="volB" min="0" max="100" value="85" oninput="actualizarFiltrosAudio()"></div>
                         </div>
                     </div>
 
@@ -336,7 +332,7 @@
                                 <span style="color:#60a5fa; font-weight:bold;">CROSSFADER</span>
                                 <span>B (Deck B)</span>
                             </div>
-                            <input type="range" id="crossfader" min="0" max="100" value="50">
+                            <input type="range" id="crossfader" min="0" max="100" value="50" oninput="actualizarFiltrosAudio()">
                         </div>
                     </div>
                 </div>
@@ -355,7 +351,7 @@
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px;">
-                    <button class="btn btn-success" onclick="iniciarReproduccionGeneral()">▶️ Iniciar Mix Prueba (3 Canciones)</button>
+                    <button class="btn btn-success" onclick="iniciarReproduccionAudioReal()">▶️ Iniciar Audio Real (Mix Prueba)</button>
                     <button class="btn btn-warning" id="btnModoKaraoke" onclick="toggleModoKaraoke()">🎤 Karaoke</button>
                 </div>
 
@@ -366,14 +362,14 @@
 
                 <h3 style="font-size:1rem; color:#e5e7eb; margin-top:15px; margin-bottom:10px;">🎵 Cola en Vivo</h3>
                 <div style="background:#1f2937; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <span id="txtEstadoCancion">Despacito - Luis Fonsi (Modo Prueba Gratuita)</span>
+                    <span id="txtEstadoCancion">Despacito - Luis Fonsi (Motor Web Audio Activo)</span>
                     <span id="txtEstadoBadge" style="color:#34d399; font-weight:bold;">Prueba (Canción 1/3) 🔊</span>
                 </div>
 
                 <div class="master-controls">
-                    <button class="btn btn-secondary" id="btnPlayPause" onclick="togglePlayPause()">⏸️ Pausar</button>
+                    <button class="btn btn-secondary" id="btnPlayPause" onclick="togglePlayPauseAudio()">⏸️ Pausar Audio</button>
                     <button class="btn btn-secondary" onclick="cambiarTodo()">⏭️ Siguiente Mix</button>
-                    <button class="btn btn-danger" onclick="borrarLista()">🗑️ Borrar</button>
+                    <button class="btn btn-danger" onclick="detenerAudioReal()">🗑️ Detener</button>
                 </div>
             </div>
         </div>
@@ -572,12 +568,21 @@
     </div>
 
     <script>
-        let planActual = 'gratis'; // Por defecto entra con prueba gratuita
+        let planActual = 'gratis';
         let cancionesPruebaReproducidas = 0;
         const limitePruebaMix = 3;
 
+        // Motor Web Audio API para sonido real
+        let audioCtx = null;
+        let oscA = null;
+        let oscB = null;
+        let gainNodeA = null;
+        let gainNodeB = null;
+        let filtroHighA = null, filtroLowA = null;
+        let filtroHighB = null, filtroLowB = null;
+        let estaReproduciendoAudio = false;
+
         let fiestasCreadas = JSON.parse(localStorage.getItem('partiflow_fiestas')) || ["Cumpleaños / Reunión"];
-        let estaReproduciendo = true;
         let modoKaraokeActivo = false;
         let modoDispositivoMovilSeguro = true;
         let modoIaActivo = true;
@@ -615,7 +620,7 @@
                 `;
                 txtInfo.innerHTML = `
                     Gestión de pagos mediante <strong>dLocal Go</strong>. Las suscripciones son de <strong>renovación automática mensual</strong> (se cobran al mes siguiente). 
-                    Cuenta con <strong>oferta especial de lanzamiento (20% de descuento válido hasta diciembre de 2026)</strong>.
+                    Cuenta com oferta especial de lanzamiento (20% de descuento válido hasta diciembre de 2026).
                 `;
             } else {
                 containerBasico.innerHTML = `$12.38 + IGV <span style="font-size:0.75rem; color:#60a5fa;">/ mes</span>`;
@@ -624,6 +629,127 @@
                     Gestión de pagos mediante <strong>dLocal Go</strong>. Las suscripciones son de <strong>renovación automática mensual</strong> (se cobran al mes siguiente).
                 `;
             }
+        }
+
+        // --- MOTOR DE AUDIO REAL (WEB AUDIO API) ---
+        function iniciarAudioReal() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            if (estaReproduciendoAudio) return;
+
+            // Deck A (Frecuencia base de ritmo 110Hz - A2)
+            oscA = audioCtx.createOscillator();
+            oscA.type = 'sawtooth';
+            oscA.frequency.setValueAtTime(110, audioCtx.currentTime);
+
+            gainNodeA = audioCtx.createGain();
+            let volVal = (document.getElementById('volA').value / 100);
+            gainNodeA.gain.setValueAtTime(volVal * 0.3, audioCtx.currentTime);
+
+            filtroHighA = audioCtx.createBiquadFilter();
+            filtroHighA.type = 'highpass';
+            filtroHighA.frequency.setValueAtTime(document.getElementById('eqHighA').value * 20, audioCtx.currentTime);
+
+            filtroLowA = audioCtx.createBiquadFilter();
+            filtroLowA.type = 'lowpass';
+            filtroLowA.frequency.setValueAtTime(document.getElementById('eqLowA').value * 150, audioCtx.currentTime);
+
+            oscA.connect(filtroHighA);
+            filtroHighA.connect(filtroLowA);
+            filtroLowA.connect(gainNodeA);
+            gainNodeA.connect(audioCtx.destination);
+
+            // Deck B (Frecuencia base de ritmo 146.83Hz - D3)
+            oscB = audioCtx.createOscillator();
+            oscB.type = 'triangle';
+            oscB.frequency.setValueAtTime(146.83, audioCtx.currentTime);
+
+            gainNodeB = audioCtx.createGain();
+            let volValB = (document.getElementById('volB').value / 100);
+            gainNodeB.gain.setValueAtTime(volValB * 0.3, audioCtx.currentTime);
+
+            filtroHighB = audioCtx.createBiquadFilter();
+            filtroHighB.type = 'highpass';
+            filtroHighB.frequency.setValueAtTime(document.getElementById('eqHighB').value * 20, audioCtx.currentTime);
+
+            filtroLowB = audioCtx.createBiquadFilter();
+            filtroLowB.type = 'lowpass';
+            filtroLowB.frequency.setValueAtTime(document.getElementById('eqLowB').value * 150, audioCtx.currentTime);
+
+            oscB.connect(filtroHighB);
+            filtroHighB.connect(filtroLowB);
+            filtroLowB.connect(gainNodeB);
+            gainNodeB.connect(audioCtx.destination);
+
+            oscA.start();
+            oscB.start();
+            estaReproduciendoAudio = true;
+            actualizarFiltrosAudio();
+        }
+
+        function actualizarFiltrosAudio() {
+            if (!estaReproduciendoAudio || !audioCtx) return;
+
+            let volA = document.getElementById('volA').value / 100;
+            let volB = document.getElementById('volB').value / 100;
+            let cross = document.getElementById('crossfader').value / 100; // 0 = A, 1 = B
+
+            // Aplicar Crossfader y Volúmenes
+            let finalVolA = volA * (1 - cross);
+            let finalVolB = volB * cross;
+
+            if (gainNodeA) gainNodeA.gain.setValueAtTime(finalVolA * 0.3, audioCtx.currentTime);
+            if (gainNodeB) gainNodeB.gain.setValueAtTime(finalVolB * 0.3, audioCtx.currentTime);
+
+            // EQ Filters
+            if (filtroHighA) filtroHighA.frequency.setValueAtTime(document.getElementById('eqHighA').value * 25, audioCtx.currentTime);
+            if (filtroLowA) filtroLowA.frequency.setValueAtTime(document.getElementById('eqLowA').value * 120, audioCtx.currentTime);
+            if (filtroHighB) filtroHighB.frequency.setValueAtTime(document.getElementById('eqHighB').value * 25, audioCtx.currentTime);
+            if (filtroLowB) filtroLowB.frequency.setValueAtTime(document.getElementById('eqLowB').value * 120, audioCtx.currentTime);
+        }
+
+        function detenerAudioReal() {
+            if (oscA) { try { oscA.stop(); } catch(e){} }
+            if (oscB) { try { oscB.stop(); } catch(e){} }
+            estaReproduciendoAudio = false;
+            mostrarNotificacion('⏹️ Motor de audio detenido.');
+        }
+
+        function togglePlayPauseAudio() {
+            if (estaReproduciendoAudio) {
+                detenerAudioReal();
+                document.getElementById('btnPlayPause').textContent = "▶️ Reanudar Audio";
+            } else {
+                iniciarAudioReal();
+                document.getElementById('btnPlayPause').textContent = "⏸️ Pausar Audio";
+            }
+        }
+
+        function verificarPermisoReproduccion() {
+            if (planActual === 'gratis') {
+                if (cancionesPruebaReproducidas >= limitePruebaMix) {
+                    mostrarNotificacion('⚠️ Has agotado tu mix gratuito de 3 canciones. Redirigiendo a Billing...');
+                    setTimeout(() => {
+                        switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5]);
+                    }, 1500);
+                    return false;
+                }
+                cancionesPruebaReproducidas++;
+                document.getElementById('txtEstadoBadge').textContent = `Prueba (Canción ${cancionesPruebaReproducidas}/${limitePruebaMix}) 🔊`;
+            }
+            return true;
+        }
+
+        function iniciarReproduccionAudioReal() {
+            if (!verificarPermisoReproduccion()) return;
+            iniciarAudioReal();
+            document.getElementById('txtEstadoCancion').textContent = catalogoGlobal[Math.floor(Math.random() * catalogoGlobal.length)];
+            mostrarNotificacion('▶️ Motor de audio real activado.');
         }
 
         function alternarModoAuth(modo) {
@@ -661,7 +787,7 @@
             switchTab('tab-perfil', document.querySelectorAll('.hub-tab')[6]);
             aplicarRestriccionesPlan();
             actualizarSelectorEventos();
-            mostrarNotificacion('¡Cuenta creada! Explora la plataforma y prueba el mix gratuito de 3 canciones.');
+            mostrarNotificacion('¡Cuenta creada! Explora la plataforma y prueba el mix gratuito.');
         }
 
         function iniciarSesion() {
@@ -677,7 +803,7 @@
 
         function cambiarPlanUsuario(nuevoPlan) {
             planActual = nuevoPlan;
-            cancionesPruebaReproducidas = 0; // Reiniciar contador al pagar
+            cancionesPruebaReproducidas = 0; 
             aplicarRestriccionesPlan();
             mostrarNotificacion(`🎉 ¡Pago procesado con éxito! Suscripción activa: ${planActual.toUpperCase()}. Acceso ilimitado concedido.`);
         }
@@ -700,8 +826,8 @@
             if (planActual === 'gratis') {
                 btnKaraoke.className = "btn btn-locked";
                 btnKaraoke.innerHTML = "🔒 Karaoke (Requiere Pago)";
-                lblInv.innerHTML = `🔒 Control de invitados QR requiere elegir un plan de suscripción en Billing`;
-                lblHard.innerHTML = `🔒 Hardware y Pantallas requiere elegir un plan de suscripción en Billing`;
+                lblInv.innerHTML = `🔒 Control de invitados QR requiere elegir un plan en Billing`;
+                lblHard.innerHTML = `🔒 Hardware y Pantallas requiere elegir un plan en Billing`;
                 bloqueInvRest.style.display = 'block';
                 bloqueInvAct.style.display = 'none';
                 bloqueHardRest.style.display = 'block';
@@ -744,44 +870,6 @@
             actualizarMensajeFiestaSemanal();
         }
 
-        function verificarPermisoReproduccion() {
-            if (planActual === 'gratis') {
-                if (cancionesPruebaReproducidas >= limitePruebaMix) {
-                    mostrarNotificacion('⚠️ Has agotado tu mix gratuito de 3 canciones. Redirigiendo a Billing para elegir plan...');
-                    setTimeout(() => {
-                        switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5]);
-                    }, 1500);
-                    return false;
-                }
-                cancionesPruebaReproducidas++;
-                document.getElementById('txtEstadoBadge').textContent = `Prueba (Canción ${cancionesPruebaReproducidas}/${limitePruebaMix}) 🔊`;
-            }
-            return true;
-        }
-
-        function iniciarReproduccionGeneral() {
-            if (!verificarPermisoReproduccion()) return;
-            estaReproduciendo = true;
-            document.getElementById('txtEstadoCancion').textContent = catalogoGlobal[Math.floor(Math.random() * catalogoGlobal.length)];
-            mostrarNotificacion('▶️ Reproduciendo mix de prueba...');
-        }
-
-        function ejecutarBusqueda() {
-            if (!verificarPermisoReproduccion()) return;
-            const input = document.getElementById('inputBusqueda');
-            if (!input.value.trim()) return mostrarNotificacion('Escribe una canción o petición.');
-            document.getElementById('txtEstadoCancion').textContent = input.value;
-            mostrarNotificacion(`✅ Petición procesada: "${input.value}"`);
-            input.value = '';
-        }
-
-        function cambiarTodo() {
-            if (!verificarPermisoReproduccion()) return;
-            const randomSong = catalogoGlobal[Math.floor(Math.random() * catalogoGlobal.length)];
-            document.getElementById('txtEstadoCancion').textContent = randomSong;
-            mostrarNotificacion('⏭️ Siguiente mezcla de prueba cargada.');
-        }
-
         function toggleModoIA() {
             if (planActual === 'gratis' || planActual === 'basico') {
                 const precioTxt = esOfertaLanzamiento ? "$19.90 + IGV" : "$24.88 + IGV";
@@ -811,6 +899,7 @@
                 document.getElementById('eqHighA').value = Math.floor(50 + Math.random() * 40);
                 document.getElementById('eqLowB').value = Math.floor(60 + Math.random() * 35);
                 document.getElementById('crossfader').value = Math.floor(30 + Math.random() * 40);
+                actualizarFiltrosAudio();
             }, 2500);
         }
 
@@ -904,13 +993,31 @@
                 filtradas.forEach(song => {
                     const item = document.createElement('div');
                     item.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#111827; padding:8px; border-radius:6px; cursor:pointer;";
-                    item.innerHTML = `🎵 ${song}</span> <button class="btn" style="padding:2px 8px; font-size:0.75rem; width:auto;" onclick="document.getElementById('txtEstadoCancion').textContent='${song}';document.getElementById('resultadosBusqueda').style.display='none';">Añadir</button>`;
+                    item.innerHTML = `<span>🎵 ${song}</span> <button class="btn" style="padding:2px 8px; font-size:0.75rem; width:auto;" onclick="document.getElementById('txtEstadoCancion').textContent='${song}';document.getElementById('resultadosBusqueda').style.display='none';">Añadir</button>`;
                     lista.appendChild(item);
                 });
             } else {
                 box.style.display = 'block';
                 lista.innerHTML = '<span style="color:#9ca3af; font-size:0.85rem;">No se encontraron resultados.</span>';
             }
+        }
+
+        function ejecutarBusqueda() {
+            if (!verificarPermisoReproduccion()) return;
+            const input = document.getElementById('inputBusqueda');
+            if (!input.value.trim()) return mostrarNotificacion('Escribe una canción o petición.');
+            document.getElementById('txtEstadoCancion').textContent = input.value;
+            iniciarAudioReal();
+            mostrarNotificacion(`✅ Petición procesada: "${input.value}"`);
+            input.value = '';
+        }
+
+        function cambiarTodo() {
+            if (!verificarPermisoReproduccion()) return;
+            const randomSong = catalogoGlobal[Math.floor(Math.random() * catalogoGlobal.length)];
+            document.getElementById('txtEstadoCancion').textContent = randomSong;
+            iniciarAudioReal();
+            mostrarNotificacion('⏭️ Siguiente mezcla cargada en motor real.');
         }
 
         function toggleModoKaraoke() {
@@ -944,6 +1051,7 @@
         }
 
         function cerrarSesion() {
+            detenerAudioReal();
             document.getElementById('appScreen').style.display = 'none';
             document.getElementById('authScreen').style.display = 'flex';
             alternarModoAuth('login');
@@ -960,7 +1068,7 @@
                     let color = i <= pl.calificacion ? '#f59e0b' : '#4b5563';
                     estrellas += `<span style="cursor:pointer; color:${color};" onclick="calificarPlaylist(${index}, ${i})">★</span>`;
                 }
-                tabla.innerHTML += `<tr><td><strong>${pl.nombre}</strong></td><td style="color:#9ca3af; font-size:0.85rem;">${pl.pistas}</td><td>${estrellas}</td><td><button class="btn btn-success" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="mostrarNotificacion('Cargado')">▶️</button></td></tr>`;
+                tabla.innerHTML += `<tr><td><strong>${pl.nombre}</strong></td><td style="color:#9ca3af; font-size:0.85rem;">${pl.pistas}</td><td>${estrellas}</td><td><button class="btn btn-success" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="iniciarReproduccionAudioReal()">▶️ Cargar</button></td></tr>`;
             });
         }
 
