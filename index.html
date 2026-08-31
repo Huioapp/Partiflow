@@ -176,10 +176,6 @@
         .mode-btn { flex: 1; min-width: 140px; background: transparent; border: none; color: #9ca3af; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
         .mode-btn.active { background: #3b82f6; color: white; box-shadow: 0 2px 8px rgba(59,130,246,0.4); }
 
-        .dynamic-box {
-            display: none; background: #1f2937; border: 1px dashed #60a5fa; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center;
-        }
-
         .mixer-console {
             background: #1a2333; border: 1px solid #374151; border-radius: 14px; padding: 15px; margin-top: 15px; margin-bottom: 15px;
         }
@@ -312,12 +308,13 @@
                     </div>
                 </div>
 
-                <div class="input-group">
-                    <label>🔍 Buscador Inteligente (Escribe o usa el Micrófono de IA):</label>
+                <!-- Buscador con Voz o Texto para pedidos de música o mezcla -->
+                <div class="input-group" style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151;">
+                    <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🎙️ Pide tu música o tu mezcla por voz o texto:</label>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="inputBusqueda" placeholder="Ej. Shakira, Dua Lipa..." style="flex:1;" onkeyup="buscarCancionEnVivo(event)">
+                        <input type="text" id="inputBusqueda" placeholder="Ej. Pon una mezcla de reggaeton, Shakira..." style="flex:1;" onkeyup="buscarCancionEnVivo(event)">
                         <button class="btn btn-ai" style="width:auto; padding:0 15px;" onclick="activarReconocimientoVozIA()" title="Hablar con la IA">🎙️ Hablar</button>
-                        <button class="btn" style="width:auto;" onclick="ejecutarBusqueda()">Buscar</button>
+                        <button class="btn" style="width:auto;" onclick="ejecutarBusqueda()">Pedir</button>
                     </div>
                 </div>
 
@@ -409,7 +406,7 @@
             </div>
         </div>
 
-        <!-- 4. INVITADOS & QR (Enlazado a múltiples fiestas) -->
+        <!-- 4. INVITADOS & QR -->
         <div id="tab-invitados" class="section-container">
             <div class="card">
                 <h2>🎫 Control de Accesos y Pases QR</h2>
@@ -438,7 +435,7 @@
             </div>
         </div>
 
-        <!-- 5. HARDWARE (Con Pantallas y TVs) -->
+        <!-- 5. HARDWARE -->
         <div id="tab-hardware" class="section-container">
             <div class="card">
                 <h2>💡 Conectividad Hardware</h2>
@@ -467,7 +464,10 @@
         <!-- 6. PLANES Y BILLING -->
         <div id="tab-billing" class="section-container">
             <div class="card">
-                <h2>💳 Suscripción y Facturación</h2>
+                <h2>💳 Suscripción y Facturación Recurrente</h2>
+                <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">
+                    Gestión de pagos mediante <strong>dLocal Go</strong>. Las suscripciones son de <strong>renovación automática mensual</strong> y se cobran al mes siguiente, a menos que decidas no continuar.
+                </p>
                 <div class="plans-grid">
                     <div class="plan-card" id="cardPlanBasico">
                         <div>
@@ -475,10 +475,11 @@
                             <p style="color:#ffffff; font-weight:bold; font-size:1.15rem;">$9.90 <span style="font-size:0.75rem; color:#9ca3af;">/ mes</span></p>
                             <p style="color:#9ca3af; font-size:0.85rem; line-height: 1.5;">
                                 <strong>Incluye:</strong> Cabina musical personal y almacenamiento de playlists.<br>
-                                <strong>Límite:</strong> 1 fiesta semanal. Sin invitados QR, sin karaoke, sin mini consola IA y sin luces.
+                                <strong>Límite:</strong> 1 fiesta semanal. Sin invitados QR, sin karaoke, sin mini consola IA y sin luces.<br>
+                                <em>Renovación automática mensual.</em>
                             </p>
                         </div>
-                        <button class="btn btn-secondary" onclick="cambiarPlanUsuario('basico')">Elegir Plan Básico</button>
+                        <button class="btn btn-secondary" id="btnElegirBasico" onclick="cambiarPlanUsuario('basico')">Elegir Plan Básico</button>
                     </div>
 
                     <div class="plan-card active-plan" id="cardPlanPro">
@@ -486,11 +487,20 @@
                             <h3 style="color:#60a5fa;">Plan PRO</h3>
                             <p style="color:#34d399; font-weight:bold; font-size:1.15rem;">$19.90 <span style="font-size:0.75rem; color:#9ca3af;">+ IGV / mes</span></p>
                             <p style="color:#9ca3af; font-size:0.85rem; line-height: 1.5;">
-                                <strong>Incluye:</strong> Acceso total, eventos ilimitados semanales, invitados QR enlazados, modo karaoke, micrófonos, pantallas, luces inteligentes y <strong>Mini Consola Táctil con IA Copiloto</strong>.
+                                <strong>Incluye:</strong> Acceso total, eventos ilimitados semanales, invitados QR enlazados, modo karaoke, micrófonos, pantallas, luces inteligentes y <strong>Mini Consola Táctil con IA Copiloto</strong>.<br>
+                                <em>Renovación automática mensual.</em>
                             </p>
                         </div>
-                        <button class="btn" onclick="cambiarPlanUsuario('pro')">Elegir Plan PRO</button>
+                        <button class="btn" id="btnElegirPro" onclick="cambiarPlanUsuario('pro')">Elegir Plan PRO</button>
                     </div>
+                </div>
+
+                <div style="margin-top:20px; padding:15px; background:#1f2937; border-radius:12px; border:1px solid #374151; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <p style="font-size:0.9rem; color:#60a5fa; font-weight:bold;">⚙️ Control de Suscripción Recurrente</p>
+                        <p style="font-size:0.75rem; color:#9ca3af;">Puedes pausar o cancelar la renovación automática en cualquier momento.</p>
+                    </div>
+                    <button class="btn btn-danger" style="width:auto; font-size:0.8rem; padding:8px 15px;" onclick="mostrarNotificacion('Suscripción cancelada al finalizar el periodo actual. No se te cobrará el próximo mes.')">🛑 Cancelar Suscripción</button>
                 </div>
             </div>
         </div>
@@ -558,13 +568,13 @@
             document.getElementById('appScreen').style.display = 'flex';
             aplicarRestriccionesPlan();
             actualizarSelectorEventos();
-            mostrarNotificacion(`Bienvenido. Plan: ${planActual.toUpperCase()}`);
+            mostrarNotificacion(`Bienvenido. Plan activo: ${planActual.toUpperCase()}`);
         }
 
         function cambiarPlanUsuario(nuevoPlan) {
             planActual = nuevoPlan;
             aplicarRestriccionesPlan();
-            mostrarNotificacion(`Cambiado al Plan ${planActual.toUpperCase()}`);
+            mostrarNotificacion(`Plan cambiado a: ${planActual.toUpperCase()} (Renovación automática mensual activa)`);
         }
 
         function aplicarRestriccionesPlan() {
@@ -575,6 +585,8 @@
             const bloqueHardAct = document.getElementById('bloqueHardwareActivo');
             const cardBasico = document.getElementById('cardPlanBasico');
             const cardPro = document.getElementById('cardPlanPro');
+            const btnBasico = document.getElementById('btnElegirBasico');
+            const btnPro = document.getElementById('btnElegirPro');
 
             if (planActual === 'basico') {
                 btnKaraoke.className = "btn btn-locked";
@@ -585,6 +597,10 @@
                 bloqueHardAct.style.display = 'none';
                 cardBasico.classList.add('active-plan');
                 cardPro.classList.remove('active-plan');
+                btnBasico.className = "btn btn-success";
+                btnBasico.innerHTML = "Plan Activo";
+                btnPro.className = "btn";
+                btnPro.innerHTML = "Elegir Plan PRO";
             } else {
                 btnKaraoke.className = "btn btn-warning";
                 btnKaraoke.innerHTML = "🎤 Karaoke";
@@ -594,6 +610,10 @@
                 bloqueHardAct.style.display = 'block';
                 cardPro.classList.add('active-plan');
                 cardBasico.classList.remove('active-plan');
+                btnPro.className = "btn btn-success";
+                btnPro.innerHTML = "Plan Activo";
+                btnBasico.className = "btn btn-secondary";
+                btnBasico.innerHTML = "Elegir Plan Básico";
             }
             actualizarMensajeFiestaSemanal();
         }
@@ -644,7 +664,7 @@
             if (planActual === 'basico') {
                 msg.textContent = fiestasCreadas.length >= 1 ? "⚠️ Límite del Plan Básico: Ya registraste tu fiesta semanal permitida." : "ℹ️ Plan Básico: Tienes disponible 1 creación de fiesta esta semana.";
             } else {
-                msg.textContent = "✨ Plan PRO: Fiestas ilimitadas ilimitadas semanales.";
+                msg.textContent = "✨ Plan PRO: Fiestas ilimitadas semanales.";
             }
         }
 
@@ -720,9 +740,9 @@
 
         function ejecutarBusqueda() {
             const input = document.getElementById('inputBusqueda');
-            if (!input.value.trim()) return mostrarNotificacion('Escribe una canción.');
+            if (!input.value.trim()) return mostrarNotificacion('Escribe una canción o petición.');
             document.getElementById('txtEstadoCancion').textContent = input.value;
-            mostrarNotificacion(`✅ Reproduciendo: "${input.value}"`);
+            mostrarNotificacion(`✅ Petición procesada: "${input.value}"`);
             input.value = '';
         }
 
