@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partiflow PRO - Centro de Control Maestro</title>
+    <title>Partiflow PRO - Plataforma Centralizada</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,6 +18,88 @@
             padding: 20px;
         }
 
+        /* --- PANTALLA DE LOGIN (Oculta tras iniciar sesión) --- */
+        #authScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
+            width: 100%;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: #111827;
+            border: 1px solid #374151;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            text-align: center;
+        }
+
+        .brand-logo {
+            max-width: 65px;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            color: #60a5fa;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .input-group input {
+            background: #1f2937;
+            border: 1px solid #4b5563;
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        /* --- CENTRO DE CONTROL (Visible tras el login) --- */
+        #appScreen {
+            display: none;
+            width: 100%;
+            max-width: 850px;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .hub-nav {
             display: flex;
             gap: 8px;
@@ -28,7 +110,6 @@
             margin-bottom: 25px;
             flex-wrap: wrap;
             justify-content: center;
-            max-width: 850px;
             width: 100%;
         }
 
@@ -36,14 +117,13 @@
             background: transparent;
             border: none;
             color: #9ca3af;
-            padding: 10px 16px;
+            padding: 10px 14px;
             border-radius: 10px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .hub-tab:hover { color: #ffffff; background: #1f2937; }
         .hub-tab.active {
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
@@ -51,7 +131,7 @@
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
         }
 
-        .section-container { display: none; width: 100%; max-width: 850px; animation: fadeIn 0.3s ease-in-out; }
+        .section-container { display: none; width: 100%; animation: fadeIn 0.3s ease-in-out; }
         .section-container.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -64,26 +144,17 @@
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         @media (max-width: 600px) { .input-grid { grid-template-columns: 1fr; } }
 
-        .input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-        .input-group label { font-size: 0.85rem; color: #9ca3af; }
-        .input-group input, .input-group select {
-            background: #1f2937; border: 1px solid #4b5563; padding: 10px 14px;
-            border-radius: 8px; color: white; font-size: 0.95rem; outline: none;
-        }
-
         .btn {
             background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; border: none;
             padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer;
-            font-size: 0.95rem; transition: opacity 0.2s; display: inline-flex; align-items: center;
-            justify-content: center; gap: 8px; width: 100%;
+            font-size: 0.95rem; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         }
         .btn:hover { opacity: 0.9; }
-
         .btn-secondary { background: #1f2937; border: 1px solid #4b5563; color: #e5e7eb; }
         .btn-secondary:hover { background: #374151; border-color: #60a5fa; color: #ffffff; }
 
         .mode-selector { display: flex; gap: 10px; margin-bottom: 20px; background: #1f2937; padding: 6px; border-radius: 12px; }
-        .mode-btn { flex: 1; background: transparent; border: none; color: #9ca3af; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .mode-btn { flex: 1; background: transparent; border: none; color: #9ca3af; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .mode-btn.active { background: #3b82f6; color: white; }
 
         .hardware-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px; }
@@ -93,7 +164,7 @@
             background: #1f2937; border: 1px solid #4b5563; border-radius: 16px;
             padding: 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 15px;
         }
-        .hardware-card h3 { color: #60a5fa; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
+        .hardware-card h3 { color: #60a5fa; font-size: 1.05rem; }
         .hardware-card p { color: #9ca3af; font-size: 0.88rem; line-height: 1.5; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
@@ -101,8 +172,8 @@
         th { color: #9ca3af; }
 
         .footer-links {
-            margin-top: 30px; text-align: center; font-size: 0.85rem; color: #6b7280;
-            display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;
+            margin-top: 20px; text-align: center; font-size: 0.85rem; color: #6b7280;
+            display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; width: 100%;
         }
         .footer-links a { color: #9ca3af; text-decoration: none; }
         .footer-links a:hover { color: #60a5fa; text-decoration: underline; }
@@ -110,154 +181,187 @@
 </head>
 <body>
 
-    <!-- Centro de Pestañas (Puentes Visibles en Vivo) -->
-    <nav class="hub-nav">
-        <button class="hub-tab active" onclick="switchTab('tab-cabina', this)">🎶 Cabina y DJ</button>
-        <button class="hub-tab" onclick="switchTab('tab-evento', this)">🎉 Configurar Fiesta</button>
-        <button class="hub-tab" onclick="switchTab('tab-invitados', this)">👥 Invitados & QR</button>
-        <button class="hub-tab" onclick="switchTab('tab-hardware', this)">💡 Luces y Pantallas</button>
-        <button class="hub-tab" onclick="switchTab('tab-billing', this)">💳 Planes & Billing</button>
-    </nav>
-
-    <!-- ================= 1. CABINA & DJ (MODO FIESTA / MODO TAXI) ================= -->
-    <div id="tab-cabina" class="section-container active">
-        <div class="card">
-            <h2>🎧 Cabina de Música Inteligente</h2>
+    <!-- ================= PANTALLA 1: LOGIN ================= -->
+    <div id="authScreen">
+        <div class="login-card">
+            <img src="Logo_fondo_blanco_solo_icono.png" alt="Partiflow PRO" class="brand-logo">
+            <h2>Partiflow PRO</h2>
             
-            <div class="mode-selector">
-                <button class="mode-btn active" id="btnModoFiesta" onclick="cambiarModo('fiesta')">🎉 Modo Fiesta (Con Votación QR)</button>
-                <button class="mode-btn" id="btnModoTaxi" onclick="cambiarModo('taxi')">🚕 Modo Taxi / Libre (Sin Invitados)</button>
+            <div class="input-group">
+                <label>Correo Electrónico:</label>
+                <input type="email" id="txtEmail" placeholder="tu@correo.com" value="admin@huioapp.com">
             </div>
-
-            <p id="descripcionModo" style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">
-                Los invitados pueden votar y pedir canciones mediante voz o texto desde sus teléfonos escaneando el QR general.
-            </p>
 
             <div class="input-group">
-                <label>Pedir canción actual:</label>
-                <div style="display:flex; gap:10px;">
-                    <input type="text" id="inputCancion" placeholder="Escribe o usa el micrófono..." style="flex:1;">
-                    <button class="btn btn-secondary" style="width:auto; padding:0 15px;" onclick="alert('Micrófono activado...')">🎤</button>
-                    <button class="btn" style="width:auto;" onclick="agregarMusicaDirecta()">Añadir</button>
-                </div>
+                <label>Contraseña:</label>
+                <input type="password" id="txtPassword" placeholder="••••••••" value="123456">
             </div>
 
-            <h3 style="font-size:1rem; color:#e5e7eb; margin-top:20px; margin-bottom:10px;">🎵 Cola en Vivo</h3>
-            <div id="colaMusica" style="display:flex; flex-direction:column; gap:8px;">
+            <button class="btn-login" onclick="iniciarSesion()">Ingresar al Centro de Control</button>
+        </div>
+    </div>
+
+    <!-- ================= PANTALLA 2: CENTRO DE CONTROL MAESTRO ================= -->
+    <div id="appScreen">
+        <!-- Pestañas Superiores de Navegación Unificada -->
+        <nav class="hub-nav">
+            <button class="hub-tab active" onclick="switchTab('tab-cabina', this)">🎶 Cabina & DJ</button>
+            <button class="hub-tab" onclick="switchTab('tab-evento', this)">🎉 Configurar Fiesta</button>
+            <button class="hub-tab" onclick="switchTab('tab-invitados', this)">👥 Invitados & QR</button>
+            <button class="hub-tab" onclick="switchTab('tab-hardware', this)">💡 Luces y Pantallas</button>
+            <button class="hub-tab" onclick="switchTab('tab-billing', this)">💳 Planes & Billing</button>
+            <button class="hub-tab" style="color:#ef4444;" onclick="cerrarSesion()">🚪 Salir</button>
+        </nav>
+
+        <!-- 1. SECCIÓN: CABINA & DJ (MODO FIESTA / MODO TAXI) -->
+        <div id="tab-cabina" class="section-container active">
+            <div class="card">
+                <h2>🎧 Cabina de Música Inteligente</h2>
+                <div class="mode-selector">
+                    <button class="mode-btn active" id="btnModoFiesta" onclick="cambiarModo('fiesta')">🎉 Modo Fiesta (Con Votación QR)</button>
+                    <button class="mode-btn" id="btnModoTaxi" onclick="cambiarModo('taxi')">🚕 Modo Taxi / Libre (Sin Invitados)</button>
+                </div>
+                <p id="descripcionModo" style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">
+                    Los invitados pueden votar y pedir canciones mediante voz o texto desde sus teléfonos escaneando el QR general.
+                </p>
+                <div class="input-group">
+                    <label>Pedir canción actual:</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="inputCancion" placeholder="Escribe o usa el micrófono..." style="flex:1; background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
+                        <button class="btn btn-secondary" style="width:auto; padding:0 15px;" onclick="alert('Micrófono activado...')">🎤</button>
+                        <button class="btn" style="width:auto;" onclick="agregarMusicaDirecta()">Añadir</button>
+                    </div>
+                </div>
+                <h3 style="font-size:1rem; color:#e5e7eb; margin-top:20px; margin-bottom:10px;">🎵 Cola en Vivo</h3>
                 <div style="background:#1f2937; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
                     <span>Despacito - Luis Fonsi</span>
                     <span style="color:#34d399; font-weight:bold;">Reproduciendo 🔊</span>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- ================= 2. CONFIGURAR FIESTA ================= -->
-    <div id="tab-evento" class="section-container">
-        <div class="card">
-            <h2>⚙️ Configuración del Evento y Fechas</h2>
-            <div class="input-grid">
-                <div class="input-group">
-                    <label>Nombre de la Fiesta:</label>
-                    <input type="text" id="txtNombre" value="Cumpleaños / Reunión">
-                </div>
-                <div class="input-group">
-                    <label>Fecha del Evento:</label>
-                    <input type="date" id="txtFecha" value="2026-09-15">
-                </div>
-            </div>
-            <div class="input-grid">
-                <div class="input-group">
-                    <label>Motivo:</label>
-                    <input type="text" id="txtMotivo" value="Celebración Privada">
-                </div>
-                <div class="input-group">
-                    <label>Anfitrión (Quién Invita):</label>
-                    <input type="text" id="txtAnfitrion" value="Luis Ganoza">
-                </div>
-            </div>
-            <button class="btn" onclick="alert('¡Configuración guardada con éxito!')">Guardar Cambios</button>
-        </div>
-    </div>
-
-    <!-- ================= 3. INVITADOS & QR ================= -->
-    <div id="tab-invitados" class="section-container">
-        <div class="card">
-            <h2>🎫 Control de Accesos y Pases QR</h2>
-            <div class="input-group">
-                <label>Registrar Invitado:</label>
-                <div style="display:flex; gap:10px;">
-                    <input type="text" id="inputInvitado" placeholder="Nombre completo..." style="flex:1;">
-                    <button class="btn" style="width:auto;" onclick="generarPaseQR()">Generar Pase</button>
-                </div>
-            </div>
-            <table>
-                <thead>
-                    <tr><th>Invitado</th><th>Código VIP</th><th>Acción</th></tr>
-                </thead>
-                <tbody id="tablaPases">
-                    <tr><td colspan="3" style="text-align:center; color:#9ca3af;">No hay pases registrados.</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- ================= 4. LUCES Y PANTALLAS (CONEXIÓN MULTI-EQUIPO WI-FI / BLUETOOTH) ================= -->
-    <div id="tab-hardware" class="section-container">
-        <div class="card">
-            <h2>💡 Conectividad Multi-Equipo (Wi-Fi y Bluetooth)</h2>
-            <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">
-                Conecta de forma inalámbrica múltiples dispositivos a la cabina: proyectores, televisores del local y barras de luces inteligentes mediante red local o Bluetooth.
-            </p>
-
-            <div class="hardware-grid">
-                <!-- Televisores / Proyectores por Wi-Fi -->
-                <div class="hardware-card">
-                    <div>
-                        <h3>📺 Pantallas y TVs del Local (Wi-Fi)</h3>
-                        <p>Transmite las visuales de discoteca, ranking de canciones y letras de karaoke a múltiples televisores o proyectores simultáneamente en la red del local.</p>
+        <!-- 2. SECCIÓN: CONFIGURAR FIESTA -->
+        <div id="tab-evento" class="section-container">
+            <div class="card">
+                <h2>⚙️ Configuración del Evento y Fechas</h2>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Nombre de la Fiesta:</label>
+                        <input type="text" id="txtNombre" value="Cumpleaños / Reunión" style="background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
                     </div>
-                    <button class="btn" onclick="alert('Buscando pantallas compatibles en la red Wi-Fi...')">📺 Conectar Pantallas (Wi-Fi)</button>
-                </div>
-
-                <!-- Modo Coro en Celulares por QR -->
-                <div class="hardware-card">
-                    <div>
-                        <h3>📱 Celulares de Invitados (QR)</h3>
-                        <p>Cada invitado que escanea su QR al ingresar activa su propio modo "Coro en Vivo" en su celular para cantar las letras sincronizadas en tiempo real.</p>
+                    <div class="input-group">
+                        <label>Fecha del Evento:</label>
+                        <input type="date" id="txtFecha" value="2026-09-15" style="background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
                     </div>
-                    <button class="btn btn-secondary" onclick="alert('¡Modo Coro en Celulares habilitado por QR!')">📲 Habilitar Coro en Celulares</button>
+                </div>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Motivo:</label>
+                        <input type="text" id="txtMotivo" value="Celebración Privada" style="background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
+                    </div>
+                    <div class="input-group">
+                        <label>Anfitrión (Quién Invita):</label>
+                        <input type="text" id="txtAnfitrion" value="Luis Ganoza" style="background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Ubicación (Enlace de Google Maps para el QR):</label>
+                    <input type="text" id="txtUbicacion" value="https://maps.google.com" style="background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
+                </div>
+                <button class="btn" onclick="alert('¡Configuración de fiesta guardada con éxito!')">Guardar Cambios del Evento</button>
+            </div>
+        </div>
+
+        <!-- 3. SECCIÓN: INVITADOS & QR -->
+        <div id="tab-invitados" class="section-container">
+            <div class="card">
+                <h2>🎫 Control de Accesos y Pases QR</h2>
+                <div class="input-group">
+                    <label>Registrar Invitado o Familia:</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="inputInvitado" placeholder="Nombre completo..." style="flex:1; background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
+                        <button class="btn" style="width:auto;" onclick="generarPaseQR()">Generar Pase</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>Invitado</th><th>Código VIP</th><th>Acción</th></tr>
+                    </thead>
+                    <tbody id="tablaPases">
+                        <tr><td colspan="3" style="text-align:center; color:#9ca3af;">No hay pases registrados.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. SECCIÓN: LUCES Y PANTALLAS (WI-FI Y BLUETOOTH) -->
+        <div id="tab-hardware" class="section-container">
+            <div class="card">
+                <h2>💡 Conectividad Multi-Equipo (Wi-Fi y Bluetooth)</h2>
+                <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">
+                    Conecta múltiples dispositivos de forma inalámbrica: proyectores, televisores del local y barras de luces inteligentes.
+                </p>
+                <div class="hardware-grid">
+                    <div class="hardware-card">
+                        <div>
+                            <h3>📺 Pantallas y TVs del Local (Wi-Fi)</h3>
+                            <p>Transmite las visuales de discoteca, ranking de canciones y letras de karaoke a múltiples televisores simultáneamente.</p>
+                        </div>
+                        <button class="btn" onclick="alert('Buscando pantallas compatibles en la red Wi-Fi...')">📺 Conectar Pantallas (Wi-Fi)</button>
+                    </div>
+                    <div class="hardware-card">
+                        <div>
+                            <h3>📱 Celulares de Invitados (QR)</h3>
+                            <p>Cada invitado que escanea su QR al ingresar activa su propio modo "Coro en Vivo" en su celular.</p>
+                        </div>
+                        <button class="btn btn-secondary" onclick="alert('¡Modo Coro en Celulares habilitado por QR!')">📲 Habilitar Coro en Celulares</button>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; background: #1f2937; padding: 20px; border-radius: 16px; border: 1px solid #4b5563;">
+                    <h3 style="color: #60a5fa; font-size: 1.05rem; margin-bottom: 8px;">🔌 Sincronización Bluetooth (Luces Inteligentes)</h3>
+                    <p style="color: #9ca3af; font-size: 0.88rem; margin-bottom: 15px;">Empareja focos inteligentes o barras LED por Bluetooth para que parpadeen al ritmo de los graves.</p>
+                    <button class="btn btn-secondary" onclick="alert('Buscando dispositivos Bluetooth cercanos...')">🔵 Vincular Equipos Bluetooth</button>
                 </div>
             </div>
+        </div>
 
-            <!-- Panel de Control Bluetooth para Luces y Equipos Múltiples -->
-            <div style="margin-top: 20px; background: #1f2937; padding: 20px; border-radius: 16px; border: 1px solid #4b5563;">
-                <h3 style="color: #60a5fa; font-size: 1.05rem; margin-bottom: 8px;">🔌 Sincronización Bluetooth (Luces y Audio Múltiple)</h3>
-                <p style="color: #9ca3af; font-size: 0.88rem; margin-bottom: 15px;">Empareja focos inteligentes, barras LED o controladores de luces por Bluetooth para que parpadeen automáticamente al ritmo de los graves de la música.</p>
-                <button class="btn btn-secondary" onclick="alert('Buscando dispositivos Bluetooth cercanos (Smart Lights / DMX)...')">🔵 Vincular Equipos Bluetooth</button>
+        <!-- 5. SECCIÓN: PLANES Y BILLING -->
+        <div id="tab-billing" class="section-container">
+            <div class="card">
+                <h2>💳 Suscripción y Facturación (Billing)</h2>
+                <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:15px;">Tu Plan Actual: <strong style="color:#34d399;">PRO ($19.90 + IGV)</strong></p>
+                <button class="btn" onclick="alert('Redirigiendo a pasarela segura dLocal Go...')">Gestionar / Renovar con dLocal Go</button>
             </div>
         </div>
-    </div>
 
-    <!-- ================= 5. PLANES Y BILLING ================= -->
-    <div id="tab-billing" class="section-container">
-        <div class="card">
-            <h2>💳 Suscripción y Facturación (Billing)</h2>
-            <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:15px;">Tu Plan Actual: <strong style="color:#34d399;">PRO ($19.90 + IGV)</strong></p>
-            <button class="btn" onclick="alert('Redirigiendo a pasarela segura dLocal Go...')">Gestionar / Renovar con dLocal Go</button>
+        <!-- Footer Legal Global -->
+        <div class="footer-links">
+            <a href="#" onclick="alert('Términos y Condiciones: Uso exclusivo para entretenimiento y gestión social...')">Términos y Condiciones</a>
+            <span>•</span>
+            <a href="#" onclick="alert('Políticas de Privacidad: Sus datos están protegidos en la nube de Supabase...')">Políticas de Privacidad</a>
+            <span>•</span>
+            <a href="#" onclick="navigator.clipboard.writeText(window.location.href); alert('¡Enlace de votación copiado al portapapeles!');">🔗 Copiar QR / Enlace para Votar</a>
         </div>
-    </div>
-
-    <!-- Footer Global -->
-    <div class="footer-links">
-        <a href="#" onclick="alert('Términos y Condiciones: Uso exclusivo para entretenimiento y gestión social...')">Términos y Condiciones</a>
-        <span>•</span>
-        <a href="#" onclick="alert('Políticas de Privacidad: Sus datos están protegidos en la nube de Supabase...')">Políticas de Privacidad</a>
-        <span>•</span>
-        <a href="#" onclick="navigator.clipboard.writeText(window.location.href); alert('¡Enlace de votación copiado al portapapeles!');">🔗 Copiar QR / Enlace para Votar</a>
     </div>
 
     <script>
+        function iniciarSesion() {
+            const email = document.getElementById('txtEmail').value;
+            const pass = document.getElementById('txtPassword').value;
+            if (!email || !pass) {
+                alert('Ingresa tus datos.');
+                return;
+            }
+            // Oculta login y muestra el Centro de Control unificado
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'flex';
+        }
+
+        function cerrarSesion() {
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+        }
+
         function switchTab(tabId, btnElement) {
             document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
             document.querySelectorAll('.hub-tab').forEach(tab => tab.classList.remove('active'));
