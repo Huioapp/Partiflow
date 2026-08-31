@@ -150,6 +150,8 @@
         .btn:hover { opacity: 0.9; }
         .btn-secondary { background: #1f2937; border: 1px solid #4b5563; color: #e5e7eb; }
         .btn-secondary:hover { background: #374151; border-color: #60a5fa; color: #ffffff; }
+        .btn-success { background: #059669; border: 1px solid #10b981; color: #ffffff; }
+        .btn-success:hover { background: #047857; }
         .btn-danger { background: #7f1d1d; border: 1px solid #991b1b; color: #fca5a5; }
         .btn-danger:hover { background: #991b1b; color: #ffffff; }
 
@@ -206,6 +208,7 @@
 </head>
 <body>
 
+    <!-- ================= PANTALLA 1: LOGIN ================= -->
     <div id="authScreen">
         <div class="login-card">
             <img src="Logo_fondo_blanco_solo_icono.png" alt="Partiflow PRO" class="brand-logo">
@@ -225,6 +228,7 @@
         </div>
     </div>
 
+    <!-- ================= PANTALLA 2: CENTRO DE CONTROL MAESTRO ================= -->
     <div id="appScreen">
         <nav class="hub-nav">
             <button class="hub-tab active" onclick="switchTab('tab-cabina', this)">🎶 Cabina & DJ</button>
@@ -235,6 +239,7 @@
             <button class="hub-tab" style="color:#ef4444;" onclick="cerrarSesion()">🚪 Salir</button>
         </nav>
 
+        <!-- 1. SECCIÓN: CABINA & DJ -->
         <div id="tab-cabina" class="section-container active">
             <div class="card">
                 <h2>🎧 Cabina de Música Inteligente</h2>
@@ -264,12 +269,19 @@
                     </div>
                 </div>
 
-                <h3 style="font-size:1rem; color:#e5e7eb; margin-top:20px; margin-bottom:10px;">🎵 Cola en Vivo</h3>
+                <!-- Botones Iniciales de Reproducción y Playlist Aleatorio -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px;">
+                    <button class="btn btn-success" onclick="iniciarReproduccionGeneral()">▶️ Iniciar Reproducción</button>
+                    <button class="btn btn-secondary" onclick="mezclarPlaylistAleatorio()">🔀 Shuffle / Aleatorio</button>
+                </div>
+
+                <h3 style="font-size:1rem; color:#e5e7eb; margin-top:15px; margin-bottom:10px;">🎵 Cola en Vivo</h3>
                 <div style="background:#1f2937; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                     <span id="txtEstadoCancion">Despacito - Luis Fonsi</span>
                     <span id="txtEstadoBadge" style="color:#34d399; font-weight:bold;">Reproduciendo 🔊</span>
                 </div>
 
+                <!-- Controles de Pausa, Cambio y Borrado -->
                 <div class="master-controls">
                     <button class="btn btn-secondary" id="btnPlayPause" onclick="togglePlayPause()">⏸️ Pausar Música</button>
                     <button class="btn btn-secondary" onclick="cambiarTodo()">⏭️ Cambiar Todo</button>
@@ -278,6 +290,7 @@
             </div>
         </div>
 
+        <!-- 2. SECCIÓN: CONFIGURAR FIESTA -->
         <div id="tab-evento" class="section-container">
             <div class="card">
                 <h2>⚙️ Configuración del Evento y Fechas</h2>
@@ -309,6 +322,7 @@
             </div>
         </div>
 
+        <!-- 3. SECCIÓN: INVITADOS & QR -->
         <div id="tab-invitados" class="section-container">
             <div class="card">
                 <h2>🎫 Control de Accesos y Pases QR</h2>
@@ -330,6 +344,7 @@
             </div>
         </div>
 
+        <!-- 4. SECCIÓN: LUCES Y PANTALLAS -->
         <div id="tab-hardware" class="section-container">
             <div class="card">
                 <h2>💡 Conectividad Multi-Equipo (Wi-Fi y Bluetooth)</h2>
@@ -355,6 +370,7 @@
             </div>
         </div>
 
+        <!-- 5. SECCIÓN: PLANES Y BILLING -->
         <div id="tab-billing" class="section-container">
             <div class="card">
                 <h2>💳 Suscripción y Facturación (Billing)</h2>
@@ -377,6 +393,7 @@
             </div>
         </div>
 
+        <!-- Footer -->
         <div class="footer-links">
             <a href="#" onclick="alert('Términos y Condiciones...')">Términos y Condiciones</a>
             <span>•</span>
@@ -388,6 +405,7 @@
 
     <script>
         let estaReproduciendo = true;
+        const playlistPrueba = ["Hips Don't Lie - Shakira", "Levitating - Dua Lipa", "I Gotta Feeling - Black Eyed Peas", "Despacito - Luis Fonsi", "Uptown Funk - Mark Ronson ft. Bruno Mars"];
 
         function iniciarSesion() {
             const email = document.getElementById('txtEmail').value;
@@ -435,6 +453,27 @@
             }
         }
 
+        function iniciarReproduccionGeneral() {
+            estaReproduciendo = true;
+            document.getElementById('btnPlayPause').innerHTML = '⏸️ Pausar Música';
+            const badge = document.getElementById('txtEstadoBadge');
+            badge.textContent = 'Reproduciendo 🔊';
+            badge.style.color = '#34d399';
+            document.getElementById('txtEstadoCancion').textContent = playlistPrueba[0];
+            alert('▶️ ¡Reproducción iniciada con éxito en la cabina!');
+        }
+
+        function mezclarPlaylistAleatorio() {
+            const cancionAleatoria = playlistPrueba[Math.floor(Math.random() * playlistPrueba.length)];
+            estaReproduciendo = true;
+            document.getElementById('btnPlayPause').innerHTML = '⏸️ Pausar Música';
+            const badge = document.getElementById('txtEstadoBadge');
+            badge.textContent = 'Mix Aleatorio (Shuffle) 🔀';
+            badge.style.color = '#38bdf8';
+            document.getElementById('txtEstadoCancion').textContent = cancionAleatoria;
+            alert('🔀 ¡Playlist mezclado de forma aleatoria! Siguiente pista seleccionada.');
+        }
+
         function togglePlayPause() {
             const btn = document.getElementById('btnPlayPause');
             const badge = document.getElementById('txtEstadoBadge');
@@ -452,7 +491,8 @@
         }
 
         function cambiarTodo() {
-            document.getElementById('txtEstadoCancion').textContent = 'Mix Reiniciado - Nueva Selección Automática';
+            const randomSong = playlistPrueba[Math.floor(Math.random() * playlistPrueba.length)];
+            document.getElementById('txtEstadoCancion').textContent = randomSong;
             alert('¡Se ha saltado y refrescado toda la mezcla de música actual!');
         }
 
