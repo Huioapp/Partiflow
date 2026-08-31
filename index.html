@@ -67,7 +67,7 @@
             color: #9ca3af;
         }
 
-        .input-group input, .input-group textarea, .input-group select {
+        .input-group input {
             background: #1f2937;
             border: 1px solid #4b5563;
             padding: 12px;
@@ -90,6 +90,25 @@
             font-size: 1rem;
             margin-top: 10px;
         }
+
+        .social-login {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-social {
+            flex: 1;
+            background: #1f2937;
+            border: 1px solid #4b5563;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-social:hover { background: #374151; }
 
         #appScreen {
             display: none;
@@ -180,10 +199,12 @@
         }
         @media (max-width: 600px) { .master-controls { grid-template-columns: 1fr; } }
 
-        .plans-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px; }
+        .plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        @media (max-width: 700px) { .plans-grid { grid-template-columns: 1fr; } }
+
         .plan-card {
             background: #1f2937; border: 1px solid #374151; border-radius: 14px; padding: 20px;
-            display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;
+            display: flex; flex-direction: column; justify-content: space-between; gap: 15px;
         }
         .plan-card.active-plan { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59,130,246,0.3); }
 
@@ -211,7 +232,7 @@
 </head>
 <body>
 
-    <!-- ================= PANTALLA 1: LOGIN ================= -->
+    <!-- ================= PANTALLA 1: LOGIN CON GOOGLE / REDES ================= -->
     <div id="authScreen">
         <div class="login-card">
             <img src="Logo_fondo_blanco_solo_icono.png" alt="Partiflow PRO" class="brand-logo">
@@ -228,6 +249,12 @@
             </div>
 
             <button class="btn-login" onclick="iniciarSesion()">Ingresar al Centro de Control</button>
+
+            <div style="margin: 15px 0; font-size: 0.8rem; color: #9ca3af;">O ingresa directamente con:</div>
+            <div class="social-login">
+                <button class="btn-social" onclick="iniciarSesionSocial('Google')">🔵 Google</button>
+                <button class="btn-social" onclick="iniciarSesionSocial('Redes')">🌐 Redes Sociales</button>
+            </div>
         </div>
     </div>
 
@@ -295,7 +322,7 @@
                     <button class="btn btn-warning" id="btnModoKaraoke" onclick="toggleModoKaraoke()">🎤 Modo Karaoke</button>
                 </div>
 
-                <!-- Monitor de Letras de Karaoke (Oculto por defecto hasta activar karaoke) -->
+                <!-- Monitor de Letras de Karaoke -->
                 <div id="karaokeMonitor" style="display:none; background:#111827; border:2px solid #f59e0b; border-radius:12px; padding:15px; margin-bottom:15px; text-align:center;">
                     <p style="color:#f59e0b; font-size:0.8rem; font-weight:bold; text-transform:uppercase; margin-bottom:5px;">🌟 MODO KARAOKE ACTIVO (Instrumental + Letras)</p>
                     <p id="letraKaraoke" style="font-size:1.1rem; color:#ffffff; font-style:italic; margin-top:5px;">♪♪ [Esperando voz o pista para cantar...] ♪♪</p>
@@ -347,20 +374,21 @@
             </div>
         </div>
 
-        <!-- 3. SECCIÓN: INVITADOS & QR -->
+        <!-- 3. SECCIÓN: INVITADOS & QR (Conectado al Evento) -->
         <div id="tab-invitados" class="section-container">
             <div class="card">
-                <h2>🎫 Control de Accesos y Pases QR</h2>
+                <h2>🎫 Control de Accesos y Pases QR del Evento</h2>
+                <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:15px;">Cada invitado registrado recibe un pase QR sincronizado automáticamente con los datos del evento actual.</p>
                 <div class="input-group">
                     <label>Registrar Invitado o Familia:</label>
                     <div style="display:flex; gap:10px;">
                         <input type="text" id="inputInvitado" placeholder="Nombre completo..." style="flex:1;">
-                        <button class="btn" style="width:auto;" onclick="generarPaseQR()">Generar Pase</button>
+                        <button class="btn" style="width:auto;" onclick="generarPaseQR()">Generar Pase VIP</button>
                     </div>
                 </div>
                 <table>
                     <thead>
-                        <tr><th>Invitado</th><th>Código VIP</th><th>Acción</th></tr>
+                        <tr><th>Invitado</th><th>Código VIP (Enlazado al Evento)</th><th>Acción</th></tr>
                     </thead>
                     <tbody id="tablaPases">
                         <tr><td colspan="3" style="text-align:center; color:#9ca3af;">No hay pases registrados.</td></tr>
@@ -369,18 +397,18 @@
             </div>
         </div>
 
-        <!-- 4. SECCIÓN: LUCES Y PANTALLAS (Actualizada con Micrófono Inalámbrico Wi-Fi/Bluetooth) -->
+        <!-- 4. SECCIÓN: LUCES Y PANTALLAS -->
         <div id="tab-hardware" class="section-container">
             <div class="card">
                 <h2>💡 Conectividad Multi-Equipo, Micrófonos y Luces</h2>
                 <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">
-                    Vincula pantallas inalámbricas, sincroniza iluminación ambiental y conecta micrófonos inalámbricos vía Wi-Fi o Bluetooth (o usa tu celular como micrófono).
+                    Vincula pantallas inalámbricas, sincroniza iluminación ambiental y conecta micrófonos inalámbricos vía Wi-Fi o Bluetooth.
                 </p>
                 <div class="hardware-grid">
                     <div class="hardware-card">
                         <div>
-                            <h3>🎤 Micrófono Inalámbrico (Wi-Fi / BT / Celular)</h3>
-                            <p>Convierte tu celular en micrófono inalámbrico o vincula un micro externo por Bluetooth o red Wi-Fi local para cantar y hablar.</p>
+                            <h3>🎤 Micrófono Inalámbrico (Wi-Fi / BT)</h3>
+                            <p>Convierte tu celular en micrófono inalámbrico o vincula un micro externo por Bluetooth o red Wi-Fi local.</p>
                         </div>
                         <button class="btn btn-warning" onclick="conectarMicrofonoInalambrico()">🎙️ Vincular Micrófono / Celular</button>
                     </div>
@@ -402,18 +430,29 @@
             </div>
         </div>
 
-        <!-- 5. SECCIÓN: PLANES Y BILLING -->
+        <!-- 5. SECCIÓN: PLANES Y BILLING (Con los 2 Planes) -->
         <div id="tab-billing" class="section-container">
             <div class="card">
                 <h2>💳 Suscripción y Facturación (Billing)</h2>
-                <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">Selecciona tu nivel de suscripción y renueva de forma segura mediante dLocal Go.</p>
+                <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">Elige o renueva tu plan de forma segura mediante dLocal Go.</p>
                 
                 <div class="plans-grid">
+                    <!-- Plan Básico -->
+                    <div class="plan-card">
+                        <div>
+                            <h3 style="color:#9ca3af; font-size:1.1rem; margin-bottom:4px;">Plan Básico</h3>
+                            <p style="color:#ffffff; font-weight:bold; font-size:1.15rem; margin-bottom:6px;">$9.90 <span style="font-size:0.75rem; color:#9ca3af;">/ mes</span></p>
+                            <p style="color:#9ca3af; font-size:0.85rem;">Cabina estándar, votación básica por QR y control de reproducción individual.</p>
+                        </div>
+                        <button class="btn btn-secondary" style="padding:10px 16px; font-size:0.85rem;" onclick="alert('Seleccionando Plan Básico...')">Elegir Plan Básico</button>
+                    </div>
+
+                    <!-- Plan PRO -->
                     <div class="plan-card active-plan">
                         <div>
                             <h3 style="color:#60a5fa; font-size:1.1rem; margin-bottom:4px;">Plan PRO</h3>
                             <p style="color:#34d399; font-weight:bold; font-size:1.15rem; margin-bottom:6px;">$19.90 <span style="font-size:0.75rem; color:#9ca3af;">+ IGV / mes</span></p>
-                            <p style="color:#9ca3af; font-size:0.85rem;">Cabina inteligente ilimitada, votación por QR, modo taxi, modo karaoke, micrófonos y control de luces LED.</p>
+                            <p style="color:#9ca3af; font-size:0.85rem;">Cabina ilimitada, votación QR, modo taxi, modo karaoke, micrófonos y control de luces LED.</p>
                         </div>
                         <div>
                             <span style="display:inline-block; background:#3b82f6; color:white; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:bold; margin-bottom:8px; text-align:center;">PLAN ACTIVO</span>
@@ -425,15 +464,15 @@
             </div>
         </div>
 
-        <!-- 6. SECCIÓN: MI PERFIL -->
+        <!-- 6. SECCIÓN: MI PERFIL (Simplificado sin cargos complejos) -->
         <div id="tab-perfil" class="section-container">
             <div class="card">
-                <h2>👤 Perfil del Administrador y Director</h2>
-                <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">Actualiza los datos de tu cuenta ejecutiva y parámetros de la plataforma.</p>
+                <h2>👤 Mi Perfil</h2>
+                <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">Tus datos de contacto principales en la plataforma.</p>
                 
                 <div class="input-grid">
                     <div class="input-group">
-                        <label>Nombre y Apellidos:</label>
+                        <label>Nombre Completo:</label>
                         <input type="text" id="perfilNombre" value="Luis Enrique Ganoza Céspedes">
                     </div>
                     <div class="input-group">
@@ -443,19 +482,15 @@
                 </div>
                 <div class="input-grid">
                     <div class="input-group">
-                        <label>Rol / Cargo Directivo:</label>
-                        <input type="text" id="perfilCargo" value="Director / Fundador Partiflow PRO">
-                    </div>
-                    <div class="input-group">
-                        <label>Teléfono de Contacto:</label>
+                        <label>Celular / WhatsApp:</label>
                         <input type="text" id="perfilTelefono" value="+51 999 999 999">
                     </div>
+                    <div class="input-group">
+                        <label>Ciudad / Ubicación:</label>
+                        <input type="text" id="perfilCiudad" value="Lima, Perú">
+                    </div>
                 </div>
-                <div class="input-group" style="margin-bottom: 20px;">
-                    <label>Bio / Perfil Ejecutivo:</label>
-                    <textarea id="perfilBio" rows="3" style="resize: vertical;">Ingeniero Químico y Ejecutivo Corporativo enfocado en el desarrollo de plataformas tecnológicas inteligentes y automatización de eventos.</textarea>
-                </div>
-                <button class="btn" onclick="alert('¡Perfil actualizado y guardado correctamente!')">Guardar Cambios del Perfil</button>
+                <button class="btn" onclick="alert('¡Perfil actualizado con éxito!')">Guardar Cambios</button>
             </div>
         </div>
 
@@ -493,6 +528,12 @@
             const email = document.getElementById('txtEmail').value;
             const pass = document.getElementById('txtPassword').value;
             if (!email || !pass) { alert('Ingresa tus datos.'); return; }
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'flex';
+        }
+
+        function iniciarSesionSocial(red) {
+            alert(`🌐 Conectando de forma segura con ${red}... ¡Ingreso exitoso!`);
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'flex';
         }
@@ -686,14 +727,15 @@
         function generarPaseQR() {
             const input = document.getElementById('inputInvitado');
             if (!input.value.trim()) return alert('Escribe el nombre del invitado.');
+            const nombreEvento = document.getElementById('txtNombre').value;
             const codigo = 'VIP-' + Math.floor(1000 + Math.random() * 9000);
             const tabla = document.getElementById('tablaPases');
             if (tabla.querySelector('td[colspan]')) tabla.innerHTML = '';
             const row = document.createElement('tr');
-            row.innerHTML = `<td>${input.value}</td><td><code style="color:#60a5fa;">${codigo}</code></td><td><a href="#" style="color:#34d399;">Ver Pase</a></td>`;
+            row.innerHTML = `<td>${input.value}</td><td><code style="color:#60a5fa;">${codigo} (${nombreEvento})</code></td><td><a href="#" style="color:#34d399;">Ver Pase</a></td>`;
             tabla.appendChild(row);
             input.value = '';
-            alert('¡Pase generado con éxito!');
+            alert('¡Pase VIP enlazado al evento generado con éxito!');
         }
     </script>
 </body>
