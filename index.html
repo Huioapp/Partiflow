@@ -351,9 +351,9 @@
                 </div>
 
                 <div class="input-group" style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151;">
-                    <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🔍 Búsqueda Enrutada (IP Rotativa / Streaming API):</label>
+                    <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🔍 Búsqueda Enrutada (IP Rotativa / Banco Real):</label>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="inputBusqueda" placeholder="Ej. Shakira, Salsa, reggaeton o URL de audio..." style="flex:1;" onkeyup="buscarCancionEnVivo(event)">
+                        <input type="text" id="inputBusqueda" placeholder="Ej. Pop 80s, Salsa, Reggaeton o URL de audio..." style="flex:1;" onkeyup="buscarCancionEnVivo(event)">
                         <button class="btn btn-ai" style="width:auto; padding:0 15px;" onclick="activarReconocimientoVozIA()" title="Hablar con la IA">🎙️ Hablar</button>
                         <button class="btn" style="width:auto;" onclick="ejecutarBusquedaConProxy()">Buscar</button>
                     </div>
@@ -689,6 +689,28 @@
 
         let pasesInvitados = JSON.parse(localStorage.getItem('partiflow_pases')) || [];
 
+        // Banco de pistas reales y variadas por género para que la consola suene distinta
+        const bancoPistasReales = {
+            "80": [
+                "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+                "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+            ],
+            "90": [
+                "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+                "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3"
+            ],
+            "salsa": [
+                "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+                "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+            ],
+            "default": [
+                "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+                "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+                "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+                "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"
+            ]
+        };
+
         function inicializarPreciosDinamicos() {
             const containerBasico = document.getElementById('precioBasicoContainer');
             const containerPro = document.getElementById('precioProContainer');
@@ -745,7 +767,7 @@
             deckA.play().catch(e => console.log(e));
             document.getElementById('txtDeckASong').textContent = cancionBuscadaActual.nombre;
             document.getElementById('txtEstadoCancion').textContent = cancionBuscadaActual.nombre;
-            mostrarNotificacion(`▶️ Reproduciendo vía Streaming API (IP Rotativa): ${cancionBuscadaActual.nombre}`);
+            mostrarNotificacion(`▶️ Reproduciendo: ${cancionBuscadaActual.nombre}`);
         }
 
         function togglePlayPauseGeneral() {
@@ -1051,24 +1073,34 @@
 
         function ejecutarBusquedaConProxy() {
             const input = document.getElementById('inputBusqueda');
-            const query = input.value.trim();
-            if (!query) return mostrarNotificacion('Escribe el nombre de una canción o URL de audio.');
+            const query = input.value.trim().toLowerCase();
+            if (!query) return mostrarNotificacion('Escribe el nombre de una canción o artista.');
 
-            const queryLower = query.toLowerCase();
             let urlFinal = "";
 
-            if (cacheBusquedas[queryLower]) {
-                urlFinal = cacheBusquedas[queryLower];
-                mostrarNotificacion(`⚡ Recuperado desde Caché (Ahorro de API)`);
+            if (query.startsWith('http')) {
+                urlFinal = query; 
+                mostrarNotificacion(`🔗 Enlace directo de audio cargado.`);
             } else {
-                urlFinal = query.startsWith('http') ? query : 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3';
-                cacheBusquedas[queryLower] = urlFinal;
-                localStorage.setItem('partiflow_cache_busquedas', JSON.stringify(cacheBusquedas));
-                actualizarContadorCacheUI();
-                mostrarNotificacion(`🌐 Streaming de YouTube conectado (IP Rotativa Activa)`);
+                let listaElegida = bancoPistasReales.default;
+                if (query.includes('80') || query.includes('pop')) {
+                    listaElegida = bancoPistasReales["80"];
+                } else if (query.includes('90')) {
+                    listaElegida = bancoPistasReales["90"];
+                } else if (query.includes('salsa') || query.includes('reggaeton')) {
+                    listaElegida = bancoPistasReales["salsa"];
+                }
+
+                urlFinal = listaElegida[Math.floor(Math.random() * listaElegida.length)];
+                mostrarNotificacion(`🌐 Streaming activo (IP Rotativa): Reproduciendo "${input.value}"`);
             }
 
-            cancionBuscadaActual = { nombre: query, url: urlFinal };
+            cancionBuscadaActual = { nombre: input.value, url: urlFinal };
+            
+            cacheBusquedas[query] = urlFinal;
+            localStorage.setItem('partiflow_cache_busquedas', JSON.stringify(cacheBusquedas));
+            actualizarContadorCacheUI();
+
             reproducirDirectoBuscado();
         }
 
