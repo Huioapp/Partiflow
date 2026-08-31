@@ -180,7 +180,6 @@
             display: none; background: #1f2937; border: 1px dashed #60a5fa; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center;
         }
 
-        /* Estilos de la Consola de Mezclas Táctil */
         .mixer-console {
             background: #1a2333; border: 1px solid #374151; border-radius: 14px; padding: 15px; margin-top: 15px; margin-bottom: 15px;
         }
@@ -223,7 +222,6 @@
 
     <div id="toastNotification">Notificación</div>
 
-    <!-- ================= PANTALLA 1: LOGIN ================= -->
     <div id="authScreen">
         <div class="login-card">
             <img src="Logo_fondo_blanco_solo_icono.png" alt="Partiflow PRO" class="brand-logo">
@@ -251,7 +249,6 @@
         </div>
     </div>
 
-    <!-- ================= PANTALLA 2: CENTRO DE CONTROL MAESTRO ================= -->
     <div id="appScreen">
         <nav class="hub-nav">
             <button class="hub-tab active" onclick="switchTab('tab-cabina', this)">🎶 Cabina & Consola</button>
@@ -264,7 +261,7 @@
             <button class="hub-tab" style="color:#ef4444;" onclick="cerrarSesion()">🚪 Salir</button>
         </nav>
 
-        <!-- 1. SECCIÓN: CABINA & CONSOLA TÁCTIL INTELIGENTE -->
+        <!-- 1. CABINA & CONSOLA -->
         <div id="tab-cabina" class="section-container active">
             <div class="card">
                 <h2>🎧 Cabina Inteligente & Consola DJ Móvil</h2>
@@ -277,7 +274,6 @@
                     <button class="btn btn-secondary" style="font-size:0.75rem; padding:8px 12px; width:auto;" onclick="alternarModoDispositivo()">Modo Laptop</button>
                 </div>
 
-                <!-- MINI CONSOLA TÁCTIL DE DJ (EXCLUSIVO PRO) -->
                 <div class="mixer-console">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                         <span style="font-size:0.9rem; color:#60a5fa; font-weight:bold;">🎛️ Consola de Mezclas Táctil</span>
@@ -287,50 +283,23 @@
                     </div>
 
                     <div class="mixer-grid">
-                        <!-- Canal A -->
                         <div class="mixer-channel">
                             <h4>Deck A</h4>
-                            <div class="slider-group">
-                                <label>Agudos (High)</label>
-                                <input type="range" id="eqHighA" min="0" max="100" value="75">
-                            </div>
-                            <div class="slider-group">
-                                <label>Medios (Mid)</label>
-                                <input type="range" id="eqMidA" min="0" max="100" value="65">
-                            </div>
-                            <div class="slider-group">
-                                <label>Graves (Low)</label>
-                                <input type="range" id="eqLowA" min="0" max="100" value="80">
-                            </div>
-                            <div class="slider-group">
-                                <label>Volumen Fader</label>
-                                <input type="range" id="volA" min="0" max="100" value="90">
-                            </div>
+                            <div class="slider-group"><label>Agudos (High)</label><input type="range" id="eqHighA" min="0" max="100" value="75"></div>
+                            <div class="slider-group"><label>Medios (Mid)</label><input type="range" id="eqMidA" min="0" max="100" value="65"></div>
+                            <div class="slider-group"><label>Graves (Low)</label><input type="range" id="eqLowA" min="0" max="100" value="80"></div>
+                            <div class="slider-group"><label>Volumen Fader</label><input type="range" id="volA" min="0" max="100" value="90"></div>
                         </div>
 
-                        <!-- Canal B -->
                         <div class="mixer-channel">
                             <h4>Deck B</h4>
-                            <div class="slider-group">
-                                <label>Agudos (High)</label>
-                                <input type="range" id="eqHighB" min="0" max="100" value="70">
-                            </div>
-                            <div class="slider-group">
-                                <label>Medios (Mid)</label>
-                                <input type="range" id="eqMidB" min="0" max="100" value="60">
-                            </div>
-                            <div class="slider-group">
-                                <label>Graves (Low)</label>
-                                <input type="range" id="eqLowB" min="0" max="100" value="85">
-                            </div>
-                            <div class="slider-group">
-                                <label>Volumen Fader</label>
-                                <input type="range" id="volB" min="0" max="100" value="85">
-                            </div>
+                            <div class="slider-group"><label>Agudos (High)</label><input type="range" id="eqHighB" min="0" max="100" value="70"></div>
+                            <div class="slider-group"><label>Medios (Mid)</label><input type="range" id="eqMidB" min="0" max="100" value="60"></div>
+                            <div class="slider-group"><label>Graves (Low)</label><input type="range" id="eqLowB" min="0" max="100" value="85"></div>
+                            <div class="slider-group"><label>Volumen Fader</label><input type="range" id="volB" min="0" max="100" value="85"></div>
                         </div>
                     </div>
 
-                    <!-- Crossfader -->
                     <div style="margin-top: 12px; background:#111827; padding:10px; border-radius:8px; border:1px solid #374151;">
                         <div class="slider-group" style="margin-bottom:0;">
                             <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
@@ -344,9 +313,10 @@
                 </div>
 
                 <div class="input-group">
-                    <label>🔍 Buscador Inteligente:</label>
+                    <label>🔍 Buscador Inteligente (Escribe o usa el Micrófono de IA):</label>
                     <div style="display:flex; gap:10px;">
                         <input type="text" id="inputBusqueda" placeholder="Ej. Shakira, Dua Lipa..." style="flex:1;" onkeyup="buscarCancionEnVivo(event)">
+                        <button class="btn btn-ai" style="width:auto; padding:0 15px;" onclick="activarReconocimientoVozIA()" title="Hablar con la IA">🎙️ Hablar</button>
                         <button class="btn" style="width:auto;" onclick="ejecutarBusqueda()">Buscar</button>
                     </div>
                 </div>
@@ -379,7 +349,7 @@
             </div>
         </div>
 
-        <!-- 2. SECCIÓN: PLAYLISTS -->
+        <!-- 2. PLAYLISTS -->
         <div id="tab-playlists" class="section-container">
             <div class="card">
                 <h2>📚 Playlists de Mezclas</h2>
@@ -406,26 +376,40 @@
             </div>
         </div>
 
-        <!-- 3. SECCIÓN: CONFIGURAR FIESTA -->
+        <!-- 3. CONFIGURAR FIESTAS -->
         <div id="tab-evento" class="section-container">
             <div class="card">
-                <h2>⚙️ Configuración del Evento</h2>
+                <h2>⚙️ Configuración del Evento y Fiestas</h2>
                 <p id="txtMensajeLimiteFiesta" style="color:#f59e0b; font-size:0.85rem; margin-bottom:15px;"></p>
                 <div class="input-grid">
                     <div class="input-group">
                         <label>Nombre de la Fiesta:</label>
-                        <input type="text" id="txtNombre" value="Cumpleaños / Reunión" onchange="actualizarSelectorEventos()">
+                        <input type="text" id="txtNombre" value="Cumpleaños / Reunión">
                     </div>
                     <div class="input-group">
-                        <label>Fecha:</label>
+                        <label>Fecha del Evento:</label>
                         <input type="date" id="txtFecha" value="2026-09-15">
                     </div>
                 </div>
-                <button class="btn" onclick="guardarConfiguracionFiesta()">Guardar Evento</button>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Motivo de Reunión:</label>
+                        <input type="text" id="txtMotivo" value="Celebración Privada">
+                    </div>
+                    <div class="input-group">
+                        <label>Quién Invita (Anfitrión):</label>
+                        <input type="text" id="txtAnfitrion" value="Luis Ganoza">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Ubicación (Enlace Google Maps):</label>
+                    <input type="text" id="txtUbicacion" value="https://maps.google.com">
+                </div>
+                <button class="btn" onclick="guardarConfiguracionFiesta()">Guardar y Registrar Fiesta</button>
             </div>
         </div>
 
-        <!-- 4. SECCIÓN: INVITADOS & QR -->
+        <!-- 4. INVITADOS & QR (Enlazado a múltiples fiestas) -->
         <div id="tab-invitados" class="section-container">
             <div class="card">
                 <h2>🎫 Control de Accesos y Pases QR</h2>
@@ -434,26 +418,27 @@
                     <button class="btn" onclick="switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5])">Actualizar a PRO</button>
                 </div>
                 <div id="bloqueInvitadosActivo">
+                    <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:15px;">Selecciona a qué fiesta creada deseas enlazar el pase VIP del invitado:</p>
                     <div class="input-group">
-                        <label>Evento Destino:</label>
+                        <label>Seleccionar Fiesta Destino:</label>
                         <select id="selectEventoInvitado"><option value="Cumpleaños / Reunión">Cumpleaños / Reunión</option></select>
                     </div>
                     <div class="input-group">
                         <label>Registrar Invitado:</label>
                         <div style="display:flex; gap:10px;">
-                            <input type="text" id="inputInvitado" placeholder="Nombre..." style="flex:1;">
+                            <input type="text" id="inputInvitado" placeholder="Nombre completo..." style="flex:1;">
                             <button class="btn" style="width:auto;" onclick="generarPaseQR()">Generar VIP</button>
                         </div>
                     </div>
                     <table>
-                        <thead><tr><th>Invitado</th><th>Evento</th><th>Código</th><th>Acción</th></tr></thead>
+                        <thead><tr><th>Invitado</th><th>Fiesta Enlazada</th><th>Código</th><th>Acción</th></tr></thead>
                         <tbody id="tablaPases"><tr><td colspan="4" style="text-align:center; color:#9ca3af;">Sin pases.</td></tr></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- 5. SECCIÓN: HARDWARE -->
+        <!-- 5. HARDWARE (Con Pantallas y TVs) -->
         <div id="tab-hardware" class="section-container">
             <div class="card">
                 <h2>💡 Conectividad Hardware</h2>
@@ -463,18 +448,23 @@
                 </div>
                 <div id="bloqueHardwareActivo" class="hardware-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
                     <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px;">
-                        <h3>🎤 Micrófono</h3>
+                        <h3>🎤 Micrófono Inalámbrico</h3>
                         <button class="btn btn-warning" style="margin-top:10px;" onclick="mostrarNotificacion('Micrófono conectado.')">Vincular</button>
                     </div>
                     <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px;">
-                        <h3>💡 Luces LED</h3>
+                        <h3>💡 Luces LED & Discoteca</h3>
                         <button class="btn btn-success" style="margin-top:10px;" onclick="mostrarNotificacion('Luces sincronizadas.')">Conectar</button>
+                    </div>
+                    <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px; grid-column:span 2;">
+                        <h3>📺 Pantallas y TVs (Wi-Fi)</h3>
+                        <p style="color:#9ca3af; font-size:0.85rem; margin-top:5px;">Transmite visuales y letras de karaoke a proyectores o pantallas inteligentes del local.</p>
+                        <button class="btn" style="margin-top:10px;" onclick="mostrarNotificacion('Buscando pantallas compatibles en red local...')">Conectar Pantallas</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 6. SECCIÓN: PLANES Y BILLING -->
+        <!-- 6. PLANES Y BILLING -->
         <div id="tab-billing" class="section-container">
             <div class="card">
                 <h2>💳 Suscripción y Facturación</h2>
@@ -496,7 +486,7 @@
                             <h3 style="color:#60a5fa;">Plan PRO</h3>
                             <p style="color:#34d399; font-weight:bold; font-size:1.15rem;">$19.90 <span style="font-size:0.75rem; color:#9ca3af;">+ IGV / mes</span></p>
                             <p style="color:#9ca3af; font-size:0.85rem; line-height: 1.5;">
-                                <strong>Incluye:</strong> Acceso total, eventos ilimitados, invitados QR, modo karaoke, micrófonos, luces inteligentes y **Mini Consola Táctil con IA Copiloto en vivo**.
+                                <strong>Incluye:</strong> Acceso total, eventos ilimitados semanales, invitados QR enlazados, modo karaoke, micrófonos, pantallas, luces inteligentes y <strong>Mini Consola Táctil con IA Copiloto</strong>.
                             </p>
                         </div>
                         <button class="btn" onclick="cambiarPlanUsuario('pro')">Elegir Plan PRO</button>
@@ -505,15 +495,31 @@
             </div>
         </div>
 
-        <!-- 7. SECCIÓN: PERFIL -->
+        <!-- 7. PERFIL AMPLIADO -->
         <div id="tab-perfil" class="section-container">
             <div class="card">
-                <h2>👤 Mi Perfil</h2>
-                <div class="input-group">
-                    <label>Nombre:</label>
-                    <input type="text" id="perfilNombre" value="Luis Enrique Ganoza Céspedes">
+                <h2>👤 Mi Perfil Corporativo y Personal</h2>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Nombre Completo:</label>
+                        <input type="text" id="perfilNombre" value="Luis Enrique Ganoza Céspedes">
+                    </div>
+                    <div class="input-group">
+                        <label>Correo Electrónico:</label>
+                        <input type="email" id="perfilCorreo" value="admin@huioapp.com">
+                    </div>
                 </div>
-                <button class="btn" onclick="mostrarNotificacion('Perfil actualizado.')">Guardar</button>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Celular / WhatsApp:</label>
+                        <input type="text" id="perfilTelefono" value="+51 999 999 999">
+                    </div>
+                    <div class="input-group">
+                        <label>Ciudad / Ubicación:</label>
+                        <input type="text" id="perfilCiudad" value="Lima, Perú">
+                    </div>
+                </div>
+                <button class="btn" onclick="mostrarNotificacion('¡Perfil y datos de contacto actualizados!')">Guardar Cambios de Perfil</button>
             </div>
         </div>
 
@@ -525,7 +531,7 @@
 
     <script>
         let planActual = 'pro';
-        let fiestaCreadaEstaSemana = false;
+        let fiestasCreadas = JSON.parse(localStorage.getItem('partiflow_fiestas')) || ["Cumpleaños / Reunión"];
         let estaReproduciendo = true;
         let modoKaraokeActivo = false;
         let modoDispositivoMovilSeguro = true;
@@ -551,6 +557,7 @@
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'flex';
             aplicarRestriccionesPlan();
+            actualizarSelectorEventos();
             mostrarNotificacion(`Bienvenido. Plan: ${planActual.toUpperCase()}`);
         }
 
@@ -591,7 +598,6 @@
             actualizarMensajeFiestaSemanal();
         }
 
-        // --- LÓGICA DEL MINI MEZCLADOR DUAL (IA vs MANUAL) ---
         function toggleModoIA() {
             if (planActual === 'basico') {
                 mostrarNotificacion('🔒 La consola táctil con IA Copiloto requiere Plan PRO.');
@@ -616,7 +622,6 @@
             if (intervaloMixIA) clearInterval(intervaloMixIA);
             intervaloMixIA = setInterval(() => {
                 if (!modoIaActivo) return;
-                // Mover visualmente los sliders de forma fluida simulando un DJ automático
                 document.getElementById('eqHighA').value = Math.floor(50 + Math.random() * 40);
                 document.getElementById('eqLowB').value = Math.floor(60 + Math.random() * 35);
                 document.getElementById('crossfader').value = Math.floor(30 + Math.random() * 40);
@@ -627,7 +632,6 @@
             if (intervaloMixIA) clearInterval(intervaloMixIA);
         }
 
-        // Iniciar IA por defecto al cargar si es PRO
         window.onload = function() {
             renderizarPlaylists();
             actualizarSelectorEventos();
@@ -638,26 +642,88 @@
         function actualizarMensajeFiestaSemanal() {
             const msg = document.getElementById('txtMensajeLimiteFiesta');
             if (planActual === 'basico') {
-                msg.textContent = fiestaCreadaEstaSemana ? "⚠️ Límite de 1 fiesta semanal alcanzado." : "ℹ️ Plan Básico: 1 fiesta disponible esta semana.";
+                msg.textContent = fiestasCreadas.length >= 1 ? "⚠️ Límite del Plan Básico: Ya registraste tu fiesta semanal permitida." : "ℹ️ Plan Básico: Tienes disponible 1 creación de fiesta esta semana.";
             } else {
-                msg.textContent = "✨ Plan PRO: Fiestas ilimitadas.";
+                msg.textContent = "✨ Plan PRO: Fiestas ilimitadas ilimitadas semanales.";
             }
         }
 
         function guardarConfiguracionFiesta() {
-            if (planActual === 'basico' && fiestaCreadaEstaSemana) {
-                mostrarNotificacion('❌ Límite semanal alcanzado en Plan Básico.');
+            const nombreFiesta = document.getElementById('txtNombre').value.trim();
+            if (!nombreFiesta) { mostrarNotificacion('Ingresa el nombre de la fiesta.'); return; }
+
+            if (planActual === 'basico' && fiestasCreadas.length >= 1 && !fiestasCreadas.includes(nombreFiesta)) {
+                mostrarNotificacion('❌ El Plan Básico solo permite 1 fiesta semanal.');
                 return;
             }
-            if (planActual === 'basico') fiestaCreadaEstaSemana = true;
+
+            if (!fiestasCreadas.includes(nombreFiesta)) {
+                fiestasCreadas.push(nombreFiesta);
+                localStorage.setItem('partiflow_fiestas', JSON.stringify(fiestasCreadas));
+            }
+
             actualizarSelectorEventos();
-            mostrarNotificacion('🎉 Evento guardado.');
+            actualizarMensajeFiestaSemanal();
+            mostrarNotificacion(`🎉 Fiesta "${nombreFiesta}" guardada y lista para invitados.`);
         }
 
         function actualizarSelectorEventos() {
-            const nombreFiesta = document.getElementById('txtNombre').value.trim() || "Evento Principal";
             const select = document.getElementById('selectEventoInvitado');
-            if(select) select.innerHTML = `<option value="${nombreFiesta}">${nombreFiesta}</option>`;
+            if(!select) return;
+            select.innerHTML = '';
+            fiestasCreadas.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f;
+                opt.textContent = f;
+                select.appendChild(opt);
+            });
+        }
+
+        function activarReconocimientoVozIA() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                mostrarNotificacion('🎙️ Navegador sin soporte de voz. Usa texto.');
+                return;
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            mostrarNotificacion('🎙️ IA escuchando... Habla ahora');
+            recognition.onresult = function(event) {
+                const speechResult = event.results[0][0].transcript;
+                document.getElementById('inputBusqueda').value = speechResult;
+                mostrarNotificacion(`🤖 IA entendió: "${speechResult}"`);
+                buscarCancionEnVivo({ target: { value: speechResult } });
+            };
+            recognition.start();
+        }
+
+        function buscarCancionEnVivo(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const box = document.getElementById('resultadosBusqueda');
+            const lista = document.getElementById('listaSugerencias');
+            lista.innerHTML = '';
+            if (query.length < 2) { box.style.display = 'none'; return; }
+            const filtradas = catalogoGlobal.filter(c => c.toLowerCase().includes(query));
+            if (filtradas.length > 0) {
+                box.style.display = 'block';
+                filtradas.forEach(song => {
+                    const item = document.createElement('div');
+                    item.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#111827; padding:8px; border-radius:6px; cursor:pointer;";
+                    item.innerHTML = `<span>🎵 ${song}</span> <button class="btn" style="padding:2px 8px; font-size:0.75rem; width:auto;" onclick="document.getElementById('txtEstadoCancion').textContent='${song}';document.getElementById('resultadosBusqueda').style.display='none';">Añadir</button>`;
+                    lista.appendChild(item);
+                });
+            } else {
+                box.style.display = 'block';
+                lista.innerHTML = '<span style="color:#9ca3af; font-size:0.85rem;">No se encontraron resultados.</span>';
+            }
+        }
+
+        function ejecutarBusqueda() {
+            const input = document.getElementById('inputBusqueda');
+            if (!input.value.trim()) return mostrarNotificacion('Escribe una canción.');
+            document.getElementById('txtEstadoCancion').textContent = input.value;
+            mostrarNotificacion(`✅ Reproduciendo: "${input.value}"`);
+            input.value = '';
         }
 
         function toggleModoKaraoke() {
@@ -730,19 +796,20 @@
             tabla.innerHTML = '';
             if (pasesInvitados.length === 0) { tabla.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#9ca3af;">Sin pases.</td></tr>'; return; }
             pasesInvitados.forEach((p, i) => {
-                tabla.innerHTML += `<tr><td>${p.nombre}</td><td>${p.evento}</td><td><code>${p.codigo}</code></td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="pasesInvitados.splice(${i},1);renderizarPases();">🗑️</button></td></tr>`;
+                tabla.innerHTML += `<tr><td>${p.nombre}</td><td><span style="color:#38bdf8;">🎉 ${p.evento}</span></td><td><code>${p.codigo}</code></td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="pasesInvitados.splice(${i},1);localStorage.setItem('partiflow_pases',JSON.stringify(pasesInvitados));renderizarPases();">🗑️</button></td></tr>`;
             });
         }
 
         function generarPaseQR() {
             const input = document.getElementById('inputInvitado');
             const nombre = input.value.trim();
+            const fiestaSeleccionada = document.getElementById('selectEventoInvitado').value;
             if (!nombre) return mostrarNotificacion('Escribe el nombre.');
-            pasesInvitados.push({ nombre, evento: document.getElementById('selectEventoInvitado').value, codigo: 'VIP-' + Math.floor(1000 + Math.random()*9000) });
+            pasesInvitados.push({ nombre, evento: fiestaSeleccionada, codigo: 'VIP-' + Math.floor(1000 + Math.random()*9000) });
             localStorage.setItem('partiflow_pases', JSON.stringify(pasesInvitados));
             input.value = '';
             renderizarPases();
-            mostrarNotificacion('🎫 Pase generado.');
+            mostrarNotificacion(`🎫 Pase VIP generado para "${fiestaSeleccionada}".`);
         }
     </script>
 </body>
