@@ -67,7 +67,7 @@
             color: #9ca3af;
         }
 
-        .input-group input, .input-group textarea {
+        .input-group input, .input-group textarea, .input-group select {
             background: #1f2937;
             border: 1px solid #4b5563;
             padding: 12px;
@@ -155,12 +155,14 @@
         .btn-success:hover { background: #047857; }
         .btn-danger { background: #7f1d1d; border: 1px solid #991b1b; color: #fca5a5; }
         .btn-danger:hover { background: #991b1b; color: #ffffff; }
+        .btn-warning { background: #d97706; border: 1px solid #f59e0b; color: #ffffff; }
+        .btn-warning:hover { background: #b45309; }
 
         .mode-selector { display: flex; gap: 8px; margin-bottom: 20px; background: #1f2937; padding: 6px; border-radius: 12px; flex-wrap: wrap; }
         .mode-btn { flex: 1; min-width: 140px; background: transparent; border: none; color: #9ca3af; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
         .mode-btn.active { background: #3b82f6; color: white; box-shadow: 0 2px 8px rgba(59,130,246,0.4); }
 
-        #personalQrBox {
+        .dynamic-box {
             display: none;
             background: #1f2937;
             border: 1px dashed #60a5fa;
@@ -244,7 +246,7 @@
         <!-- 1. SECCIÓN: CABINA & DJ -->
         <div id="tab-cabina" class="section-container active">
             <div class="card">
-                <h2>🎧 Cabina de Música Inteligente</h2>
+                <h2>🎧 Cabina de Música Inteligente & Karaoke</h2>
                 
                 <div class="mode-selector">
                     <button class="mode-btn active" id="btnModoFiesta" onclick="cambiarModo('fiesta')">🎉 Fiesta (QR)</button>
@@ -256,24 +258,47 @@
                     Los invitados pueden votar y pedir canciones mediante voz o texto desde sus teléfonos escaneando el QR general.
                 </p>
 
-                <div id="personalQrBox">
+                <!-- Caja QR exclusiva para Modo Personal -->
+                <div id="personalQrBox" class="dynamic-box">
                     <p style="color:#60a5fa; font-size:0.9rem; font-weight:bold; margin-bottom:8px;">🔗 Tu Enlace / QR Privado de Mezcla</p>
                     <p style="color:#9ca3af; font-size:0.8rem; margin-bottom:12px;">Comparte este acceso exclusivo con otra persona para que agregue canciones a tu sesión privada sin tocar la fiesta principal.</p>
                     <button class="btn btn-secondary" style="font-size:0.85rem; padding:8px 12px;" onclick="copiarEnlacePersonal()">📋 Copiar Enlace Privado</button>
                 </div>
 
+                <!-- Caja QR exclusiva para Modo Taxi -->
+                <div id="taxiQrBox" class="dynamic-box">
+                    <p style="color:#34d399; font-size:0.9rem; font-weight:bold; margin-bottom:8px;">🚕 QR Único del Pasajero en el Auto</p>
+                    <p style="color:#9ca3af; font-size:0.8rem; margin-bottom:12px;">Muestra o comparte este código QR en el asiento trasero para que el pasajero escanee y elija su música al instante.</p>
+                    <button class="btn btn-secondary" style="font-size:0.85rem; padding:8px 12px;" onclick="copiarEnlaceTaxi()">📋 Copiar QR / Enlace del Taxi</button>
+                </div>
+
+                <!-- Buscador Inteligente de Canciones / Artistas -->
                 <div class="input-group">
-                    <label>Pedir canción actual:</label>
+                    <label>🔍 Buscador Inteligente (Artista o Canción):</label>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="inputCancion" placeholder="Escribe o usa el micrófono..." style="flex:1; background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
-                        <button class="btn btn-secondary" style="width:auto; padding:0 15px;" onclick="alert('Micrófono activado...')">🎤</button>
-                        <button class="btn" style="width:auto;" onclick="agregarMusicaDirecta()">Añadir</button>
+                        <input type="text" id="inputBusqueda" placeholder="Ej. Shakira, Dua Lipa, Fonsi..." style="flex:1;" onkeyup="buscarCancionEnVivo(event)">
+                        <button class="btn btn-secondary" style="width:auto; padding:0 15px;" onclick="alert('Micrófono de voz activado...')">🎤</button>
+                        <button class="btn" style="width:auto;" onclick="ejecutarBusqueda()">Buscar</button>
                     </div>
                 </div>
 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px;">
-                    <button class="btn btn-success" onclick="iniciarReproduccionGeneral()">▶️ Iniciar Reproducción</button>
-                    <button class="btn btn-secondary" onclick="mezclarPlaylistAleatorio()">🔀 Shuffle / Aleatorio</button>
+                <!-- Resultados de búsqueda simulados -->
+                <div id="resultadosBusqueda" style="background:#1f2937; border-radius:10px; padding:10px; margin-bottom:15px; display:none;">
+                    <p style="font-size:0.85rem; color:#60a5fa; margin-bottom:6px; font-weight:bold;">Sugerencias encontradas:</p>
+                    <div id="listaSugerencias" style="display:flex; flex-direction:column; gap:6px;"></div>
+                </div>
+
+                <!-- Controles Principales y Karaoke -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px;">
+                    <button class="btn btn-success" onclick="iniciarReproduccionGeneral()">▶️ Iniciar</button>
+                    <button class="btn btn-secondary" onclick="mezclarPlaylistAleatorio()">🔀 Shuffle</button>
+                    <button class="btn btn-warning" id="btnModoKaraoke" onclick="toggleModoKaraoke()">🎤 Modo Karaoke</button>
+                </div>
+
+                <!-- Monitor de Letras de Karaoke (Oculto por defecto hasta activar karaoke) -->
+                <div id="karaokeMonitor" style="display:none; background:#111827; border:2px solid #f59e0b; border-radius:12px; padding:15px; margin-bottom:15px; text-align:center;">
+                    <p style="color:#f59e0b; font-size:0.8rem; font-weight:bold; text-transform:uppercase; margin-bottom:5px;">🌟 MODO KARAOKE ACTIVO (Instrumental + Letras)</p>
+                    <p id="letraKaraoke" style="font-size:1.1rem; color:#ffffff; font-style:italic; margin-top:5px;">♪♪ [Esperando voz o pista para cantar...] ♪♪</p>
                 </div>
 
                 <h3 style="font-size:1rem; color:#e5e7eb; margin-top:15px; margin-bottom:10px;">🎵 Cola en Vivo</h3>
@@ -297,26 +322,26 @@
                 <div class="input-grid">
                     <div class="input-group">
                         <label>Nombre de la Fiesta:</label>
-                        <input type="text" id="txtNombre" value="Cumpleaños / Reunión" style="background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
+                        <input type="text" id="txtNombre" value="Cumpleaños / Reunión">
                     </div>
                     <div class="input-group">
                         <label>Fecha del Evento:</label>
-                        <input type="date" id="txtFecha" value="2026-09-15" style="background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
+                        <input type="date" id="txtFecha" value="2026-09-15">
                     </div>
                 </div>
                 <div class="input-grid">
                     <div class="input-group">
                         <label>Motivo:</label>
-                        <input type="text" id="txtMotivo" value="Celebración Privada" style="background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
+                        <input type="text" id="txtMotivo" value="Celebración Privada">
                     </div>
                     <div class="input-group">
                         <label>Anfitrión (Quién Invita):</label>
-                        <input type="text" id="txtAnfitrion" value="Luis Ganoza" style="background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
+                        <input type="text" id="txtAnfitrion" value="Luis Ganoza">
                     </div>
                 </div>
                 <div class="input-group">
                     <label>Ubicación (Enlace de Google Maps para el QR):</label>
-                    <input type="text" id="txtUbicacion" value="https://maps.google.com" style="background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
+                    <input type="text" id="txtUbicacion" value="https://maps.google.com">
                 </div>
                 <button class="btn" onclick="alert('¡Configuración de fiesta guardada con éxito!')">Guardar Cambios del Evento</button>
             </div>
@@ -329,7 +354,7 @@
                 <div class="input-group">
                     <label>Registrar Invitado o Familia:</label>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="inputInvitado" placeholder="Nombre completo..." style="flex:1; background:#1f2937; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white; outline:none;">
+                        <input type="text" id="inputInvitado" placeholder="Nombre completo..." style="flex:1;">
                         <button class="btn" style="width:auto;" onclick="generarPaseQR()">Generar Pase</button>
                     </div>
                 </div>
@@ -344,27 +369,34 @@
             </div>
         </div>
 
-        <!-- 4. SECCIÓN: LUCES Y PANTALLAS -->
+        <!-- 4. SECCIÓN: LUCES Y PANTALLAS (Actualizada con Micrófono Inalámbrico Wi-Fi/Bluetooth) -->
         <div id="tab-hardware" class="section-container">
             <div class="card">
-                <h2>💡 Conectividad Multi-Equipo (Wi-Fi y Bluetooth)</h2>
+                <h2>💡 Conectividad Multi-Equipo, Micrófonos y Luces</h2>
                 <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">
-                    Conecta múltiples dispositivos de forma inalámbrica: proyectores, televisores del local y barras de luces inteligentes.
+                    Vincula pantallas inalámbricas, sincroniza iluminación ambiental y conecta micrófonos inalámbricos vía Wi-Fi o Bluetooth (o usa tu celular como micrófono).
                 </p>
                 <div class="hardware-grid">
                     <div class="hardware-card">
                         <div>
-                            <h3>📺 Pantallas y TVs del Local (Wi-Fi)</h3>
-                            <p>Transmite las visuales de discoteca, ranking de canciones y letras de karaoke a múltiples televisores simultáneamente.</p>
+                            <h3>🎤 Micrófono Inalámbrico (Wi-Fi / BT / Celular)</h3>
+                            <p>Convierte tu celular en micrófono inalámbrico o vincula un micro externo por Bluetooth o red Wi-Fi local para cantar y hablar.</p>
                         </div>
-                        <button class="btn" onclick="alert('Buscando pantallas compatibles en la red Wi-Fi...')">📺 Conectar Pantallas (Wi-Fi)</button>
+                        <button class="btn btn-warning" onclick="conectarMicrofonoInalambrico()">🎙️ Vincular Micrófono / Celular</button>
                     </div>
                     <div class="hardware-card">
                         <div>
-                            <h3>📱 Celulares de Invitados (QR)</h3>
-                            <p>Cada invitado que escanea su QR al ingresar activa su propio modo "Coro en Vivo" en su celular.</p>
+                            <h3>📺 Pantallas y TVs (Wi-Fi)</h3>
+                            <p>Transmite las visuales musicales, letras de karaoke y ranking a proyectores o televisores inteligentes.</p>
                         </div>
-                        <button class="btn btn-secondary" onclick="alert('¡Modo Coro en Celulares habilitado por QR!')">📲 Habilitar Coro en Celulares</button>
+                        <button class="btn" onclick="alert('Buscando pantallas compatibles en la red Wi-Fi...')">📺 Conectar Pantallas (Wi-Fi)</button>
+                    </div>
+                    <div class="hardware-card" style="grid-column: span 2;">
+                        <div>
+                            <h3>💡 Luces LED & Discoteca (Wi-Fi / Bluetooth)</h3>
+                            <p>Sincroniza barras LED, focos RGB y luces rítmicas al compás de la música y la voz del karaoke.</p>
+                        </div>
+                        <button class="btn btn-success" onclick="alert('Buscando dispositivos de iluminación inteligentes por Wi-Fi y Bluetooth...')">💡 Conectar Luces Inteligentes</button>
                     </div>
                 </div>
             </div>
@@ -381,7 +413,7 @@
                         <div>
                             <h3 style="color:#60a5fa; font-size:1.1rem; margin-bottom:4px;">Plan PRO</h3>
                             <p style="color:#34d399; font-weight:bold; font-size:1.15rem; margin-bottom:6px;">$19.90 <span style="font-size:0.75rem; color:#9ca3af;">+ IGV / mes</span></p>
-                            <p style="color:#9ca3af; font-size:0.85rem;">Cabina inteligente ilimitada, votación por QR, modo personal y control multi-pantalla.</p>
+                            <p style="color:#9ca3af; font-size:0.85rem;">Cabina inteligente ilimitada, votación por QR, modo taxi, modo karaoke, micrófonos y control de luces LED.</p>
                         </div>
                         <div>
                             <span style="display:inline-block; background:#3b82f6; color:white; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:bold; margin-bottom:8px; text-align:center;">PLAN ACTIVO</span>
@@ -393,7 +425,7 @@
             </div>
         </div>
 
-        <!-- 6. SECCIÓN: MI PERFIL (NUEVA) -->
+        <!-- 6. SECCIÓN: MI PERFIL -->
         <div id="tab-perfil" class="section-container">
             <div class="card">
                 <h2>👤 Perfil del Administrador y Director</h2>
@@ -439,7 +471,23 @@
 
     <script>
         let estaReproduciendo = true;
-        const playlistPrueba = ["Hips Don't Lie - Shakira", "Levitating - Dua Lipa", "I Gotta Feeling - Black Eyed Peas", "Despacito - Luis Fonsi", "Uptown Funk - Mark Ronson ft. Bruno Mars"];
+        let modoKaraokeActivo = false;
+        const catalogoGlobal = [
+            "Hips Don't Lie - Shakira",
+            "Levitating - Dua Lipa",
+            "I Gotta Feeling - Black Eyed Peas",
+            "Despacito - Luis Fonsi",
+            "Uptown Funk - Mark Ronson ft. Bruno Mars",
+            "Blinding Lights - The Weeknd",
+            "Danza Kuduro - Don Omar",
+            "Gasolina - Daddy Yankee"
+        ];
+
+        const letrasMuestra = {
+            "Despacito - Luis Fonsi": "♪ Despacito... quiero respirar tu cuello despacito... ♪",
+            "Hips Don't Lie - Shakira": "♪ Oh baby when you talk like that... you make a woman go mad... ♪",
+            "Levitating - Dua Lipa": "♪ If you wanna run away with me, I know a galaxy... ♪"
+        };
 
         function iniciarSesion() {
             const email = document.getElementById('txtEmail').value;
@@ -467,24 +515,99 @@
             const btnPersonal = document.getElementById('btnModoPersonal');
             const desc = document.getElementById('descripcionModo');
             const personalBox = document.getElementById('personalQrBox');
+            const taxiBox = document.getElementById('taxiQrBox');
 
             btnFiesta.classList.remove('active');
             btnTaxi.classList.remove('active');
             btnPersonal.classList.remove('active');
+            personalBox.style.display = 'none';
+            taxiBox.style.display = 'none';
 
             if (modo === 'fiesta') {
                 btnFiesta.classList.add('active');
                 desc.textContent = "Los invitados pueden votar y pedir canciones mediante voz o texto desde sus teléfonos escaneando el QR general.";
-                personalBox.style.display = 'none';
             } else if (modo === 'taxi') {
                 btnTaxi.classList.add('active');
-                desc.textContent = "Modo Libre / Conductor: Sin necesidad de invitados ni registros. Control directo de música continua para viajes o reproducción personal.";
-                personalBox.style.display = 'none';
+                desc.textContent = "🚕 Modo Taxi / Libre: Control directo para vehículos. El pasajero escanea el QR exclusivo del auto para pedir su música.";
+                taxiBox.style.display = 'block';
             } else if (modo === 'personal') {
                 btnPersonal.classList.add('active');
                 desc.textContent = "🎧 Modo Personal / Privado: Espacio exclusivo e independiente para escuchar música sin interrumpir la sala.";
                 personalBox.style.display = 'block';
             }
+        }
+
+        function toggleModoKaraoke() {
+            modoKaraokeActivo = !modoKaraokeActivo;
+            const btnKaraoke = document.getElementById('btnModoKaraoke');
+            const monitor = document.getElementById('karaokeMonitor');
+            const cancionActual = document.getElementById('txtEstadoCancion').textContent;
+
+            if (modoKaraokeActivo) {
+                btnKaraoke.style.background = '#f59e0b';
+                btnKaraoke.style.color = '#030712';
+                btnKaraoke.innerHTML = '🎤 Karaoke ACTIVO';
+                monitor.style.display = 'block';
+                const letra = letrasMuestra[cancionActual] || "♪♪ [Modo Instrumental: Canta con el ritmo de la música...] ♪♪";
+                document.getElementById('letraKaraoke').textContent = letra;
+                alert('🎤 ¡Modo Karaoke activado! Voz principal atenuada (Instrumental) y letras desplegadas en pantalla.');
+            } else {
+                btnKaraoke.style.background = '#d97706';
+                btnKaraoke.style.color = '#ffffff';
+                btnKaraoke.innerHTML = '🎤 Modo Karaoke';
+                monitor.style.display = 'none';
+                alert('🎤 Modo Karaoke desactivado (Audio original restablecido).');
+            }
+        }
+
+        function conectarMicrofonoInalambrico() {
+            alert('🎙️ Buscando micrófono inalámbrico por Wi-Fi / Bluetooth y configurando este celular como micrófono activo... ¡Conectado con éxito!');
+        }
+
+        function buscarCancionEnVivo(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const box = document.getElementById('resultadosBusqueda');
+            const lista = document.getElementById('listaSugerencias');
+            lista.innerHTML = '';
+
+            if (query.length < 2) {
+                box.style.display = 'none';
+                return;
+            }
+
+            const filtradas = catalogoGlobal.filter(c => c.toLowerCase().includes(query));
+            if (filtradas.length > 0) {
+                box.style.display = 'block';
+                filtradas.forEach(song => {
+                    const item = document.createElement('div');
+                    item.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#111827; padding:8px 12px; border-radius:6px; cursor:pointer;";
+                    item.innerHTML = `<span>🎵 ${song}</span> <button class="btn" style="padding:4px 10px; font-size:0.75rem;" onclick="seleccionarCancion('${song}')">Añadir</button>`;
+                    lista.appendChild(item);
+                });
+            } else {
+                box.style.display = 'block';
+                lista.innerHTML = '<span style="color:#9ca3af; font-size:0.85rem; padding:4px;">No se encontraron resultados. Intenta otro artista.</span>';
+            }
+        }
+
+        function ejecutarBusqueda() {
+            const input = document.getElementById('inputBusqueda');
+            if (!input.value.trim()) return alert('Escribe el nombre de un artista o canción.');
+            seleccionarCancion(input.value);
+        }
+
+        function seleccionarCancion(nombreCancion) {
+            document.getElementById('txtEstadoCancion').textContent = nombreCancion;
+            document.getElementById('txtEstadoBadge').textContent = 'Reproduciendo 🔊';
+            document.getElementById('txtEstadoBadge').style.color = '#34d399';
+            document.getElementById('resultadosBusqueda').style.display = 'none';
+            document.getElementById('inputBusqueda').value = '';
+            
+            if (modoKaraokeActivo) {
+                const letra = letrasMuestra[nombreCancion] || "♪♪ [Instrumental activo - Sigue la letra en la pantalla...] ♪♪";
+                document.getElementById('letraKaraoke').textContent = letra;
+            }
+            alert(`✅ ¡"${nombreCancion}" añadida a la cola de reproducción con éxito!`);
         }
 
         function iniciarReproduccionGeneral() {
@@ -493,18 +616,21 @@
             const badge = document.getElementById('txtEstadoBadge');
             badge.textContent = 'Reproduciendo 🔊';
             badge.style.color = '#34d399';
-            document.getElementById('txtEstadoCancion').textContent = playlistPrueba[0];
+            document.getElementById('txtEstadoCancion').textContent = catalogoGlobal[0];
             alert('▶️ ¡Reproducción iniciada con éxito en la cabina!');
         }
 
         function mezclarPlaylistAleatorio() {
-            const cancionAleatoria = playlistPrueba[Math.floor(Math.random() * playlistPrueba.length)];
+            const cancionAleatoria = catalogoGlobal[Math.floor(Math.random() * catalogoGlobal.length)];
             estaReproduciendo = true;
             document.getElementById('btnPlayPause').innerHTML = '⏸️ Pausar Música';
             const badge = document.getElementById('txtEstadoBadge');
             badge.textContent = 'Mix Aleatorio (Shuffle) 🔀';
             badge.style.color = '#38bdf8';
             document.getElementById('txtEstadoCancion').textContent = cancionAleatoria;
+            if (modoKaraokeActivo) {
+                document.getElementById('letraKaraoke').textContent = letrasMuestra[cancionAleatoria] || "♪♪ [Instrumental activo...] ♪♪";
+            }
             alert('🔀 ¡Playlist mezclado de forma aleatoria! Siguiente pista seleccionada.');
         }
 
@@ -525,8 +651,11 @@
         }
 
         function cambiarTodo() {
-            const randomSong = playlistPrueba[Math.floor(Math.random() * playlistPrueba.length)];
+            const randomSong = catalogoGlobal[Math.floor(Math.random() * catalogoGlobal.length)];
             document.getElementById('txtEstadoCancion').textContent = randomSong;
+            if (modoKaraokeActivo) {
+                document.getElementById('letraKaraoke').textContent = letrasMuestra[randomSong] || "♪♪ [Instrumental activo...] ♪♪";
+            }
             alert('¡Se ha saltado y refrescado toda la mezcla de música actual!');
         }
 
@@ -535,6 +664,9 @@
                 document.getElementById('txtEstadoCancion').textContent = 'Lista vacía (Esperando nuevas canciones)';
                 document.getElementById('txtEstadoBadge').textContent = 'Detenido ⏹️';
                 document.getElementById('txtEstadoBadge').style.color = '#ef4444';
+                if (modoKaraokeActivo) {
+                    document.getElementById('letraKaraoke').textContent = "♪♪ [Lista vacía] ♪♪";
+                }
                 alert('Se ha borrado toda la cola. Puedes empezar a agregar nuevas canciones.');
             }
         }
@@ -542,7 +674,13 @@
         function copiarEnlacePersonal() {
             const enlacePrivado = window.location.href + '#privado-' + Math.floor(Math.random() * 90000);
             navigator.clipboard.writeText(enlacePrivado);
-            alert('¡Enlace de tu sala privada copiado al portapapeles! Compártelo con otra persona para que agregue música a tu mix.');
+            alert('🎨 ¡Enlace de tu sala privada copiado al portapapeles!');
+        }
+
+        function copiarEnlaceTaxi() {
+            const enlaceTaxi = window.location.href + '#taxi-pasajero-' + Math.floor(Math.random() * 90000);
+            navigator.clipboard.writeText(enlaceTaxi);
+            alert('🚕 ¡QR y Enlace único del auto copiados al portapapeles! Compártelo con el pasajero.');
         }
 
         function generarPaseQR() {
@@ -556,16 +694,6 @@
             tabla.appendChild(row);
             input.value = '';
             alert('¡Pase generado con éxito!');
-        }
-
-        function agregarMusicaDirecta() {
-            const input = document.getElementById('inputCancion');
-            if (!input.value.trim()) return alert('Escribe una canción.');
-            document.getElementById('txtEstadoCancion').textContent = input.value;
-            document.getElementById('txtEstadoBadge').textContent = 'Reproduciendo 🔊';
-            document.getElementById('txtEstadoBadge').style.color = '#34d399';
-            alert('Canción añadida y en reproducción.');
-            input.value = '';
         }
     </script>
 </body>
