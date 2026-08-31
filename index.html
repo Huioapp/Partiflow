@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partiflow PRO - Plataforma Centralizada con IA</title>
+    <title>Partiflow PRO - Plataforma Centralizada</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -16,6 +16,23 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
+        }
+
+        /* Notificador Flotante Elegante */
+        #toastNotification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1f2937;
+            color: #34d399;
+            border: 1px solid #374151;
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            font-size: 0.9rem;
+            z-index: 1000;
+            display: none;
+            transition: opacity 0.3s ease;
         }
 
         #authScreen {
@@ -233,6 +250,9 @@
 </head>
 <body>
 
+    <!-- Elemento flotante para notificaciones limpias -->
+    <div id="toastNotification">Notificación</div>
+
     <!-- ================= PANTALLA 1: LOGIN ================= -->
     <div id="authScreen">
         <div class="login-card">
@@ -371,7 +391,7 @@
                     <label>Ubicación (Enlace de Google Maps para el QR):</label>
                     <input type="text" id="txtUbicacion" value="https://maps.google.com">
                 </div>
-                <button class="btn" onclick="alert('¡Configuración de fiesta guardada con éxito!')">Guardar Cambios del Evento</button>
+                <button class="btn" onclick="mostrarNotificacion('¡Configuración de fiesta guardada con éxito!')">Guardar Cambios del Evento</button>
             </div>
         </div>
 
@@ -418,14 +438,14 @@
                             <h3>📺 Pantallas y TVs (Wi-Fi)</h3>
                             <p>Transmite las visuales musicales, letras de karaoke y ranking a proyectores o televisores inteligentes.</p>
                         </div>
-                        <button class="btn" onclick="alert('Buscando pantallas compatibles en la red Wi-Fi...')">📺 Conectar Pantallas (Wi-Fi)</button>
+                        <button class="btn" onclick="mostrarNotificacion('Buscando pantallas compatibles en la red Wi-Fi...')">📺 Conectar Pantallas (Wi-Fi)</button>
                     </div>
                     <div class="hardware-card" style="grid-column: span 2;">
                         <div>
                             <h3>💡 Luces LED & Discoteca (Wi-Fi / Bluetooth)</h3>
                             <p>Sincroniza barras LED, focos RGB y luces rítmicas al compás de la música y la voz del karaoke.</p>
                         </div>
-                        <button class="btn btn-success" onclick="alert('Buscando dispositivos de iluminación inteligentes por Wi-Fi y Bluetooth...')">💡 Conectar Luces Inteligentes</button>
+                        <button class="btn btn-success" onclick="mostrarNotificacion('Buscando dispositivos de iluminación inteligentes por Wi-Fi y Bluetooth...')">💡 Conectar Luces Inteligentes</button>
                     </div>
                 </div>
             </div>
@@ -445,7 +465,7 @@
                             <p style="color:#ffffff; font-weight:bold; font-size:1.15rem; margin-bottom:6px;">$9.90 <span style="font-size:0.75rem; color:#9ca3af;">/ mes</span></p>
                             <p style="color:#9ca3af; font-size:0.85rem;">Cabina estándar, votación básica por QR y control de reproducción individual.</p>
                         </div>
-                        <button class="btn btn-secondary" style="padding:10px 16px; font-size:0.85rem;" onclick="alert('Seleccionando Plan Básico...')">Elegir Plan Básico</button>
+                        <button class="btn btn-secondary" style="padding:10px 16px; font-size:0.85rem;" onclick="mostrarNotificacion('Seleccionando Plan Básico...')">Elegir Plan Básico</button>
                     </div>
 
                     <!-- Plan PRO -->
@@ -458,14 +478,14 @@
                         <div>
                             <span style="display:inline-block; background:#3b82f6; color:white; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:bold; margin-bottom:8px; text-align:center;">PLAN ACTIVO</span>
                             <br>
-                            <button class="btn" style="padding:10px 16px; font-size:0.85rem;" onclick="alert('Redirigiendo a pasarela dLocal Go para renovar Plan PRO...')">Renovar con dLocal Go</button>
+                            <button class="btn" style="padding:10px 16px; font-size:0.85rem;" onclick="mostrarNotificacion('Redirigiendo a pasarela dLocal Go para renovar Plan PRO...')">Renovar con dLocal Go</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 6. SECCIÓN: MI PERFIL (Simplificado) -->
+        <!-- 6. SECCIÓN: MI PERFIL -->
         <div id="tab-perfil" class="section-container">
             <div class="card">
                 <h2>👤 Mi Perfil</h2>
@@ -491,17 +511,17 @@
                         <input type="text" id="perfilCiudad" value="Lima, Perú">
                     </div>
                 </div>
-                <button class="btn" onclick="alert('¡Perfil actualizado con éxito!')">Guardar Cambios</button>
+                <button class="btn" onclick="mostrarNotificacion('¡Perfil actualizado con éxito!')">Guardar Cambios</button>
             </div>
         </div>
 
         <!-- Footer -->
         <div class="footer-links">
-            <a href="#" onclick="alert('Términos y Condiciones...')">Términos y Condiciones</a>
+            <a href="#" onclick="mostrarNotificacion('Términos y Condiciones...')">Términos y Condiciones</a>
             <span>•</span>
-            <a href="#" onclick="alert('Políticas de Privacidad...')">Políticas de Privacidad</a>
+            <a href="#" onclick="mostrarNotificacion('Políticas de Privacidad...')">Políticas de Privacidad</a>
             <span>•</span>
-            <a href="#" onclick="navigator.clipboard.writeText(window.location.href); alert('¡Enlace copiado!');">🔗 Copiar QR / Enlace</a>
+            <a href="#" onclick="navigator.clipboard.writeText(window.location.href); mostrarNotificacion('🔗 Enlace copiado al portapapeles');">🔗 Copiar QR / Enlace</a>
         </div>
     </div>
 
@@ -525,16 +545,32 @@
             "Levitating - Dua Lipa": "♪ If you wanna run away with me, I know a galaxy... ♪"
         };
 
+        // Función para mostrar notificaciones limpias en pantalla sin ventanas emergentes
+        function mostrarNotificacion(mensaje) {
+            const toast = document.getElementById('toastNotification');
+            toast.textContent = mensaje;
+            toast.style.display = 'block';
+            toast.style.opacity = '1';
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 300);
+            }, 3000);
+        }
+
         function iniciarSesion() {
             const email = document.getElementById('txtEmail').value;
             const pass = document.getElementById('txtPassword').value;
-            if (!email || !pass) { alert('Ingresa tus datos.'); return; }
+            if (!email || !pass) { mostrarNotificacion('Ingresa tus datos de acceso.'); return; }
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'flex';
+            mostrarNotificacion('¡Bienvenido al Centro de Control!');
         }
 
         function iniciarSesionSocial(red) {
-            alert(`🌐 Conectando de forma segura con ${red}... ¡Ingreso exitoso!`);
+            mostrarNotificacion(`🌐 Conectando de forma segura con ${red}... ¡Ingreso exitoso!`);
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'flex';
         }
@@ -542,6 +578,7 @@
         function cerrarSesion() {
             document.getElementById('appScreen').style.display = 'none';
             document.getElementById('authScreen').style.display = 'flex';
+            mostrarNotificacion('Sesión cerrada correctamente.');
         }
 
         function switchTab(tabId, btnElement) {
@@ -582,7 +619,7 @@
         // --- FUNCIONES DE INTELIGENCIA ARTIFICIAL (IA) ---
         function activarReconocimientoVozIA() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert('🎙️ Tu navegador no soporta reconocimiento de voz nativo, pero puedes escribir tu petición en el buscador.');
+                mostrarNotificacion('🎙️ Tu navegador no soporta voz nativa. Usa el buscador escrito.');
                 return;
             }
             
@@ -592,19 +629,18 @@
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
 
-            alert('🎙️ IA escuchando... Habla ahora (Ej: "Pon a Shakira")');
+            mostrarNotificacion('🎙️ IA escuchando... Habla ahora');
 
             recognition.onresult = function(event) {
                 const speechResult = event.results[0][0].transcript;
                 document.getElementById('inputBusqueda').value = speechResult;
-                alert(`🤖 IA entendió: "${speechResult}"`);
-                // Disparar búsqueda automática
+                mostrarNotificacion(`🤖 IA entendió: "${speechResult}"`);
                 const eventoSimulado = { target: { value: speechResult } };
                 buscarCancionEnVivo(eventoSimulado);
             };
 
             recognition.onerror = function(event) {
-                alert('No se pudo capturar la voz claramente. Intenta de nuevo.');
+                mostrarNotificacion('No se capturó la voz claramente.');
             };
 
             recognition.start();
@@ -621,7 +657,7 @@
             document.getElementById('txtEstadoCancion').textContent = recomendada + " (Sugerida por DJ IA 🤖)";
             document.getElementById('txtEstadoBadge').textContent = 'Reproduciendo 🔊';
             document.getElementById('txtEstadoBadge').style.color = '#ec4899';
-            alert(`🤖 DJ Virtual IA analizó el ambiente y seleccionó automáticamente: "${recomendada}"`);
+            mostrarNotificacion(`🤖 DJ IA seleccionó: "${recomendada}"`);
         }
 
         function toggleModoKaraoke() {
@@ -635,20 +671,20 @@
                 btnKaraoke.style.color = '#030712';
                 btnKaraoke.innerHTML = '🎤 Karaoke ACTIVO';
                 monitor.style.display = 'block';
-                const letra = letrasMuestra[cancionActual] || "♪♪ [Modo Instrumental IA: Canta con el ritmo de la música...] ♪♪";
+                const letra = letrasMuestra[cancionActual] || "♪♪ [Modo Instrumental IA: Canta con el ritmo...] ♪♪";
                 document.getElementById('letraKaraoke').textContent = letra;
-                alert('🎤 ¡Modo Karaoke activado! IA atenuó la voz principal (Instrumental) y muestra las letras.');
+                mostrarNotificacion('🎤 Modo Karaoke activado (Instrumental + Letras)');
             } else {
                 btnKaraoke.style.background = '#d97706';
                 btnKaraoke.style.color = '#ffffff';
                 btnKaraoke.innerHTML = '🎤 Karaoke';
                 monitor.style.display = 'none';
-                alert('🎤 Modo Karaoke desactivado.');
+                mostrarNotificacion('🎤 Modo Karaoke desactivado.');
             }
         }
 
         function conectarMicrofonoInalambrico() {
-            alert('🎙️ Vinculando micrófono inalámbrico o configurando este dispositivo como micrófono activo por IA... ¡Conectado!');
+            mostrarNotificacion('🎙️ Micrófono inalámbrico vinculado con éxito.');
         }
 
         function buscarCancionEnVivo(e) {
@@ -673,13 +709,13 @@
                 });
             } else {
                 box.style.display = 'block';
-                lista.innerHTML = '<span style="color:#9ca3af; font-size:0.85rem; padding:4px;">No se encontraron resultados. Intenta otro artista.</span>';
+                lista.innerHTML = '<span style="color:#9ca3af; font-size:0.85rem; padding:4px;">No se encontraron resultados.</span>';
             }
         }
 
         function ejecutarBusqueda() {
             const input = document.getElementById('inputBusqueda');
-            if (!input.value.trim()) return alert('Escribe el nombre de un artista o canción.');
+            if (!input.value.trim()) return mostrarNotificacion('Escribe el nombre de un artista o canción.');
             seleccionarCancion(input.value);
         }
 
@@ -694,7 +730,7 @@
                 const letra = letrasMuestra[nombreCancion] || "♪♪ [Instrumental IA activo - Sigue la letra...] ♪♪";
                 document.getElementById('letraKaraoke').textContent = letra;
             }
-            alert(`✅ ¡"${nombreCancion}" añadida a la cola por IA!`);
+            mostrarNotificacion(`✅ Añadida: "${nombreCancion}"`);
         }
 
         function iniciarReproduccionGeneral() {
@@ -704,7 +740,7 @@
             badge.textContent = 'Reproduciendo 🔊';
             badge.style.color = '#34d399';
             document.getElementById('txtEstadoCancion').textContent = catalogoGlobal[0];
-            alert('▶️ ¡Reproducción iniciada con éxito!');
+            mostrarNotificacion('▶️ Reproducción iniciada.');
         }
 
         function mezclarPlaylistAleatorio() {
@@ -718,7 +754,7 @@
             if (modoKaraokeActivo) {
                 document.getElementById('letraKaraoke').textContent = letrasMuestra[cancionAleatoria] || "♪♪ [Instrumental IA activo...] ♪♪";
             }
-            alert('🔀 ¡Playlist mezclado de forma aleatoria!');
+            mostrarNotificacion('🔀 Playlist mezclado en modo aleatorio.');
         }
 
         function togglePlayPause() {
@@ -730,10 +766,12 @@
                 btn.innerHTML = '⏸️ Pausar';
                 badge.textContent = 'Reproduciendo 🔊';
                 badge.style.color = '#34d399';
+                mostrarNotificacion('▶️ Música reanudada.');
             } else {
                 btn.innerHTML = '▶️ Reproducir';
                 badge.textContent = 'En Pausa ⏸️';
                 badge.style.color = '#fbbf24';
+                mostrarNotificacion('⏸️ Música en pausa.');
             }
         }
 
@@ -743,7 +781,7 @@
             if (modoKaraokeActivo) {
                 document.getElementById('letraKaraoke').textContent = letrasMuestra[randomSong] || "♪♪ [Instrumental IA activo...] ♪♪";
             }
-            alert('¡Se ha saltado y refrescado toda la mezcla!');
+            mostrarNotificacion('⏭️ Mezcla refrescada con éxito.');
         }
 
         function borrarLista() {
@@ -754,34 +792,34 @@
                 if (modoKaraokeActivo) {
                     document.getElementById('letraKaraoke').textContent = "♪♪ [Lista vacía] ♪♪";
                 }
-                alert('Cola borrada.');
+                mostrarNotificacion('🗑️ Cola de reproducción borrada.');
             }
         }
 
         function copiarEnlacePersonal() {
             const enlacePrivado = window.location.href + '#privado-' + Math.floor(Math.random() * 90000);
             navigator.clipboard.writeText(enlacePrivado);
-            alert('🎨 ¡Enlace de tu sala privada copiado!');
+            mostrarNotificacion('🔗 Enlace privado copiado al portapapeles.');
         }
 
         function copiarEnlaceTaxi() {
             const enlaceTaxi = window.location.href + '#taxi-pasajero-' + Math.floor(Math.random() * 90000);
             navigator.clipboard.writeText(enlaceTaxi);
-            alert('🚕 ¡QR y Enlace único del auto copiados!');
+            mostrarNotificacion('🚕 QR y enlace único del taxi copiado.');
         }
 
         function generarPaseQR() {
             const input = document.getElementById('inputInvitado');
-            if (!input.value.trim()) return alert('Escribe el nombre del invitado.');
+            if (!input.value.trim()) return mostrarNotificacion('Escribe el nombre del invitado.');
             const nombreEvento = document.getElementById('txtNombre').value;
             const codigo = 'VIP-' + Math.floor(1000 + Math.random() * 9000);
             const tabla = document.getElementById('tablaPases');
             if (tabla.querySelector('td[colspan]')) tabla.innerHTML = '';
             const row = document.createElement('tr');
-            row.innerHTML = `<td>${input.value}</td><td><code style="color:#60a5fa;">${codigo} (${nombreEvento})</code></td><td><a href="#" style="color:#34d399;">Ver Pase</a></td>`;
+            row.innerHTML = `<td>${input.value}</td><td><code style="color:#60a5fa;">${codigo} (${nombreEvento})</code></td><td><a href="#" style="color:#34d399;" onclick="mostrarNotificacion('Pase generado con éxito')">Ver Pase</a></td>`;
             tabla.appendChild(row);
             input.value = '';
-            alert('¡Pase VIP enlazado al evento generado con éxito!');
+            mostrarNotificacion('🎫 Pase VIP generado y enlazado al evento.');
         }
     </script>
 </body>
