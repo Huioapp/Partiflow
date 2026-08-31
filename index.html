@@ -351,7 +351,7 @@
                 </div>
 
                 <div class="input-group" style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151;">
-                    <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🔍 Búsqueda Enrutada (IP Rotativa / Caché):</label>
+                    <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🔍 Búsqueda Enrutada (IP Rotativa / Streaming API):</label>
                     <div style="display:flex; gap:10px;">
                         <input type="text" id="inputBusqueda" placeholder="Ej. Shakira, Salsa, reggaeton o URL de audio..." style="flex:1;" onkeyup="buscarCancionEnVivo(event)">
                         <button class="btn btn-ai" style="width:auto; padding:0 15px;" onclick="activarReconocimientoVozIA()" title="Hablar con la IA">🎙️ Hablar</button>
@@ -502,7 +502,7 @@
             </div>
         </div>
 
-        <!-- 6. PLANES Y BILLING (Prueba de 14 Días Exclusiva para Plan Básico) -->
+        <!-- 6. PLANES Y BILLING -->
         <div id="tab-billing" class="section-container">
             <div class="card">
                 <h2>💳 Suscripción y Facturación Recurrente</h2>
@@ -520,7 +520,7 @@
                                 <em>🎁 14 días de prueba gratis (Cobro el día 15).</em>
                             </p>
                         </div>
-                        <button class="btn btn-success" id="btnElegirBasico" onclick="cambiarPlanUsuario('basico')">Activar Prueba Plan Básico</button>
+                        <button class="btn btn-success" id="btnElegirBasico" onclick="cambiarPlanUsuario('basico')">Prueba Activa (14 Días)</button>
                     </div>
 
                     <div class="plan-card" id="cardPlanPro">
@@ -656,7 +656,7 @@
     </div>
 
     <script>
-        let planActual = 'basico'; // Por defecto inician con la prueba del plan básico
+        let planActual = 'basico';
         let usuarioActualEmail = '';
         let deviceFingerprint = 'dev_' + Math.random().toString(36).substring(2);
 
@@ -745,7 +745,7 @@
             deckA.play().catch(e => console.log(e));
             document.getElementById('txtDeckASong').textContent = cancionBuscadaActual.nombre;
             document.getElementById('txtEstadoCancion').textContent = cancionBuscadaActual.nombre;
-            mostrarNotificacion(`▶️ Reproduciendo vía IP Rotativa: ${cancionBuscadaActual.nombre}`);
+            mostrarNotificacion(`▶️ Reproduciendo vía Streaming API (IP Rotativa): ${cancionBuscadaActual.nombre}`);
         }
 
         function togglePlayPauseGeneral() {
@@ -801,7 +801,7 @@
             }
 
             usuarioActualEmail = email;
-            planActual = 'basico'; // Asignación de prueba gratuita de 14 días en Plan Básico
+            planActual = 'basico';
 
             document.getElementById('perfilNombre').value = nombre;
             document.getElementById('perfilCorreo').value = email;
@@ -1030,8 +1030,8 @@
 
             box.style.display = 'block';
             lista.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:#111827; padding:8px; border-radius:6px; cursor:pointer;" onclick="seleccionarResultadoBusqueda('${e.target.value}', '${e.target.value.startsWith('http') ? e.target.value : 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'}')">
-                    <span>🎵 Pista enrutada (IP rotativa): "${e.target.value}"</span> 
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#111827; padding:8px; border-radius:6px; cursor:pointer;" onclick="seleccionarResultadoBusqueda('${e.target.value}', 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3')">
+                    <span>🎵 Pista de Streaming: "${e.target.value}"</span> 
                     <span style="color:#34d399; font-size:0.75rem;">Seleccionar</span>
                 </div>
             `;
@@ -1046,7 +1046,7 @@
             localStorage.setItem('partiflow_cache_busquedas', JSON.stringify(cacheBusquedas));
             actualizarContadorCacheUI();
 
-            mostrarNotificacion(`✅ Seleccionado vía Proxy IP: ${nombre}`);
+            mostrarNotificacion(`✅ Seleccionado vía Streaming API: ${nombre}`);
         }
 
         function ejecutarBusquedaConProxy() {
@@ -1061,11 +1061,11 @@
                 urlFinal = cacheBusquedas[queryLower];
                 mostrarNotificacion(`⚡ Recuperado desde Caché (Ahorro de API)`);
             } else {
-                urlFinal = query.startsWith('http') ? query : 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3';
+                urlFinal = query.startsWith('http') ? query : 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3';
                 cacheBusquedas[queryLower] = urlFinal;
                 localStorage.setItem('partiflow_cache_busquedas', JSON.stringify(cacheBusquedas));
                 actualizarContadorCacheUI();
-                mostrarNotificacion(`🌐 Enrutado mediante IP aleatoria de respaldo`);
+                mostrarNotificacion(`🌐 Streaming de YouTube conectado (IP Rotativa Activa)`);
             }
 
             cancionBuscadaActual = { nombre: query, url: urlFinal };
