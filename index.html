@@ -67,7 +67,7 @@
             color: #9ca3af;
         }
 
-        .input-group input {
+        .input-group input, .input-group textarea {
             background: #1f2937;
             border: 1px solid #4b5563;
             padding: 12px;
@@ -75,6 +75,7 @@
             color: white;
             font-size: 0.95rem;
             outline: none;
+            font-family: inherit;
         }
 
         .btn-login {
@@ -100,7 +101,7 @@
 
         .hub-nav {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             background: #111827;
             padding: 10px;
             border-radius: 16px;
@@ -115,10 +116,10 @@
             background: transparent;
             border: none;
             color: #9ca3af;
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: 10px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -236,6 +237,7 @@
             <button class="hub-tab" onclick="switchTab('tab-invitados', this)">👥 Invitados & QR</button>
             <button class="hub-tab" onclick="switchTab('tab-hardware', this)">💡 Luces y Pantallas</button>
             <button class="hub-tab" onclick="switchTab('tab-billing', this)">💳 Planes & Billing</button>
+            <button class="hub-tab" onclick="switchTab('tab-perfil', this)">👤 Mi Perfil</button>
             <button class="hub-tab" style="color:#ef4444;" onclick="cerrarSesion()">🚪 Salir</button>
         </nav>
 
@@ -269,7 +271,6 @@
                     </div>
                 </div>
 
-                <!-- Botones Iniciales de Reproducción y Playlist Aleatorio -->
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px;">
                     <button class="btn btn-success" onclick="iniciarReproduccionGeneral()">▶️ Iniciar Reproducción</button>
                     <button class="btn btn-secondary" onclick="mezclarPlaylistAleatorio()">🔀 Shuffle / Aleatorio</button>
@@ -281,7 +282,6 @@
                     <span id="txtEstadoBadge" style="color:#34d399; font-weight:bold;">Reproduciendo 🔊</span>
                 </div>
 
-                <!-- Controles de Pausa, Cambio y Borrado -->
                 <div class="master-controls">
                     <button class="btn btn-secondary" id="btnPlayPause" onclick="togglePlayPause()">⏸️ Pausar Música</button>
                     <button class="btn btn-secondary" onclick="cambiarTodo()">⏭️ Cambiar Todo</button>
@@ -390,6 +390,40 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- 6. SECCIÓN: MI PERFIL (NUEVA) -->
+        <div id="tab-perfil" class="section-container">
+            <div class="card">
+                <h2>👤 Perfil del Administrador y Director</h2>
+                <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">Actualiza los datos de tu cuenta ejecutiva y parámetros de la plataforma.</p>
+                
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Nombre y Apellidos:</label>
+                        <input type="text" id="perfilNombre" value="Luis Enrique Ganoza Céspedes">
+                    </div>
+                    <div class="input-group">
+                        <label>Correo Electrónico:</label>
+                        <input type="email" id="perfilCorreo" value="admin@huioapp.com">
+                    </div>
+                </div>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Rol / Cargo Directivo:</label>
+                        <input type="text" id="perfilCargo" value="Director / Fundador Partiflow PRO">
+                    </div>
+                    <div class="input-group">
+                        <label>Teléfono de Contacto:</label>
+                        <input type="text" id="perfilTelefono" value="+51 999 999 999">
+                    </div>
+                </div>
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <label>Bio / Perfil Ejecutivo:</label>
+                    <textarea id="perfilBio" rows="3" style="resize: vertical;">Ingeniero Químico y Ejecutivo Corporativo enfocado en el desarrollo de plataformas tecnológicas inteligentes y automatización de eventos.</textarea>
+                </div>
+                <button class="btn" onclick="alert('¡Perfil actualizado y guardado correctamente!')">Guardar Cambios del Perfil</button>
             </div>
         </div>
 
