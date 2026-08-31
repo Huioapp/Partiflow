@@ -50,10 +50,10 @@
             background: #374151;
             color: #ffffff;
             border: 1px solid #4b5563;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 8px;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
@@ -68,7 +68,7 @@
             background: #ef4444;
             color: white;
             border: none;
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
@@ -76,7 +76,6 @@
         }
         .btn-logout:hover { opacity: 0.9; }
 
-        /* Panel Principal */
         .panel-box {
             width: 100%;
             max-width: 700px;
@@ -97,7 +96,7 @@
         .input-grupo {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 15px;
         }
 
@@ -109,7 +108,7 @@
         .input-grupo input, .input-grupo select {
             background: #1f2937;
             border: 1px solid #4b5563;
-            padding: 10px 15px;
+            padding: 10px 14px;
             border-radius: 8px;
             color: white;
             font-size: 0.95rem;
@@ -125,6 +124,7 @@
             font-weight: bold;
             cursor: pointer;
             font-size: 1rem;
+            width: 100%;
         }
         .btn-generar:hover { opacity: 0.9; }
 
@@ -135,7 +135,6 @@
             font-size: 0.75rem;
             font-weight: bold;
             text-transform: uppercase;
-            margin-left: 10px;
         }
         .badge-activo { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; }
         .badge-historico { background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid #4b5563; }
@@ -158,51 +157,55 @@
 </head>
 <body>
 
-    <!-- Barra Superior con el Botón de Regreso -->
+    <!-- Barra Superior con Botón de Regreso -->
     <div class="top-bar">
         <div class="brand-title">Partiflow <span style="color: white;">PRO</span></div>
         <div class="btn-acciones-top">
-            <a href="index.html" class="btn-nav">🏠 Volver al Inicio</a>
+            <a href="index.html" class="btn-nav">🎶 Ir a Cabina de Música</a>
             <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
         </div>
     </div>
 
-    <!-- Configuración de la Fiesta y Datos del QR -->
+    <!-- Configuración Completa del Evento -->
     <div class="panel-box">
-        <h3>🎉 Configuración de la Fiesta y Evento</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0;">🎉 Configuración del Evento</h3>
+            <span id="lblEstadoFiesta" class="badge-estado badge-activo">Activa en Vivo</span>
+        </div>
+        
         <div class="input-grupo">
-            <label>Nombre de la Fiesta o Motivo:</label>
-            <input type="text" id="txtNombreFiesta" value="Cumpleaños / Reunión Principal">
+            <label>Nombre de la Fiesta:</label>
+            <input type="text" id="txtNombreFiesta" value="Cumpleaños / Reunión Especial">
+
+            <label>Motivo del Evento:</label>
+            <input type="text" id="txtMotivo" value="Celebración de Aniversario y Fiesta Privada">
+
+            <label>¿Quién Invita (Anfitrión):</label>
+            <input type="text" id="txtAnfitrion" value="Luis Ganoza">
             
             <label>Fecha de la Fiesta:</label>
             <input type="date" id="txtFechaFiesta" value="2026-09-15">
-
-            <label>Ubicación (Enlace de Google Maps para el QR):</label>
-            <input type="text" id="txtUbicacion" value="https://maps.google.com">
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span id="lblEstadoFiesta" class="badge-estado badge-activo">Activa en Vivo</span>
-            <button class="btn-nav" onclick="guardarConfigFiesta()">Actualizar Evento</button>
-        </div>
+        <button class="btn-nav" style="width:100%; text-align:center;" onclick="guardarEvento()">Guardar Cambios del Evento</button>
     </div>
 
     <!-- Registrar Invitado para el QR -->
     <div class="panel-box">
         <h3>➕ Registrar Invitado (Genera Pase y QR)</h3>
         <div class="input-grupo">
-            <label>Nombre del Invitado, Pareja o Familia:</label>
-            <input type="text" id="inputNombre" placeholder="Ej. Carlos Ganoza y Familia...">
+            <label>Nombre del Invitado o Familia:</label>
+            <input type="text" id="inputNombre" placeholder="Ej. Carlos Ganoza y Acompañante...">
         </div>
         <button class="btn-generar" onclick="generarPase()">Generar Pase y Enlace QR</button>
     </div>
 
-    <!-- Lista de Pases Activos / Histórico -->
+    <!-- Lista de Pases Generados -->
     <div class="panel-box">
         <h3>📋 Lista de Pases Generados</h3>
         <table>
             <thead>
                 <tr>
-                    <th>Nombre / Grupo</th>
+                    <th>Nombre / Invitado</th>
                     <th>Código Único</th>
                     <th>Acción QR</th>
                 </tr>
@@ -214,7 +217,6 @@
     </div>
 
     <script>
-        // Control de fecha y estado histórico automático
         const inputFecha = document.getElementById('txtFechaFiesta');
         const badgeEstado = document.getElementById('lblEstadoFiesta');
 
@@ -232,8 +234,8 @@
         inputFecha.addEventListener('change', verificarHistorico);
         verificarHistorico();
 
-        function guardarConfigFiesta() {
-            alert('¡Configuración de la fiesta guardada con éxito!');
+        function guardarEvento() {
+            alert('¡Datos de la fiesta y fecha guardados correctamente!');
             verificarHistorico();
         }
 
@@ -252,7 +254,7 @@
             const tabla = document.getElementById('tablaInvitados');
             
             if (tabla.querySelector('td[colspan]')) {
-                tabla.innerHTML = ''; // Limpiar mensaje de vacío
+                tabla.innerHTML = '';
             }
 
             const fila = document.createElement('tr');
@@ -263,7 +265,7 @@
             `;
             tabla.appendChild(fila);
             nombreInput.value = '';
-            alert('¡Pase y QR generado con éxito!');
+            alert('¡Pase generado con éxito!');
         }
     </script>
 </body>
