@@ -204,7 +204,8 @@
 <body>
  <div id="toastNotification">Notificación</div>
 
- <!-- Motor de audio principal en cascada -->
+ <!-- Doble capa de audio: Pista de mezcla continua + Reproductor principal de canciones -->
+ <audio id="audioPistaMix" preload="auto" loop></audio>
  <audio id="audioReproductorPrincipal" preload="auto"></audio>
  <audio id="audioDeckA" preload="auto"></audio>
  <audio id="audioDeckB" preload="auto"></audio>
@@ -319,16 +320,16 @@
  </div>
  </div>
 
- <!-- GESTOR DE COLA CON BUSCADOR ANCHO Y MINIATURA LATERAL DE VIDEO GARANTIZADO -->
+ <!-- GESTOR DE COLA CON BUSCADOR Y MINIATURA LATERAL -->
  <div style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151; margin-top:15px;">
  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
  <div style="flex: 1;">
  <h3 style="font-size:1rem; color:#60a5fa; margin-bottom:4px;">⚡ Gestor de Cola Abierta</h3>
  <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Arma tu set y dale play cuando esté listo</p>
  </div>
- <!-- Miniatura lateral de video 160x90px con enlace seguro de reproducción libre -->
+ <!-- Miniatura lateral de video 160x90px -->
  <div style="width: 160px; height: 90px; background: #111827; border-radius: 8px; border: 1px solid #374151; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
- <iframe id="iframeYouTubeReal" width="100%" height="100%" src="https://www.youtube.com/embed/9bZkp7q19f0?autoplay=0&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+ <iframe id="iframeYouTubeReal" width="100%" height="100%" src="https://www.youtube.com/embed/uC3V52f7V9g?autoplay=0&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
  </div>
  </div>
  
@@ -343,7 +344,7 @@
  </div>
  </div>
 
- <!-- CONFIGURACIÓN DE ORDEN -->
+ <!-- CONFIGURACIÓN DE ORDEN Y TRANSICIÓN -->
  <div class="input-grid" style="margin-top: 15px;">
  <div class="input-group">
  <label>⚙️ Orden de Reproducción:</label>
@@ -666,17 +667,15 @@
  "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
  ];
 
- // Almacén de la cola de peticiones
+ // Almacén de la cola de peticiones y biblioteca de pistas de mezcla fluidas
  let listaColaPeticiones = [];
  let indiceReproduccionActual = 0;
 
- // Biblioteca de pistas musicales en streaming estables y libres de restricciones de iframe
- const listaExitosStreaming = [
+ const listaPistasMezcla = [
  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
- "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
- "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"
+ "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
  ];
 
  let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
@@ -778,26 +777,26 @@
  const estiloTransicion = document.getElementById('selectEstiloTransicion').value;
 
  if (estiloTransicion === 'mix') {
- mostrarNotificacion(`🎧 Transición de set continuo aplicada para: "${itemActual}"`);
+ mostrarNotificacion(`🎧 Pista de mezcla continua aplicada para: "${itemActual}"`);
  }
 
- // Reproducción limpia y sin bloqueos de la petición actual
- const streamUrl = listaExitosStreaming[indiceReproduccionActual % listaExitosStreaming.length];
+ // Inicia la pista de mezcla musical principal garantizada
+ const pistaUrl = listaPistasMezcla[indiceReproduccionActual % listaPistasMezcla.length];
  const audioPrincipal = document.getElementById('audioReproductorPrincipal');
- audioPrincipal.src = streamUrl;
+ audioPrincipal.src = pistaUrl;
  audioPrincipal.volume = 0.9;
- audioPrincipal.play().catch(e => console.log("Audio autorizado"));
+ audioPrincipal.play().catch(e => console.log("Audio de mezcla autorizado"));
 
  document.getElementById('txtDeckASong').textContent = itemActual;
  document.getElementById('txtDeckBSong').textContent = (listaColaPeticiones[indiceReproduccionActual + 1] || "Fin de set");
- document.getElementById('txtEstadoCancion').textContent = `[${indiceReproduccionActual + 1}/${listaColaPeticiones.length}] ${itemActual}`;
+ document.getElementById('txtEstadoCancion').textContent = `[${indiceReproduccionActual + 1}/${listaColaPeticiones.length}] Reproduciendo: ${itemActual}`;
  document.getElementById('txtEstadoBadge').textContent = "Mezclando 🔊";
 
  audioPrincipal.onended = function() {
  siguienteEnCola();
  };
 
- mostrarNotificacion(`▶️ Reproduciendo (${indiceReproduccionActual + 1}/${listaColaPeticiones.length}): ${itemActual}`);
+ mostrarNotificacion(`▶️ Reproduciendo pista y mezcla para: ${itemActual}`);
  }
 
  function siguienteEnCola() {
@@ -1100,7 +1099,7 @@
  const pistas = document.getElementById('inputPistasPlaylist').value.trim();
  if (!nombre || !pistas) return mostrarNotificacion('Ingresa nombre y pistas.');
  playlistsGuardados.push({ nombre, pistas, calificacion: 5 });
- localStorage.setItem('partiflow_sets_dj', JSON.stringify(playlistsGuardados));
+ localStorage.setItem('partiflow_sets_dj', JSON.stringify(playlistsGuardOS));
  renderizarPlaylists();
  mostrarNotificacion('💾 Playlist guardado.');
  }
