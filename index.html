@@ -1,1153 +1,1177 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partiflow PRO - Consola Centralizada</title>
-    <link rel="icon" href="Logo_fondo_blanco_solo_icono.png" type="image/png">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            min-height: 100vh;
-            background-color: #030712;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Partiflow PRO - Plataforma Centralizada</title>
+ <link rel="icon" href="Logo_fondo_blanco_solo_icono.png" type="image/png">
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ <style>
+ * { box-sizing: border-box; margin: 0; padding: 0; }
+ body {
+ min-height: 100vh;
+ background-color: #030712;
+ color: #ffffff;
+ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ padding: 20px;
+ }
+ #toastNotification {
+ position: fixed;
+ top: 20px;
+ right: 20px;
+ background: #1f2937;
+ color: #34d399;
+ border: 1px solid #374151;
+ padding: 12px 20px;
+ border-radius: 12px;
+ box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+ font-size: 0.9rem;
+ z-index: 1000;
+ display: none;
+ transition: opacity 0.3s ease;
+ }
+ #authScreen {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+ min-height: 90vh;
+ width: 100%;
+ }
+ .login-card {
+ width: 100%;
+ max-width: 420px;
+ background: #111827;
+ border: 1px solid #374151;
+ border-radius: 20px;
+ padding: 30px;
+ box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+ text-align: center;
+ }
+ .brand-logo {
+ max-width: 65px;
+ height: auto;
+ border-radius: 12px;
+ box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+ margin-bottom: 15px;
+ }
+ h2 {
+ font-size: 1.4rem;
+ color: #60a5fa;
+ margin-bottom: 20px;
+ text-transform: uppercase;
+ letter-spacing: 1px;
+ }
+ .input-group {
+ display: flex;
+ flex-direction: column;
+ gap: 6px;
+ margin-bottom: 15px;
+ text-align: left;
+ }
+ .input-group label {
+ font-size: 0.85rem;
+ color: #9ca3af;
+ }
+ .input-group input, .input-group select {
+ background: #1f2937;
+ border: 1px solid #4b5563;
+ padding: 12px;
+ border-radius: 10px;
+ color: white;
+ font-size: 0.95rem;
+ outline: none;
+ font-family: inherit;
+ }
+ .btn-login {
+ background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+ color: white;
+ border: none;
+ padding: 12px;
+ border-radius: 10px;
+ font-weight: bold;
+ cursor: pointer;
+ width: 100%;
+ font-size: 1rem;
+ margin-top: 10px;
+ }
+ .auth-link {
+ margin-top: 15px;
+ font-size: 0.85rem;
+ color: #9ca3af;
+ }
+ .auth-link a {
+ color: #60a5fa;
+ text-decoration: none;
+ font-weight: 600;
+ }
+ .auth-link a:hover { text-decoration: underline; }
+ #appScreen {
+ display: none;
+ width: 100%;
+ max-width: 850px;
+ flex-direction: column;
+ align-items: center;
+ }
+ .hub-nav {
+ display: flex;
+ gap: 6px;
+ background: #111827;
+ padding: 10px;
+ border-radius: 16px;
+ border: 1px solid #374151;
+ margin-bottom: 25px;
+ flex-wrap: wrap;
+ justify-content: center;
+ width: 100%;
+ }
+ .hub-tab {
+ background: transparent;
+ border: none;
+ color: #9ca3af;
+ padding: 8px 12px;
+ border-radius: 10px;
+ font-weight: 600;
+ font-size: 0.8rem;
+ cursor: pointer;
+ transition: all 0.2s;
+ }
+ .hub-tab:hover { color: #ffffff; background: #1f2937; }
+ .hub-tab.active {
+ background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+ color: #ffffff;
+ box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+ }
+ .section-container { display: none; width: 100%; animation: fadeIn 0.3s ease-in-out; }
+ .section-container.active { display: block; }
+ @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+ .card {
+ background: #111827; border: 1px solid #374151; border-radius: 20px;
+ padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+ }
+ .card h2 { font-size: 1.25rem; color: #60a5fa; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+ .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+ @media (max-width: 600px) { .input-grid { grid-template-columns: 1fr; } }
+ .btn {
+ background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; border: none;
+ padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer;
+ font-size: 0.95rem; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ }
+ .btn:hover { opacity: 0.9; }
+ .btn-secondary { background: #1f2937; border: 1px solid #4b5563; color: #e5e7eb; }
+ .btn-success { background: #059669; border: 1px solid #10b981; color: #ffffff; }
+ .btn-danger { background: #7f1d1d; border: 1px solid #991b1b; color: #fca5a5; }
+ .btn-warning { background: #d97706; border: 1px solid #f59e0b; color: #ffffff; }
+ .btn-ai { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; }
+ .btn-locked { background: #374151; color: #9ca3af; border: 1px dashed #4b5563; cursor: not-allowed; }
+ .mixer-console {
+ background: #1a2333; border: 1px solid #374151; border-radius: 14px; padding: 15px; margin-top: 15px;
+ }
+ .mixer-grid {
+ display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;
+ }
+ .mixer-channel {
+ background: #111827; padding: 12px; border-radius: 10px; border: 1px solid #374151; text-align: center;
+ }
+ .mixer-channel h4 { font-size: 0.85rem; color: #60a5fa; margin-bottom: 8px; }
+ .slider-group {
+ display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; font-size: 0.75rem; color: #9ca3af;
+ }
+ .slider-group input[type=range] { width: 100%; accent-color: #3b82f6; cursor: pointer; }
+ .master-controls {
+ display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px;
+ }
+ @media (max-width: 600px) { .master-controls { grid-template-columns: 1fr; } }
+ .plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+ @media (max-width: 700px) { .plans-grid { grid-template-columns: 1fr; } }
+ .plan-card {
+ background: #1f2937; border: 1px solid #374151; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 15px;
+ }
+ .plan-card.active-plan { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59,130,246,0.3); }
+ table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+ th, td { padding: 12px; text-align: left; border-bottom: 1px solid #374151; font-size: 0.9rem; }
+ th { color: #9ca3af; }
+ .footer-links {
+ margin-top: 20px; text-align: center; font-size: 0.85rem; color: #6b7280; display: flex; gap: 15px; justify-content: center;
+ }
+ .footer-links a { color: #9ca3af; text-decoration: none; }
 
-        #toastNotification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #1f2937;
-            color: #34d399;
-            border: 1px solid #374151;
-            padding: 12px 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            font-size: 0.9rem;
-            z-index: 1000;
-            display: none;
-            transition: opacity 0.3s ease;
-        }
-
-        #authScreen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 90vh;
-            width: 100%;
-        }
-
-        .login-card {
-            width: 100%;
-            max-width: 420px;
-            background: #111827;
-            border: 1px solid #374151;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-            text-align: center;
-        }
-
-        .brand-logo {
-            max-width: 65px;
-            height: auto;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-            margin-bottom: 15px;
-        }
-
-        h2 {
-            font-size: 1.4rem;
-            color: #60a5fa;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        .input-group label {
-            font-size: 0.85rem;
-            color: #9ca3af;
-        }
-
-        .input-group input, .input-group select {
-            background: #1f2937;
-            border: 1px solid #4b5563;
-            padding: 12px;
-            border-radius: 10px;
-            color: white;
-            font-size: 0.95rem;
-            outline: none;
-            font-family: inherit;
-        }
-
-        .btn-login {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
-            margin-top: 10px;
-        }
-
-        .auth-link {
-            margin-top: 15px;
-            font-size: 0.85rem;
-            color: #9ca3af;
-        }
-        .auth-link a {
-            color: #60a5fa;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .auth-link a:hover { text-decoration: underline; }
-
-        #appScreen {
-            display: none;
-            width: 100%;
-            max-width: 850px;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .hub-nav {
-            display: flex;
-            gap: 6px;
-            background: #111827;
-            padding: 10px;
-            border-radius: 16px;
-            border: 1px solid #374151;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 100%;
-        }
-
-        .hub-tab {
-            background: transparent;
-            border: none;
-            color: #9ca3af;
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .hub-tab:hover { color: #ffffff; background: #1f2937; }
-        .hub-tab.active {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-        }
-
-        .section-container { display: none; width: 100%; animation: fadeIn 0.3s ease-in-out; }
-        .section-container.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card {
-            background: #111827; border: 1px solid #374151; border-radius: 20px;
-            padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-        .card h2 { font-size: 1.25rem; color: #60a5fa; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        @media (max-width: 600px) { .input-grid { grid-template-columns: 1fr; } }
-
-        .btn {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; border: none;
-            padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer;
-            font-size: 0.95rem; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn:hover { opacity: 0.9; }
-        .btn-secondary { background: #1f2937; border: 1px solid #4b5563; color: #e5e7eb; }
-        .btn-success { background: #059669; border: 1px solid #10b981; color: #ffffff; }
-        .btn-danger { background: #7f1d1d; border: 1px solid #991b1b; color: #fca5a5; }
-        .btn-warning { background: #d97706; border: 1px solid #f59e0b; color: #ffffff; }
-        .btn-ai { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; }
-        .btn-locked { background: #374151; color: #9ca3af; border: 1px dashed #4b5563; cursor: not-allowed; }
-
-        .mixer-console {
-            background: #1a2333; border: 1px solid #374151; border-radius: 14px; padding: 15px; margin-top: 15px; margin-bottom: 15px;
-        }
-        .mixer-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;
-        }
-        .mixer-channel {
-            background: #111827; padding: 12px; border-radius: 10px; border: 1px solid #374151; text-align: center;
-        }
-        .mixer-channel h4 { font-size: 0.85rem; color: #60a5fa; margin-bottom: 8px; }
-        .slider-group {
-            display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; font-size: 0.75rem; color: #9ca3af; text-align: left;
-        }
-        .slider-group input[type=range] { width: 100%; accent-color: #3b82f6; cursor: pointer; }
-
-        .master-controls {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px;
-        }
-        @media (max-width: 600px) { .master-controls { grid-template-columns: 1fr; } }
-
-        .plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        @media (max-width: 700px) { .plans-grid { grid-template-columns: 1fr; } }
-
-        .plan-card {
-            background: #1f2937; border: 1px solid #374151; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 15px;
-        }
-        .plan-card.active-plan { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59,130,246,0.3); }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #374151; font-size: 0.9rem; }
-        th { color: #9ca3af; }
-
-        .footer-links {
-            margin-top: 20px; text-align: center; font-size: 0.85rem; color: #6b7280; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; width: 100%;
-        }
-        .footer-links a { color: #9ca3af; text-decoration: none; }
-    </style>
+ /* Contenedores multimedia para modo Dual */
+ .wrapper-reproductor-fantasma {
+ position: relative;
+ width: 100%;
+ }
+ .capa-iframe-transparente {
+ position: absolute;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ opacity: 0.01;
+ z-index: 10;
+ cursor: pointer;
+ }
+ </style>
 </head>
 <body>
-
-    <div id="toastNotification">Notificación</div>
-
-    <!-- ================= PANTALLA 1: LOGIN / REGISTRO ================= -->
-    <div id="authScreen">
-        <div class="login-card">
-            <img src="Logo_fondo_blanco_solo_icono.png" alt="Partiflow PRO" class="brand-logo">
-            <h2 id="authTitle">Partiflow PRO</h2>
-            
-            <div id="formLogin">
-                <div class="input-group">
-                    <label>Correo Electrónico:</label>
-                    <input type="email" id="txtEmail" placeholder="tu@correo.com" value="admin@huioapp.com">
-                </div>
-
-                <div class="input-group">
-                    <label>Contraseña:</label>
-                    <input type="password" id="txtPassword" placeholder="••••••••" value="123456">
-                </div>
-
-                <button class="btn-login" onclick="iniciarSesion()">Ingresar al Centro de Control</button>
-                
-                <div class="auth-link">
-                    ¿No tienes cuenta? <a href="#" onclick="alternarModoAuth('registro')">Regístrate (14 Días Gratis Básico)</a>
-                </div>
-            </div>
-
-            <div id="formRegistro" style="display:none;">
-                <div style="background:rgba(59, 130, 246, 0.1); border:1px solid #3b82f6; padding:10px; border-radius:8px; margin-bottom:12px; font-size:0.8rem; color:#93c5fd;">
-                    🎁 <strong>14 Días de Prueba (Plan Básico):</strong> Requiere tarjeta verificada. Cobro automático al día 15.
-                </div>
-                <div class="input-group">
-                    <label>Nombre Completo:</label>
-                    <input type="text" id="regNombre" placeholder="Tu nombre y apellido">
-                </div>
-                <div class="input-group">
-                    <label>Correo Electrónico:</label>
-                    <input type="email" id="regEmail" placeholder="tu@correo.com">
-                </div>
-                <div class="input-group">
-                    <label>Crea una Contraseña:</label>
-                    <input type="password" id="regPassword" placeholder="••••••••">
-                </div>
-                <div class="input-group">
-                    <label>Tarjeta dLocal Go (Verificación Plan Básico):</label>
-                    <input type="text" id="regTarjeta" placeholder="•••• •••• •••• •••• (Simulador Seguro)">
-                </div>
-
-                <button class="btn-login" onclick="completarRegistroConPrueba()">Activar 14 Días Plan Básico</button>
-                
-                <div class="auth-link">
-                    ¿Ya tienes cuenta? <a href="#" onclick="alternarModoAuth('login')">Ingresa aquí</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= PANTALLA 2: CENTRO DE CONTROL MAESTRO ================= -->
-    <div id="appScreen">
-        <nav class="hub-nav" id="navContainer">
-            <button class="hub-tab active" onclick="switchTab('tab-cabina', this)">🎶 Cabina & Consola</button>
-            <button class="hub-tab" onclick="switchTab('tab-playlists', this)">📚 Playlists</button>
-            <button class="hub-tab" onclick="switchTab('tab-evento', this)">🎉 Fiestas</button>
-            <button class="hub-tab" onclick="switchTab('tab-invitados', this)">👥 Invitados & QR</button>
-            <button class="hub-tab" onclick="switchTab('tab-hardware', this)">💡 Hardware</button>
-            <button class="hub-tab" onclick="switchTab('tab-billing', this)">💳 Planes</button>
-            <button class="hub-tab" onclick="switchTab('tab-perfil', this)">👤 Perfil</button>
-            <button class="hub-tab" id="tabAdminBtn" style="color:#60a5fa; display:none;" onclick="switchTab('tab-admin', this)">🛡️ Admin Master</button>
-            <button class="hub-tab" style="color:#ef4444;" onclick="cerrarSesion()">🚪 Salir</button>
-        </nav>
-
-        <!-- 1. CABINA & CONSOLA DUAL PRO CON CANCIONES REALES -->
-        <div id="tab-cabina" class="section-container active">
-            <div class="card">
-                <h2>🎧 Cabina Inteligente - Consola Pro (Canciones Reales)</h2>
-                
-                <div style="background:#1f2937; border:1px solid #374151; border-radius:12px; padding:12px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                    <div>
-                        <p style="font-size:0.85rem; color:#60a5fa; font-weight:bold;">🛡️ Motor de Alta Fidelidad & IP Rotativa</p>
-                        <p id="txtEstadoProxy" style="font-size:0.75rem; color:#34d399; margin-top:2px;">Reproducción Activa: Voces y Artistas Reales</p>
-                    </div>
-                    <button class="btn btn-secondary" style="font-size:0.75rem; padding:8px 12px; width:auto;" onclick="alternarModoDispositivo()">Modo Laptop</button>
-                </div>
-
-                <div class="mixer-console">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <span style="font-size:0.9rem; color:#60a5fa; font-weight:bold;">🎛️ Consola Dual con Mezcla Directa</span>
-                        <div>
-                            <button id="btnModoIA" class="btn btn-ai" style="padding:4px 10px; font-size:0.75rem; width:auto;" onclick="toggleModoIA()">🤖 IA Copiloto: ON</button>
-                        </div>
-                    </div>
-
-                    <div class="mixer-grid">
-                        <!-- DECK A -->
-                        <div class="mixer-channel">
-                            <h4 style="color:#60a5fa;">Deck A</h4>
-                            <p id="txtDeckASong" style="font-size:0.75rem; color:#d1d5db; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ninguna</p>
-                            
-                            <div class="slider-group"><label>Volumen</label><input type="range" id="volA" min="0" max="100" value="90"></div>
-                            <button class="btn btn-success" style="font-size:0.75rem; padding:8px; margin-top:6px;" onclick="cargarDeck('A')">▶️ Cargar en Deck A</button>
-                        </div>
-
-                        <!-- DECK B -->
-                        <div class="mixer-channel">
-                            <h4 style="color:#60a5fa;">Deck B</h4>
-                            <p id="txtDeckBSong" style="font-size:0.75rem; color:#d1d5db; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ninguna</p>
-                            
-                            <div class="slider-group"><label>Volumen</label><input type="range" id="volB" min="0" max="100" value="85"></div>
-                            <button class="btn btn-success" style="font-size:0.75rem; padding:8px; margin-top:6px;" onclick="cargarDeck('B')">▶️ Cargar en Deck B</button>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 12px; background:#111827; padding:10px; border-radius:8px; border:1px solid #374151;">
-                        <div class="slider-group" style="margin-bottom:0;">
-                            <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
-                                <span>A (Deck A)</span>
-                                <span style="color:#60a5fa; font-weight:bold;">CROSSFADER DE MEZCLA</span>
-                                <span>B (Deck B)</span>
-                            </div>
-                            <input type="range" id="crossfader" min="0" max="100" value="50">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="input-group" style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151;">
-                    <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🔍 Buscar Canción o Artista:</label>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="inputBusqueda" placeholder="Ej. Shakira, Hombres G, Luis Miguel, Salsa..." style="flex:1;" onkeyup="buscarCancionEnVivo(event)">
-                        <button class="btn btn-ai" style="width:auto; padding:0 15px;" onclick="activarReconocimientoVozIA()" title="Hablar con la IA">🎙️ Hablar</button>
-                        <button class="btn" style="width:auto;" onclick="ejecutarBusquedaPro()">Buscar</button>
-                    </div>
-                </div>
-
-                <div id="resultadosBusqueda" style="background:#1f2937; border-radius:10px; padding:10px; margin-bottom:15px; display:none;">
-                    <div id="listaSugerencias" style="display:flex; flex-direction:column; gap:6px;"></div>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px;">
-                    <button class="btn btn-success" onclick="ejecutarBusquedaPro(); cargarDeck('A');">▶️ Reproducción Directa</button>
-                    <button class="btn btn-warning" id="btnModoKaraoke" onclick="toggleModoKaraoke()">🎤 Karaoke</button>
-                </div>
-
-                <div id="karaokeMonitor" style="display:none; background:#111827; border:2px solid #f59e0b; border-radius:12px; padding:15px; margin-bottom:15px; text-align:center;">
-                    <p style="color:#f59e0b; font-size:0.8rem; font-weight:bold;">🌟 KARAOKE ACTIVO</p>
-                    <p id="letraKaraoke" style="font-size:1.1rem; color:#ffffff; font-style:italic; margin-top:5px;">♪♪ [Canta aquí con la letra oficial...] ♪♪</p>
-                </div>
-
-                <h3 style="font-size:1rem; color:#e5e7eb; margin-top:15px; margin-bottom:10px;">🎵 Cola en Vivo</h3>
-                <div style="background:#1f2937; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <span id="txtEstadoCancion">Ninguna canción seleccionada</span>
-                    <span id="txtEstadoBadge" style="color:#34d399; font-weight:bold;">Listo 🔊</span>
-                </div>
-
-                <div class="master-controls">
-                    <button class="btn btn-secondary" id="btnPlayPause" onclick="togglePlayPauseGeneral()">⏸️ Pausar Todo</button>
-                    <button class="btn btn-secondary" onclick="siguienteDeckMix()">⏭️ Siguiente Mix</button>
-                    <button class="btn btn-danger" onclick="detenerTodoAudio()">🗑️ Detener</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. PLAYLISTS -->
-        <div id="tab-playlists" class="section-container">
-            <div class="card">
-                <h2>📚 Playlists de Mezclas</h2>
-                <div class="input-grid">
-                    <div class="input-group">
-                        <label>Nombre del Set:</label>
-                        <input type="text" id="inputNombrePlaylist" placeholder="Ej. Set Verano...">
-                    </div>
-                    <div class="input-group">
-                        <label>Enlace de Audio o Streaming:</label>
-                        <input type="text" id="inputSpotifyLink" placeholder="https://... o enlace YouTube">
-                    </div>
-                </div>
-                <div class="input-group" style="margin-bottom: 15px;">
-                    <label>Pistas / Artistas:</label>
-                    <input type="text" id="inputPistasPlaylist" placeholder="Ej. Shakira, Tiesto...">
-                </div>
-                <button class="btn" style="margin-bottom: 20px;" onclick="guardarNuevoPlaylist()">💾 Guardar Set</button>
-
-                <table>
-                    <thead><tr><th>Set</th><th>Pistas / Enlace</th><th>Calificación</th><th>Acción</th></tr></thead>
-                    <tbody id="tablaPlaylistsGuardados"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- 3. CONFIGURAR FIESTAS -->
-        <div id="tab-evento" class="section-container">
-            <div class="card">
-                <h2>⚙️ Configuración del Evento y Fiestas</h2>
-                <p id="txtMensajeLimiteFiesta" style="color:#f59e0b; font-size:0.85rem; margin-bottom:15px;"></p>
-                <div class="input-grid">
-                    <div class="input-group">
-                        <label>Nombre de la Fiesta:</label>
-                        <input type="text" id="txtNombre" value="Cumpleaños / Reunión">
-                    </div>
-                    <div class="input-group">
-                        <label>Fecha del Evento:</label>
-                        <input type="date" id="txtFecha" value="2026-09-15">
-                    </div>
-                </div>
-                <div class="input-grid">
-                    <div class="input-group">
-                        <label>Motivo de Reunión:</label>
-                        <input type="text" id="txtMotivo" value="Celebración Privada">
-                    </div>
-                    <div class="input-group">
-                        <label>Quién Invita (Anfitrión):</label>
-                        <input type="text" id="txtAnfitrion" value="Luis Ganoza">
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label>Ubicación (Enlace Google Maps):</label>
-                    <input type="text" id="txtUbicacion" value="https://maps.google.com">
-                </div>
-                <button class="btn" onclick="guardarConfiguracionFiesta()">Guardar y Registrar Fiesta</button>
-            </div>
-        </div>
-
-        <!-- 4. INVITADOS & QR -->
-        <div id="tab-invitados" class="section-container">
-            <div class="card">
-                <h2>🎫 Control de Accesos y Pases QR</h2>
-                <div id="bloqueInvitadosRestringido" style="display:none; text-align:center; padding:30px;">
-                    <p style="color:#f59e0b; font-weight:bold; margin-bottom:10px;" id="lblRestriccionInv">🔒 Exclusivo Plan PRO</p>
-                    <button class="btn" onclick="switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5])">Actualizar a PRO</button>
-                </div>
-                <div id="bloqueInvitadosActivo">
-                    <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:15px;">Selecciona a qué fiesta creada deseas enlazar el pase VIP del invitado:</p>
-                    <div class="input-group">
-                        <label>Seleccionar Fiesta Destino:</label>
-                        <select id="selectEventoInvitado"><option value="Cumpleaños / Reunión">Cumpleaños / Reunión</option></select>
-                    </div>
-                    <div class="input-group">
-                        <label>Registrar Invitado:</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" id="inputInvitado" placeholder="Nombre completo..." style="flex:1;">
-                            <button class="btn" style="width:auto;" onclick="generarPaseQR()">Generar VIP</button>
-                        </div>
-                    </div>
-                    <table>
-                        <thead><tr><th>Invitado</th><th>Fiesta Enlazada</th><th>Código</th><th>Acción</th></tr></thead>
-                        <tbody id="tablaPases"><tr><td colspan="4" style="text-align:center; color:#9ca3af;">Sin pases.</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. HARDWARE -->
-        <div id="tab-hardware" class="section-container">
-            <div class="card">
-                <h2>💡 Conectividad Hardware</h2>
-                <div id="bloqueHardwareRestringido" style="display:none; text-align:center; padding:30px;">
-                    <p style="color:#f59e0b; font-weight:bold; margin-bottom:10px;" id="lblRestriccionHard">🔒 Exclusivo Plan PRO</p>
-                    <button class="btn" onclick="switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5])">Actualizar a PRO</button>
-                </div>
-                <div id="bloqueHardwareActivo" class="hardware-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                    <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px;">
-                        <h3>🎤 Micrófono Inalámbrico</h3>
-                        <button class="btn btn-warning" style="margin-top:10px;" onclick="mostrarNotificacion('Micrófono conectado.')">Vincular</button>
-                    </div>
-                    <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px;">
-                        <h3>💡 Luces LED & Discoteca</h3>
-                        <button class="btn btn-success" style="margin-top:10px;" onclick="mostrarNotificacion('Luces sincronizadas.')">Conectar</button>
-                    </div>
-                    <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px; grid-column:span 2;">
-                        <h3>📺 Pantallas y TVs (Wi-Fi)</h3>
-                        <p style="color:#9ca3af; font-size:0.85rem; margin-top:5px;">Transmite visuales y letras de karaoke a proyectores o pantallas inteligentes del local.</p>
-                        <button class="btn" style="margin-top:10px;" onclick="mostrarNotificacion('Buscando pantallas compatibles en red local...')">Conectar Pantallas</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 6. PLANES Y BILLING -->
-        <div id="tab-billing" class="section-container">
-            <div class="card">
-                <h2>💳 Suscripción y Facturación Recurrente</h2>
-                <p style="color:#34d399; font-size:0.9rem; margin-bottom:20px; background:rgba(52,211,153,0.1); padding:12px; border-radius:8px; border:1px solid #059669;" id="txtBillingInfo">
-                    🎉 <strong>Promoción Activa:</strong> El <strong>Plan Básico</strong> incluye <strong>14 días de prueba gratis</strong> con tarjeta verificada y cobro automático al día 15. El <strong>Plan PRO</strong> es de contratación directa o pago inmediato.
-                </p>
-                <div class="plans-grid">
-                    <div class="plan-card active-plan" id="cardPlanBasico">
-                        <div>
-                            <h3 style="color:#9ca3af;">Plan Básico</h3>
-                            <p style="color:#ffffff; font-weight:bold; font-size:1.15rem;" id="precioBasicoContainer"></p>
-                            <p style="color:#9ca3af; font-size:0.85rem; line-height: 1.5;">
-                                <strong>Incluye:</strong> Cabina musical personal y almacenamiento de playlists.<br>
-                                <strong>Límite:</strong> 1 fiesta semanal. Sin invitados QR, sin karaoke, sin mini consola IA y sin luces.<br>
-                                <em>🎁 14 días de prueba gratis (Cobro el día 15).</em>
-                            </p>
-                        </div>
-                        <button class="btn btn-success" id="btnElegirBasico" onclick="cambiarPlanUsuario('basico')">Prueba Activa (14 Días)</button>
-                    </div>
-
-                    <div class="plan-card" id="cardPlanPro">
-                        <div>
-                            <h3 style="color:#60a5fa;">Plan PRO</h3>
-                            <p style="color:#34d399; font-weight:bold; font-size:1.15rem;" id="precioProContainer"></p>
-                            <p style="color:#9ca3af; font-size:0.85rem; line-height: 1.5;">
-                                <strong>Incluye:</strong> Acceso total, eventos ilimitados semanales, invitados QR enlazados, modo karaoke, micrófonos, pantallas, luces inteligentes y <strong>Mini Consola Táctil con IA Copiloto</strong>.<br>
-                                <em>⚡ Contratación directa / Pago inmediato.</em>
-                            </p>
-                        </div>
-                        <button class="btn" id="btnElegirPro" onclick="cambiarPlanUsuario('pro')">Contratar Plan PRO</button>
-                    </div>
-                </div>
-
-                <div style="margin-top:20px; padding:15px; background:#1f2937; border-radius:12px; border:1px solid #374151;">
-                    <p style="font-size:0.9rem; color:#60a5fa; font-weight:bold; margin-bottom:8px;">🎁 Canjear Código de Regalo / Promoción</p>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="inputCodigoCanje" placeholder="Ingresa tu código (Ej. PRO-REGALO-xxxx)" style="flex:1; background:#111827; border:1px solid #4b5563; padding:10px; border-radius:8px; color:white;">
-                        <button class="btn" style="width:auto;" onclick="canjearCodigoRegalo()">Canjear Código</button>
-                    </div>
-                </div>
-
-                <div style="margin-top:20px; padding:15px; background:#1f2937; border-radius:12px; border:1px solid #374151; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                    <div>
-                        <p style="font-size:0.9rem; color:#60a5fa; font-weight:bold;">⚙️ Control de Suscripción Recurrente</p>
-                        <p style="font-size:0.75rem; color:#9ca3af;">Puedes pausar o cancelar la renovación automática en cualquier momento.</p>
-                    </div>
-                    <button class="btn btn-danger" style="width:auto; font-size:0.8rem; padding:8px 15px;" onclick="mostrarNotificacion('Suscripción cancelada. No se realizarán cargos.')">🛑 Cancelar Suscripción</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 7. PERFIL AMPLIADO -->
-        <div id="tab-perfil" class="section-container">
-            <div class="card">
-                <h2>👤 Mi Perfil Corporativo y Personal</h2>
-                <div class="input-grid">
-                    <div class="input-group">
-                        <label>Nombre Completo:</label>
-                        <input type="text" id="perfilNombre" value="Luis Enrique Ganoza Céspedes">
-                    </div>
-                    <div class="input-group">
-                        <label>Correo Electrónico:</label>
-                        <input type="email" id="perfilCorreo" value="admin@huioapp.com">
-                    </div>
-                </div>
-                <div class="input-grid">
-                    <div class="input-group">
-                        <label>Celular / WhatsApp:</label>
-                        <input type="text" id="perfilTelefono" value="+51 999 999 999">
-                    </div>
-                    <div class="input-group">
-                        <label>Ciudad / Ubicación:</label>
-                        <input type="text" id="perfilCiudad" value="Lima, Perú">
-                    </div>
-                </div>
-                <button class="btn" onclick="mostrarNotificacion('¡Perfil y datos de contacto actualizados!')">Guardar Cambios de Perfil</button>
-            </div>
-        </div>
-
-        <!-- 8. PANEL DE ADMINISTRACIÓN MASTER & MONITOREO DE RED / IP -->
-        <div id="tab-admin" class="section-container">
-            <div class="card">
-                <h2>🛡️ Panel de Administración Master (Admin huioapp.com)</h2>
-                <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">
-                    Control general de licencias, cuentas corporativas ilimitadas, generador de códigos de regalo y monitoreo de tráfico con pool de IPs rotativas.
-                </p>
-
-                <!-- Monitoreo de Tráfico, Caché y Pool de IPs Rotativas -->
-                <div style="background:#1f2937; padding:15px; border-radius:10px; border:1px solid #374151; margin-bottom:20px;">
-                    <h3 style="color:#f59e0b; font-size:1rem; margin-bottom:8px;">📊 Monitoreo de Red & Pool de IPs Rotativas</h3>
-                    <p style="color:#9ca3af; font-size:0.85rem; margin-bottom:12px;">Estado del backend proxy para prevenir baneos y asegurar las pruebas del Plan Básico:</p>
-                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; text-align:center;">
-                        <div style="background:#111827; padding:10px; border-radius:8px;">
-                            <span style="font-size:0.75rem; color:#9ca3af;">IPs en Rotación</span>
-                            <p style="font-size:1.1rem; color:#34d399; font-weight:bold; margin-top:4px;">999 Activas</p>
-                        </div>
-                        <div style="background:#111827; padding:10px; border-radius:8px;">
-                            <span style="font-size:0.75rem; color:#9ca3af;">Búsquedas en Caché</span>
-                            <p id="statCacheCount" style="font-size:1.1rem; color:#60a5fa; font-weight:bold; margin-top:4px;">0</p>
-                        </div>
-                        <div style="background:#111827; padding:10px; border-radius:8px;">
-                            <span style="font-size:0.75rem; color:#9ca3af;">Pruebas de 14 Días (Básico)</span>
-                            <p id="statTrialCount" style="font-size:1.1rem; color:#f59e0b; font-weight:bold; margin-top:4px;">1 Activa</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
-                    <div style="background:#1f2937; padding:15px; border-radius:10px; border:1px solid #374151;">
-                        <h3 style="color:#60a5fa; font-size:1rem; margin-bottom:8px;">🎁 Códigos PRO de Regalo (1 Mes)</h3>
-                        <p style="color:#9ca3af; font-size:0.8rem; margin-bottom:10px;">100 códigos generados para entrega manual.</p>
-                        <button class="btn btn-ai" style="font-size:0.8rem; padding:8px;" onclick="mostrarListaCodigos('pro')">Ver Lista de 100 Códigos PRO</button>
-                    </div>
-
-                    <div style="background:#1f2937; padding:15px; border-radius:10px; border:1px solid #374151;">
-                        <h3 style="color:#60a5fa; font-size:1rem; margin-bottom:8px;">🎁 Códigos Básico de Regalo</h3>
-                        <p style="color:#9ca3af; font-size:0.8rem; margin-bottom:10px;">100 códigos generados para entrega manual.</p>
-                        <button class="btn btn-secondary" style="font-size:0.8rem; padding:8px;" onclick="mostrarListaCodigos('basico')">Ver Lista de 100 Códigos Básico</button>
-                    </div>
-                </div>
-
-                <div style="background:#1f2937; padding:15px; border-radius:10px; border:1px solid #374151; margin-bottom:20px;">
-                    <h3 style="color:#34d399; font-size:1rem; margin-bottom:8px;">🌟 Cuentas PRO Ilimitadas Adicionales (10 Cupos)</h3>
-                    <p style="color:#9ca3af; font-size:0.85rem; margin-bottom:10px;">Lista de correos con acceso PRO permanente sin restricciones:</p>
-                    <div id="listaCuentasProIlimitadas" style="font-family:monospace; font-size:0.85rem; color:#e5e7eb; background:#111827; padding:10px; border-radius:6px; max-height:120px; overflow-y:auto;">
-                        1. admin@huioapp.com (Super Administrador)<br>
-                        2. vip1@partiflow.app<br>
-                        3. vip2@partiflow.app<br>
-                        4. vip3@partiflow.app<br>
-                        5. vip4@partiflow.app<br>
-                        6. vip5@partiflow.app<br>
-                        7. vip6@partiflow.app<br>
-                        8. vip7@partiflow.app<br>
-                        9. vip8@partiflow.app<br>
-                        10. vip9@partiflow.app<br>
-                        11. vip10@partiflow.app
-                    </div>
-                </div>
-
-                <div id="contenedorGenerador" style="display:none; background:#111827; padding:15px; border-radius:10px; border:1px solid #374151;">
-                    <h3 id="tituloListaCodigos" style="color:#f59e0b; font-size:0.95rem; margin-bottom:10px;"></h3>
-                    <textarea id="txtAreaCodigos" rows="6" style="width:100%; background:#1f2937; color:#34d399; border:1px solid #4b5563; padding:10px; border-radius:8px; font-family:monospace; font-size:0.85rem;" readonly></textarea>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-links">
-            <a href="#" onclick="mostrarNotificacion('Términos...')">Términos y Condiciones</a>
-            <a href="#" onclick="navigator.clipboard.writeText(window.location.href); mostrarNotificacion('Enlace copiado');">🔗 Copiar Enlace</a>
-        </div>
-    </div>
-
-    <script>
-        let planActual = 'basico';
-        let usuarioActualEmail = '';
-        let deviceFingerprint = 'dev_' + Math.random().toString(36).substring(2);
-
-        const codigosProRegalo = Array.from({length: 100}, (_, i) => `PRO-REGALO-${1000 + i}`);
-        const codigosBasicoRegalo = Array.from({length: 100}, (_, i) => `BASICO-REGALO-${2000 + i}`);
-
-        const cuentasIlimitadasPro = [
-            "admin@huioapp.com",
-            "vip1@partiflow.app", "vip2@partiflow.app", "vip3@partiflow.app", 
-            "vip4@partiflow.app", "vip5@partiflow.app", "vip6@partiflow.app", 
-            "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
-        ];
-
-        // Biblioteca directa con IDs de YouTube de alta fidelidad (Canciones reales cantadas)
-        const bibliotecaNativaAudio = {
-            "shakira": { nombre: "Shakira - Waka Waka (Canción Oficial)", id: "pXRviuL6vMY" },
-            "luis miguel": { nombre: "Luis Miguel - La Incondicional (Balada)", id: "Q4v1H88U5a8" },
-            "mexicanos": { nombre: "Vicente Fernández - Hermoso Cariño (Ranchera)", id: "7a75u9g46rQ" },
-            "80": { nombre: "Hombres G - Devuélveme a mi Chica (Pop Rock)", id: "uC3V52f7V9g" },
-            "90": { nombre: "Maná - Rayando el Sol (Rock Pop 90s)", id: "v14f_v1Q79g" },
-            "salsa": { nombre: "Salsa Romántica - Mix Éxitos", id: "98H5x578a_4" },
-            "default": { nombre: "Luis Fonsi - Despacito ft. Daddy Yankee", id: "kJQP7kiw5Fk" }
-        };
-
-        let cancionActualA = bibliotecaNativaAudio.default;
-        let cancionActualB = bibliotecaNativaAudio.default;
-        let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
-
-        let fiestasCreadas = JSON.parse(localStorage.getItem('partiflow_fiestas')) || ["Cumpleaños / Reunión"];
-        let modoKaraokeActivo = false;
-        let modoDispositivoMovilSeguro = true;
-        let modoIaActivo = true;
-        let intervaloMixIA = null;
-
-        function inicializarPreciosDinamicos() {
-            const containerBasico = document.getElementById('precioBasicoContainer');
-            const containerPro = document.getElementById('precioProContainer');
-
-            if (esOfertaLanzamiento) {
-                containerBasico.innerHTML = `$9.90 + IGV <span style="font-size:0.75rem; color:#34d399;">/ mes (14 días gratis)</span>`;
-                containerPro.innerHTML = `$19.90 + IGV <span style="font-size:0.75rem; color:#60a5fa;">/ mes (Pago inmediato)</span>`;
-            } else {
-                containerBasico.innerHTML = `$12.38 + IGV <span style="font-size:0.75rem; color:#34d399;">/ mes (14 días gratis)</span>`;
-                containerPro.innerHTML = `$24.88 + IGV <span style="font-size:0.75rem; color:#60a5fa;">/ mes (Pago inmediato)</span>`;
-            }
-            actualizarContadorCacheUI();
-        }
-
-        function actualizarContadorCacheUI() {
-            const elem = document.getElementById('statCacheCount');
-            if(elem) elem.textContent = Object.keys(cacheBusquedas).length;
-        }
-
-        function cargarDeck(deck) {
-            const cancion = deck === 'A' ? cancionActualA : cancionActualB;
-            
-            // Inyectar el reproductor oficial flotante de YouTube para garantizar voz y audio real
-            const contenedorDeck = document.createElement('div');
-            contenedorDeck.innerHTML = `
-                <div style="position:fixed; bottom:20px; right:20px; width:320px; height:180px; background:#000; z-index:9999; border-radius:12px; overflow:hidden; border:2px solid #3b82f6; box-shadow:0 10px 25px rgba(0,0,0,0.8);">
-                    <div style="background:#111827; padding:4px 8px; font-size:0.75rem; color:#60a5fa; display:flex; justify-content:space-between; align-items:center;">
-                        <span>▶️ ${cancion.nombre}</span>
-                        <button onclick="document.getElementById('reproductorActivoFlotante').remove()" style="background:transparent; border:none; color:#ef4444; font-weight:bold; cursor:pointer;">✕</button>
-                    </div>
-                    <iframe width="100%" height="calc(100% - 24px)" src="https://www.youtube.com/embed/${cancion.id}?autoplay=1" title="${cancion.nombre}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-            `;
-            
-            const viejoReproductor = document.getElementById('reproductorActivoFlotante');
-            if (viejoReproductor) viejoReproductor.remove();
-            contenedorDeck.id = 'reproductorActivoFlotante';
-            document.body.appendChild(contenedorDeck);
-
-            document.getElementById(`txtDeck${deck}Song`).textContent = cancion.nombre;
-            if(deck === 'A') {
-                document.getElementById('txtEstadoCancion').textContent = cancion.nombre;
-            }
-            mostrarNotificacion(`▶️ Deck ${deck} cargado (Canción real): ${cancion.nombre}`);
-        }
-
-        function ejecutarBusquedaPro() {
-            const input = document.getElementById('inputBusqueda');
-            const query = input.value.trim().toLowerCase();
-            if (!query) return mostrarNotificacion('Escribe el nombre de una canción o artista.');
-
-            let resultado = bibliotecaNativaAudio.default;
-
-            if (query.includes('shakira')) {
-                resultado = bibliotecaNativaAudio.shakira;
-            } else if (query.includes('luis miguel') || query.includes('miguel')) {
-                resultado = bibliotecaNativaAudio["luis miguel"];
-            } else if (query.includes('mexicanos') || query.includes('mexicana') || query.includes('vicente') || query.includes('ranchera')) {
-                resultado = bibliotecaNativaAudio.mexicanos;
-            } else if (query.includes('80') || query.includes('hombres g') || query.includes('rock')) {
-                resultado = bibliotecaNativaAudio["80"];
-            } else if (query.includes('90') || query.includes('maná') || query.includes('enanitos')) {
-                resultado = bibliotecaNativaAudio["90"];
-            } else if (query.includes('salsa') || query.includes('reggaeton')) {
-                resultado = bibliotecaNativaAudio.salsa;
-            } else {
-                resultado = { nombre: `${input.value} (Hit Global en Vivo)`, id: "kJQP7kiw5Fk" };
-            }
-
-            cancionActualA = resultado;
-            document.getElementById('txtDeckASong').textContent = resultado.nombre;
-            document.getElementById('txtEstadoCancion').textContent = resultado.nombre;
-            
-            cargarDeck('A');
-        }
-
-        function siguienteDeckMix() {
-            cancionActualA = bibliotecaNativaAudio["80"];
-            cargarDeck('A');
-            mostrarNotificacion('⏭️ Siguiente mix cargado en Deck A.');
-        }
-
-        function togglePlayPauseGeneral() {
-            const reproductor = document.getElementById('reproductorActivoFlotante');
-            if (reproductor) {
-                reproductor.style.display = reproductor.style.display === 'none' ? 'block' : 'none';
-                mostrarNotificacion("⏸️ Reproductor alternado");
-            } else {
-                mostrarNotificacion("Carga una canción primero.");
-            }
-        }
-
-        function detenerTodoAudio() {
-            const viejoReproductor = document.getElementById('reproductorActivoFlotante');
-            if (viejoReproductor) viejoReproductor.remove();
-            document.getElementById('txtEstadoCancion').textContent = "Detenido";
-            mostrarNotificacion('⏹️ Audio detenido.');
-        }
-
-        function alternarModoAuth(modo) {
-            const formLogin = document.getElementById('formLogin');
-            const formRegistro = document.getElementById('formRegistro');
-            const title = document.getElementById('authTitle');
-
-            if (modo === 'registro') {
-                formLogin.style.display = 'none';
-                formRegistro.style.display = 'block';
-                title.textContent = 'Registro (14 Días Básico)';
-            } else {
-                formRegistro.style.display = 'none';
-                formLogin.style.display = 'block';
-                title.textContent = 'Partiflow PRO';
-            }
-        }
-
-        function completarRegistroConPrueba() {
-            const nombre = document.getElementById('regNombre').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const pass = document.getElementById('regPassword').value.trim();
-            const tarjeta = document.getElementById('regTarjeta').value.trim();
-
-            if (!nombre || !email || !pass || !tarjeta) {
-                mostrarNotificacion('Completa todos los campos y la tarjeta de verificación.');
-                return;
-            }
-
-            usuarioActualEmail = email;
-            planActual = 'basico';
-
-            document.getElementById('perfilNombre').value = nombre;
-            document.getElementById('perfilCorreo').value = email;
-
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'flex';
-            
-            verificarAccesoAdminMaster();
-            aplicarRestriccionesPlan();
-            actualizarSelectorEventos();
-            mostrarNotificacion('🎉 ¡Bienvenido! Tus 14 días de prueba en el Plan Básico están activos.');
-        }
-
-        function iniciarSesion() {
-            const email = document.getElementById('txtEmail').value.trim();
-            const pass = document.getElementById('txtPassword').value.trim();
-            if (!email || !pass) { mostrarNotificacion('Ingresa tus datos.'); return; }
-
-            usuarioActualEmail = email;
-            document.getElementById('perfilCorreo').value = email;
-
-            if (cuentasIlimitadasPro.includes(email)) {
-                planActual = 'pro';
-            } else {
-                planActual = 'basico'; 
-            }
-
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'flex';
-            
-            verificarAccesoAdminMaster();
-            aplicarRestriccionesPlan();
-            actualizarSelectorEventos();
-            mostrarNotificacion(`Sesión iniciada: ${email}`);
-        }
-
-        function verificarAccesoAdminMaster() {
-            const tabAdminBtn = document.getElementById('tabAdminBtn');
-            if (usuarioActualEmail === 'admin@huioapp.com') {
-                tabAdminBtn.style.display = 'inline-block';
-            } else {
-                tabAdminBtn.style.display = 'none';
-            }
-        }
-
-        function cambiarPlanUsuario(nuevoPlan) {
-            planActual = nuevoPlan;
-            aplicarRestriccionesPlan();
-            if (nuevoPlan === 'pro') {
-                mostrarNotificacion('💳 Redirigiendo a pasarela dLocal Go para pago inmediato de Plan PRO...');
-            } else {
-                mostrarNotificacion('🎉 Suscripción actualizada a Plan Básico (14 días gratis)');
-            }
-        }
-
-        function canjearCodigoRegalo() {
-            const codigo = document.getElementById('inputCodigoCanje').value.trim();
-            if (!codigo) { mostrarNotificacion('Ingresa un código válido.'); return; }
-
-            if (codigosProRegalo.includes(codigo)) {
-                planActual = 'pro';
-                mostrarNotificacion('🎁 ¡Código PRO canjeado con éxito (1 mes gratis)!');
-                aplicarRestriccionesPlan();
-            } else if (codigosBasicoRegalo.includes(codigo)) {
-                planActual = 'basico';
-                mostrarNotificacion('🎁 ¡Código Básico canjeado con éxito!');
-                aplicarRestriccionesPlan();
-            } else {
-                mostrarNotificacion('❌ Código inválido.');
-            }
-            document.getElementById('inputCodigoCanje').value = '';
-        }
-
-        function aplicarRestriccionesPlan() {
-            const btnKaraoke = document.getElementById('btnModoKaraoke');
-            const bloqueInvRest = document.getElementById('bloqueInvitadosRestringido');
-            const bloqueInvAct = document.getElementById('bloqueInvitadosActivo');
-            const bloqueHardRest = document.getElementById('bloqueHardwareRestringido');
-            const bloqueHardAct = document.getElementById('bloqueHardwareActivo');
-            const cardBasico = document.getElementById('cardPlanBasico');
-            const cardPro = document.getElementById('cardPlanPro');
-            const btnBasico = document.getElementById('btnElegirBasico');
-            const btnPro = document.getElementById('btnElegirPro');
-
-            const esProIlimitado = cuentasIlimitadasPro.includes(usuarioActualEmail);
-            if (esProIlimitado) planActual = 'pro';
-
-            if (planActual === 'basico') {
-                btnKaraoke.className = "btn btn-locked";
-                btnKaraoke.innerHTML = "🔒 Karaoke (Exclusivo PRO)";
-                bloqueInvRest.style.display = 'block';
-                bloqueInvAct.style.display = 'none';
-                bloqueHardRest.style.display = 'block';
-                bloqueHardAct.style.display = 'none';
-                cardBasico.classList.add('active-plan');
-                cardPro.classList.remove('active-plan');
-                btnBasico.className = "btn btn-success";
-                btnBasico.innerHTML = "Prueba Activa (14 Días)";
-                btnPro.className = "btn";
-                btnPro.innerHTML = "Contratar Plan PRO";
-            } else {
-                btnKaraoke.className = "btn btn-warning";
-                btnKaraoke.innerHTML = "🎤 Karaoke";
-                bloqueInvRest.style.display = 'none';
-                bloqueInvAct.style.display = 'block';
-                bloqueHardRest.style.display = 'none';
-                bloqueHardAct.style.display = 'block';
-                cardPro.classList.add('active-plan');
-                cardBasico.classList.remove('active-plan');
-                btnPro.className = "btn btn-success";
-                btnPro.innerHTML = esProIlimitado ? "Acceso Admin Ilimitado" : "Plan PRO Activo";
-                btnBasico.className = "btn btn-secondary";
-                btnBasico.innerHTML = "Cambiar a Básico";
-            }
-            
-            actualizarMensajeFiestaSemanal();
-        }
-
-        function toggleModoIA() {
-            if (planActual === 'basico' && !cuentasIlimitadasPro.includes(usuarioActualEmail)) {
-                mostrarNotificacion('🔒 La IA Copiloto requiere Plan PRO.');
-                switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5]);
-                return;
-            }
-            modoIaActivo = !modoIaActivo;
-            const btn = document.getElementById('btnModoIA');
-            if (modoIaActivo) {
-                btn.className = "btn btn-ai";
-                btn.innerHTML = "🤖 IA Copiloto: ON";
-                mostrarNotificacion("🤖 IA Copiloto activada.");
-            } else {
-                btn.className = "btn btn-secondary";
-                btn.innerHTML = "🎛️ Manual: ON";
-                mostrarNotificacion("🎛️ Modo Manual activado.");
-            }
-        }
-
-        window.onload = function() {
-            inicializarPreciosDinamicos();
-            renderizarPlaylists();
-            actualizarSelectorEventos();
-            renderizarPases();
-        };
-
-        function actualizarMensajeFiestaSemanal() {
-            const msg = document.getElementById('txtMensajeLimiteFiesta');
-            if (planActual === 'basico') {
-                msg.textContent = "ℹ️ Plan Básico (Prueba 14 Días): 1 fiesta semanal permitida.";
-            } else {
-                msg.textContent = "✨ Plan PRO: Fiestas ilimitadas semanales.";
-            }
-        }
-
-        function guardarConfiguracionFiesta() {
-            const nombreFiesta = document.getElementById('txtNombre').value.trim();
-            if (!nombreFiesta) { mostrarNotificacion('Ingresa el nombre de la fiesta.'); return; }
-
-            if (planActual === 'basico' && fiestasCreadas.length >= 1 && !fiestasCreadas.includes(nombreFiesta)) {
-                mostrarNotificacion('❌ El Plan Básico solo permite 1 fiesta semanal.');
-                return;
-            }
-
-            if (!fiestasCreadas.includes(nombreFiesta)) {
-                fiestasCreadas.push(nombreFiesta);
-                localStorage.setItem('partiflow_fiestas', JSON.stringify(fiestasCreadas));
-            }
-
-            actualizarSelectorEventos();
-            actualizarMensajeFiestaSemanal();
-            mostrarNotificacion(`🎉 Fiesta "${nombreFiesta}" guardada.`);
-        }
-
-        function actualizarSelectorEventos() {
-            const select = document.getElementById('selectEventoInvitado');
-            if(!select) return;
-            select.innerHTML = '';
-            fiestasCreadas.forEach(f => {
-                const opt = document.createElement('option');
-                opt.value = f;
-                opt.textContent = f;
-                select.appendChild(opt);
-            });
-        }
-
-        function activarReconocimientoVozIA() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                mostrarNotificacion('🎙️ Navegador sin soporte de voz.');
-                return;
-            }
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'es-ES';
-            mostrarNotificacion('🎙️ IA escuchando...');
-            recognition.onresult = function(event) {
-                const speechResult = event.results[0][0].transcript;
-                document.getElementById('inputBusqueda').value = speechResult;
-                ejecutarBusquedaPro();
-            };
-            recognition.start();
-        }
-
-        function buscarCancionEnVivo(e) {
-            const query = e.target.value.toLowerCase().trim();
-            const box = document.getElementById('resultadosBusqueda');
-            const lista = document.getElementById('listaSugerencias');
-            lista.innerHTML = '';
-            if (query.length < 2) { box.style.display = 'none'; return; }
-
-            box.style.display = 'block';
-            lista.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:#111827; padding:8px; border-radius:6px; cursor:pointer;" onclick="seleccionarSugerenciaPro('${e.target.value}')">
-                    <span>🎵 Cargar: "${e.target.value}"</span> 
-                    <span style="color:#34d399; font-size:0.75rem;">Seleccionar</span>
-                </div>
-            `;
-        }
-
-        function seleccionarSugerenciaPro(nombre) {
-            document.getElementById('inputBusqueda').value = nombre;
-            document.getElementById('resultadosBusqueda').style.display = 'none';
-            ejecutarBusquedaPro();
-        }
-
-        function toggleModoKaraoke() {
-            if (planActual === 'basico' && !cuentasIlimitadasPro.includes(usuarioActualEmail)) {
-                mostrarNotificacion('🔒 El modo Karaoke requiere Plan PRO.');
-                switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5]);
-                return;
-            }
-            modoKaraokeActivo = !modoKaraokeActivo;
-            document.getElementById('karaokeMonitor').style.display = modoKaraokeActivo ? 'block' : 'none';
-            mostrarNotificacion(modoKaraokeActivo ? '🎤 Karaoke activado.' : '🎤 Karaoke desactivado.');
-        }
-
-        function mostrarNotificacion(mensaje) {
-            const toast = document.getElementById('toastNotification');
-            toast.textContent = mensaje;
-            toast.style.display = 'block';
-            toast.style.opacity = '1';
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => { toast.style.display = 'none'; }, 300);
-            }, 3000);
-        }
-
-        function switchTab(tabId, btnElement) {
-            document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.hub-tab').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if (btnElement) btnElement.classList.add('active');
-        }
-
-        function cerrarSesion() {
-            detenerTodoAudio();
-            document.getElementById('appScreen').style.display = 'none';
-            document.getElementById('authScreen').style.display = 'flex';
-            alternarModoAuth('login');
-            mostrarNotificacion('Sesión cerrada.');
-        }
-
-        function mostrarListaCodigos(tipo) {
-            const contenedor = document.getElementById('contenedorGenerador');
-            const titulo = document.getElementById('tituloListaCodigos');
-            const textarea = document.getElementById('txtAreaCodigos');
-
-            contenedor.style.display = 'block';
-            if (tipo === 'pro') {
-                titulo.textContent = "📋 Lista de 100 Códigos PRO:";
-                textarea.value = codigosProRegalo.join('\n');
-            } else {
-                titulo.textContent = "📋 Lista de 100 Códigos Básico:";
-                textarea.value = codigosBasicoRegalo.join('\n');
-            }
-        }
-
-        function renderizarPlaylists() {
-            const tabla = document.getElementById('tablaPlaylistsGuardados');
-            if(!tabla) return;
-            tabla.innerHTML = '';
-            playlistsGuardados.forEach((pl, index) => {
-                let estrellas = '';
-                for (let i = 1; i <= 5; i++) {
-                    let color = i <= pl.calificacion ? '#f59e0b' : '#4b5563';
-                    estrellas += `<span style="cursor:pointer; color:${color};" onclick="calificarPlaylist(${index}, ${i})">★</span>`;
-                }
-                tabla.innerHTML += `<tr><td><strong>${pl.nombre}</strong></td><td style="color:#9ca3af; font-size:0.85rem;">${pl.pistas}</td><td>${estrellas}</td><td><button class="btn btn-success" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="cancionActualA=bibliotecaNativaAudio.default;cargarDeck('A');">▶️ Cargar</button></td></tr>`;
-            });
-        }
-
-        function guardarNuevoPlaylist() {
-            const nombre = document.getElementById('inputNombrePlaylist').value.trim();
-            const pistas = document.getElementById('inputPistasPlaylist').value.trim();
-            if (!nombre || !pistas) return mostrarNotificacion('Ingresa nombre y pistas.');
-            playlistsGuardados.push({ nombre, pistas, calificacion: 5 });
-            localStorage.setItem('partiflow_sets_dj', JSON.stringify(playlistsGuardados));
-            renderizarPlaylists();
-            mostrarNotificacion('💾 Playlist guardado.');
-        }
-
-        function calificarPlaylist(index, val) {
-            playlistsGuardados[index].calificacion = val;
-            localStorage.setItem('partiflow_sets_dj', JSON.stringify(playlistsGuardados));
-            renderizarPlaylists();
-        }
-
-        function renderizarPases() {
-            const tabla = document.getElementById('tablaPases');
-            if(!tabla) return;
-            tabla.innerHTML = '';
-            if (pasesInvitados.length === 0) { tabla.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#9ca3af;">Sin pases.</td></tr>'; return; }
-            pasesInvitados.forEach((p, i) => {
-                tabla.innerHTML += `<tr><td>${p.nombre}</td><td><span style="color:#38bdf8;">🎉 ${p.evento}</span></td><td><code>${p.codigo}</code></td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="pasesInvitados.splice(${i},1);localStorage.setItem('partiflow_pases',JSON.stringify(pasesInvitados));renderizarPases();">🗑️</button></td></tr>`;
-            });
-        }
-
-        function generarPaseQR() {
-            if (planActual === 'basico' && !cuentasIlimitadasPro.includes(usuarioActualEmail)) {
-                mostrarNotificacion('🔒 Los pases QR requieren Plan PRO.');
-                switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5]);
-                return;
-            }
-            const input = document.getElementById('inputInvitado');
-            const nombre = input.value.trim();
-            const fiestaSeleccionada = document.getElementById('selectEventoInvitado').value;
-            if (!nombre) return mostrarNotificacion('Escribe el nombre.');
-            pasesInvitados.push({ nombre, evento: fiestaSeleccionada, codigo: 'VIP-' + Math.floor(1000 + Math.random()*9000) });
-            localStorage.setItem('partiflow_pases', JSON.stringify(pasesInvitados));
-            input.value = '';
-            renderizarPases();
-            mostrarNotificacion(`🎫 Pase VIP generado para "${fiestaSeleccionada}".`);
-        }
-    </script>
+ <div id="toastNotification">Notificación</div>
+
+ <!-- Elementos de audio HTML5 para archivos en la Nube / MP3 Directos -->
+ <audio id="audioDeckA" preload="auto"></audio>
+ <audio id="audioDeckB" preload="auto"></audio>
+
+ <!-- ================= PANTALLA 1: LOGIN / REGISTRO ================= -->
+ <div id="authScreen">
+ <div class="login-card">
+ <img src="Logo_fondo_blanco_solo_icono.png" alt="Partiflow PRO" class="brand-logo">
+ <h2 id="authTitle">Partiflow PRO</h2>
+ 
+ <div id="formLogin">
+ <div class="input-group">
+ <label>Correo Electrónico:</label>
+ <input type="email" id="txtEmail" placeholder="tu@correo.com" value="admin@huioapp.com">
+ </div>
+ <div class="input-group">
+ <label>Contraseña:</label>
+ <input type="password" id="txtPassword" placeholder="••••••••" value="123456">
+ </div>
+ <button class="btn-login" onclick="iniciarSesion()">Ingresar al Centro de Control</button>
+ 
+ <div class="auth-link">
+ ¿No tienes cuenta? <a href="#" onclick="alternarModoAuth('registro')">Regístrate (14 Días Básico)</a>
+ </div>
+ </div>
+
+ <div id="formRegistro" style="display:none;">
+ <div style="background:rgba(59, 130, 246, 0.1); border:1px solid #3b82f6; padding:10px; border-radius:8px; margin-bottom:15px; font-size:0.85rem; color:#93c5fd; text-align:left;">
+ 🎁 <strong>14 Días de Prueba (Plan Básico):</strong> Requiere tarjeta verificada. Cobro al día 15.
+ </div>
+ <div class="input-group">
+ <label>Nombre Completo:</label>
+ <input type="text" id="regNombre" placeholder="Tu nombre y apellido">
+ </div>
+ <div class="input-group">
+ <label>Correo Electrónico:</label>
+ <input type="email" id="regEmail" placeholder="tu@correo.com">
+ </div>
+ <div class="input-group">
+ <label>Crea una Contraseña:</label>
+ <input type="password" id="regPassword" placeholder="••••••••">
+ </div>
+ <div class="input-group">
+ <label>Tarjeta dLocal Go (Verificación Plan Básico):</label>
+ <input type="text" id="regTarjeta" placeholder="•••• •••• •••• •••• (Simulador Seguro)">
+ </div>
+ <button class="btn-login" onclick="completarRegistroConPrueba()">Activar 14 Días Plan Básico</button>
+ 
+ <div class="auth-link">
+ ¿Ya tienes cuenta? <a href="#" onclick="alternarModoAuth('login')">Ingresa aquí</a>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- ================= PANTALLA 2: CENTRO DE CONTROL MAESTRO ================= -->
+ <div id="appScreen">
+ <nav class="hub-nav" id="navContainer">
+ <button class="hub-tab active" onclick="switchTab('tab-cabina', this)">🎶 Cabina & Consola</button>
+ <button class="hub-tab" onclick="switchTab('tab-playlists', this)">📚 Playlists</button>
+ <button class="hub-tab" onclick="switchTab('tab-evento', this)">🎉 Fiestas</button>
+ <button class="hub-tab" onclick="switchTab('tab-invitados', this)">👥 Invitados & QR</button>
+ <button class="hub-tab" onclick="switchTab('tab-hardware', this)">💡 Hardware</button>
+ <button class="hub-tab" onclick="switchTab('tab-billing', this)">💳 Planes</button>
+ <button class="hub-tab" onclick="switchTab('tab-perfil', this)">👤 Perfil</button>
+ <button class="hub-tab" id="tabAdminBtn" style="color:#60a5fa; display:none;" onclick="switchTab('tab-admin', this)">🛠️ Admin Master</button>
+ <button class="hub-tab" style="color:#ef4444;" onclick="cerrarSesion()">🚪 Salir</button>
+ </nav>
+
+ <!-- 1. CABINA & CONSOLA DUAL DUAL (YOUTUBE / NUBE) -->
+ <div id="tab-cabina" class="section-container active">
+ <div class="card">
+ <h2>🎧 Cabina Inteligente con Selector Dual</h2>
+ 
+ <!-- Selector de Fuente: YouTube vs Nube / Archivos Propios -->
+ <div class="input-group" style="background:#1f2937; padding:12px; border-radius:12px; border:1px solid #374151; margin-bottom:15px;">
+ <label style="color:#60a5fa; font-weight:bold;">🔄 Seleccionar Fuente de Audio:</label>
+ <select id="selectFuenteAudio" onchange="cambiarFuenteAudio()">
+ <option value="youtube">📺 YouTube (Artistas Reales con Voz)</option>
+ <option value="nube">☁️ Mis Archivos en la Nube / Enlace Directo (.mp3)</option>
+ </select>
+ </div>
+
+ <!-- Visor de YouTube (Visible cuando fuente es YouTube) -->
+ <div id="contenedorVisorYouTube" style="margin-bottom: 15px; width: 100%; display: flex; flex-direction: column; align-items: center;">
+ <span id="lblVisorTitulo" style="font-size: 0.8rem; color: #34d399; margin-bottom: 6px; font-weight: bold;">📺 Reproductor Activo: Luis Fonsi - Despacito</span>
+ <div class="wrapper-reproductor-fantasma" style="width: 100%; max-width: 500px; height: 240px; background: #111827; border-radius: 12px; border: 1px solid #374151; overflow: hidden; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+ <iframe id="iframeYouTubeReal" class="capa-iframe-transparente" width="100%" height="100%" src="https://www.youtube.com/embed/kJQP7kiw5Fk?enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+ </div>
+ </div>
+
+ <div class="mixer-console">
+ <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+ <span style="font-size:0.9rem; color:#60a5fa; font-weight:bold;">🎛️ Consola Dual de Mezclas</span>
+ <div>
+ <button id="btnModoIA" class="btn btn-ai" style="padding:4px 10px; font-size:0.75rem;" onclick="toggleModoIA()">🤖 IA Copiloto: ON</button>
+ </div>
+ </div>
+
+ <div class="mixer-grid">
+ <!-- DECK A -->
+ <div class="mixer-channel">
+ <h4 style="color:#60a5fa;">Deck A</h4>
+ <p id="txtDeckASong" style="font-size:0.75rem; color:#d1d5db; margin-bottom:6px; word-break:break-all;">Luis Fonsi - Despacito</p>
+ <div class="slider-group"><label>Volumen</label><input type="range" id="volA" min="0" max="100" value="80" oninput="aplicarMezclaHTML5()"></div>
+ <button class="btn btn-success" style="font-size:0.75rem; padding:8px; margin-top:4px;" onclick="cargarDeck('A')">Cargar en Deck A</button>
+ </div>
+ <!-- DECK B -->
+ <div class="mixer-channel">
+ <h4 style="color:#60a5fa;">Deck B</h4>
+ <p id="txtDeckBSong" style="font-size:0.75rem; color:#d1d5db; margin-bottom:6px; word-break:break-all;">Ninguna</p>
+ <div class="slider-group"><label>Volumen</label><input type="range" id="volB" min="0" max="100" value="80" oninput="aplicarMezclaHTML5()"></div>
+ <button class="btn btn-success" style="font-size:0.75rem; padding:8px; margin-top:4px;" onclick="cargarDeck('B')">Cargar en Deck B</button>
+ </div>
+ </div>
+
+ <div style="margin-top: 12px; background:#111827; padding:10px; border-radius:8px; border:1px solid #374151;">
+ <div class="slider-group" style="margin-bottom:0;">
+ <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+ <span>A (Deck A)</span>
+ <span style="color:#60a5fa; font-weight:bold;">CROSSFADER DE MEZCLA</span>
+ <span>B (Deck B)</span>
+ </div>
+ <input type="range" id="crossfader" min="0" max="100" value="50" oninput="aplicarMezclaHTML5()">
+ </div>
+ </div>
+ </div>
+
+ <div class="input-group" style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151; margin-top:15px;">
+ <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🔍 Buscador Inteligente (YouTube o Enlace MP3 Cloud):</label>
+ <div style="display:flex; gap:10px;">
+ <input type="text" id="inputBusqueda" placeholder="Ej. Shakira, Pop 80s o pega enlace .mp3 directo..." oninput="buscarCancionEnVivo(event)">
+ <button class="btn btn-ai" style="width:auto; padding:0 15px;" onclick="activarReconocimientoVozIA()">🎤 Hablar</button>
+ <button class="btn" style="width:auto;" onclick="ejecutarBusquedaUniversal()">Buscar</button>
+ </div>
+ </div>
+
+ <div id="resultadosBusqueda" style="background:#1f2937; border-radius:10px; padding:10px; margin-top:8px; display:none;">
+ <div id="listaSugerencias" style="display:flex; flex-direction:column; gap:6px;"></div>
+ </div>
+
+ <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px;">
+ <button class="btn btn-success" onclick="ejecutarBusquedaUniversal()">▶️ Reproducción Directa</button>
+ <button class="btn btn-warning" id="btnModoKaraoke" onclick="toggleModoKaraoke()">🎤 Karaoke</button>
+ </div>
+
+ <div id="karaokeMonitor" style="display:none; background:#111827; border:2px solid #f59e0b; border-radius:10px; padding:12px; text-align:center; margin-bottom:15px;">
+ <p style="color:#f59e0b; font-size:0.8rem; font-weight:bold;">🌟 KARAOKE ACTIVO</p>
+ <p id="letraKaraoke" style="font-size:1.1rem; color:#ffffff; font-style:italic; margin-top:5px;">Sigue la letra en pantalla...</p>
+ </div>
+
+ <h3 style="font-size:1rem; color:#e5e7eb; margin-top:15px; margin-bottom:10px;">🎵 Cola en Vivo</h3>
+ <div style="background:#1f2937; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+ <span id="txtEstadoCancion">Luis Fonsi - Despacito</span>
+ <span id="txtEstadoBadge" style="color:#34d399; font-weight:bold;">Listo 🔊</span>
+ </div>
+
+ <div class="master-controls">
+ <button class="btn btn-secondary" onclick="detenerTodoAudio()">⏸️ Pausar Todo</button>
+ <button class="btn btn-secondary" onclick="siguienteDeckMix()">⏭️ Siguiente Mix</button>
+ <button class="btn btn-danger" onclick="detenerTodoAudio()">⏹️ Detener</button>
+ </div>
+ </div>
+ </div>
+
+ <!-- 2. PLAYLISTS -->
+ <div id="tab-playlists" class="section-container">
+ <div class="card">
+ <h2>📚 Playlists de Mezclas</h2>
+ <div class="input-grid">
+ <div class="input-group">
+ <label>Nombre del Set:</label>
+ <input type="text" id="inputNombrePlaylist" placeholder="Ej. Set Verano...">
+ </div>
+ <div class="input-group">
+ <label>Enlace de Audio o Streaming:</label>
+ <input type="text" id="inputSpotifyLink" placeholder="https://... o enlace MP3 en nube">
+ </div>
+ </div>
+ <div class="input-group" style="margin-bottom: 15px;">
+ <label>Pistas / Artistas:</label>
+ <input type="text" id="inputPistasPlaylist" placeholder="Ej. Shakira, Tiesto...">
+ </div>
+ <button class="btn" style="margin-bottom: 20px;" onclick="guardarNuevoPlaylist()">💾 Guardar Playlist</button>
+ <table>
+ <thead><tr><th>Set</th><th>Pistas / Enlace</th><th>Calificación</th><th>Acción</th></tr></thead>
+ <tbody id="tablaPlaylistsGuardados"></tbody>
+ </table>
+ </div>
+ </div>
+
+ <!-- 3. CONFIGURAR FIESTAS -->
+ <div id="tab-evento" class="section-container">
+ <div class="card">
+ <h2>⚙️ Configuración del Evento y Fiestas</h2>
+ <p id="txtMensajeLimiteFiesta" style="color:#f59e0b; font-size:0.85rem; margin-bottom:15px;"></p>
+ <div class="input-grid">
+ <div class="input-group">
+ <label>Nombre de la Fiesta:</label>
+ <input type="text" id="txtNombre" value="Cumpleaños / Reunión">
+ </div>
+ <div class="input-group">
+ <label>Fecha del Evento:</label>
+ <input type="date" id="txtFecha" value="2026-09-15">
+ </div>
+ </div>
+ <div class="input-grid">
+ <div class="input-group">
+ <label>Motivo de Reunión:</label>
+ <input type="text" id="txtMotivo" value="Celebración Privada">
+ </div>
+ <div class="input-group">
+ <label>Quién Invita (Anfitrión):</label>
+ <input type="text" id="txtAnfitrion" value="Luis Ganoza">
+ </div>
+ </div>
+ <div class="input-group">
+ <label>Ubicación (Enlace Google Maps):</label>
+ <input type="text" id="txtUbicacion" value="https://maps.google.com">
+ </div>
+ <button class="btn" onclick="guardarConfiguracionFiesta()">Guardar y Registrar Fiesta</button>
+ </div>
+ </div>
+
+ <!-- 4. INVITADOS & QR -->
+ <div id="tab-invitados" class="section-container">
+ <div class="card">
+ <h2>🎫 Control de Accesos y Pases QR</h2>
+ <div id="bloqueInvitadosRestringido" style="display:none; text-align:center; padding:30px;">
+ <p style="color:#f59e0b; font-weight:bold; margin-bottom:10px;" id="lblRestriccionInv">🔒 Sección exclusiva para Plan PRO.</p>
+ <button class="btn" onclick="switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5])">Ver Planes PRO</button>
+ </div>
+ <div id="bloqueInvitadosActivo">
+ <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:15px;">Selecciona a qué fiesta corresponde el invitado VIP:</p>
+ <div class="input-group">
+ <label>Seleccionar Fiesta Destino:</label>
+ <select id="selectEventoInvitado"><option value="Cumpleaños / Reunión">Cumpleaños / Reunión</option></select>
+ </div>
+ <div class="input-group">
+ <label>Registrar Invitado:</label>
+ <div style="display:flex; gap:10px;">
+ <input type="text" id="inputInvitado" placeholder="Nombre completo..." style="flex:1;">
+ <button class="btn" style="width:auto;" onclick="generarPaseQR()">Generar VIP</button>
+ </div>
+ </div>
+ <table>
+ <thead><tr><th>Invitado</th><th>Fiesta Enlazada</th><th>Código</th><th>Acción</th></tr></thead>
+ <tbody id="tablaPases"><tr><td colspan="4" style="text-align:center; color:#9ca3af;">Sin invitados registrados.</td></tr></tbody>
+ </table>
+ </div>
+ </div>
+ </div>
+
+ <!-- 5. HARDWARE -->
+ <div id="tab-hardware" class="section-container">
+ <div class="card">
+ <h2>💡 Conectividad Hardware</h2>
+ <div id="bloqueHardwareRestringido" style="display:none; text-align:center; padding:30px;">
+ <p style="color:#f59e0b; font-weight:bold; margin-bottom:10px;" id="lblRestriccionHard">🔒 Control de Hardware exclusivo para Plan PRO.</p>
+ <button class="btn" onclick="switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5])">Ver Planes PRO</button>
+ </div>
+ <div id="bloqueHardwareActivo" class="hardware-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px;">
+ <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px;">
+ <h3>🎤 Micrófono Inalámbrico</h3>
+ <button class="btn btn-warning" style="margin-top:10px;" onclick="mostrarNotificacion('Micrófono conectado vía Bluetooth.')">Conectar Mic</button>
+ </div>
+ <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px;">
+ <h3>💡 Luces LED & Discoteca</h3>
+ <button class="btn btn-success" style="margin-top:10px;" onclick="mostrarNotificacion('Sincronizando efectos DMX con el beat...')">Sincronizar Luces</button>
+ </div>
+ <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px;">
+ <h3>📺 Pantallas y TVs (Wi-Fi)</h3>
+ <p style="color:#9ca3af; font-size:0.85rem; margin-top:5px;">Transmite visuales y letras.</p>
+ <button class="btn" style="margin-top:10px;" onclick="mostrarNotificacion('Buscando pantallas en la red local...')">Buscar Pantallas</button>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- 6. PLANES Y BILLING -->
+ <div id="tab-billing" class="section-container">
+ <div class="card">
+ <h2>💳 Suscripción y Facturación Recurrente</h2>
+ <p style="color:#34d399; font-size:0.9rem; margin-bottom:20px; background:rgba(52,211,153,0.1); padding:10px; border-radius:8px;">
+ 🎉 <strong>Promoción Activa:</strong> El <strong>Plan Básico</strong> incluye <strong>14 días de prueba gratis</strong> con tarjeta verificada.
+ </p>
+ <div class="plans-grid">
+ <div class="plan-card active-plan" id="cardPlanBasico">
+ <div>
+ <h3 style="color:#9ca3af;">Plan Básico</h3>
+ <p style="color:#ffffff; font-weight:bold; font-size:1.15rem;" id="precioBasicoContainer">$9.90 + IGV / mes</p>
+ <p style="color:#9ca3af; font-size:0.85rem; line-height: 1.5; margin-top:8px;">
+ <strong>Incluye:</strong> Cabina musical personal y almacenamiento de playlist.<br>
+ <strong>Límite:</strong> 1 fiesta semanal. Sin invitados QR, sin karaoke, sin hardware.<br>
+ <em>🎁 14 días de prueba gratis (Cobro el día 15).</em>
+ </p>
+ </div>
+ <button class="btn btn-success" id="btnElegirBasico" onclick="cambiarPlanUsuario('basico')">Prueba Activa (14 Días)</button>
+ </div>
+ <div class="plan-card" id="cardPlanPro">
+ <div>
+ <h3 style="color:#60a5fa;">Plan PRO</h3>
+ <p style="color:#34d399; font-weight:bold; font-size:1.15rem;" id="precioProContainer">$19.90 + IGV / mes</p>
+ <p style="color:#9ca3af; font-size:0.85rem; line-height: 1.5; margin-top:8px;">
+ <strong>Incluye:</strong> Acceso total, eventos ilimitados semanales, invitados QR, karaoke y hardware.<br>
+ <em>⚡ Contratación directa / Pago inmediato.</em>
+ </p>
+ </div>
+ <button class="btn" id="btnElegirPro" onclick="cambiarPlanUsuario('pro')">Contratar Plan PRO</button>
+ </div>
+ </div>
+ <div style="margin-top:20px; padding:15px; background:#1f2937; border-radius:12px; border:1px solid #374151;">
+ <p style="font-size:0.9rem; color:#60a5fa; font-weight:bold; margin-bottom:8px;">🎁 Canje de Código Promocional</p>
+ <div style="display:flex; gap:10px;">
+ <input type="text" id="inputCodigoCanje" placeholder="Ingresa tu código (Ej. PRO-REGALO-1000)">
+ <button class="btn" style="width:auto;" onclick="canjearCodigoRegalo()">Canjear Código</button>
+ </div>
+ </div>
+ <div style="margin-top:20px; padding:15px; background:#1f2937; border-radius:12px; border:1px solid #374151; display:flex; justify-content:space-between; align-items:center;">
+ <div>
+ <p style="font-size:0.9rem; color:#60a5fa; font-weight:bold;">⚙️ Control de Suscripción</p>
+ <p style="font-size:0.75rem; color:#9ca3af;">Puedes pausar o cancelar la renovación automática en cualquier momento.</p>
+ </div>
+ <button class="btn btn-danger" style="width:auto; font-size:0.8rem; padding:8px 15px;" onclick="mostrarNotificacion('Suscripción pausada temporalmente.')">Pausar Plan</button>
+ </div>
+ </div>
+ </div>
+
+ <!-- 7. PERFIL AMPLIADO -->
+ <div id="tab-perfil" class="section-container">
+ <div class="card">
+ <h2>👤 Mi Perfil Corporativo y Personal</h2>
+ <div class="input-grid">
+ <div class="input-group">
+ <label>Nombre Completo:</label>
+ <input type="text" id="perfilNombre" value="Luis Enrique Ganoza Céspedes">
+ </div>
+ <div class="input-group">
+ <label>Correo Electrónico:</label>
+ <input type="email" id="perfilCorreo" value="admin@huioapp.com">
+ </div>
+ </div>
+ <div class="input-grid">
+ <div class="input-group">
+ <label>Celular / WhatsApp:</label>
+ <input type="text" id="perfilTelefono" value="+51 999 999 999">
+ </div>
+ <div class="input-group">
+ <label>Ciudad / Ubicación:</label>
+ <input type="text" id="perfilCiudad" value="Lima, Perú">
+ </div>
+ </div>
+ <button class="btn" onclick="mostrarNotificacion('¡Perfil y datos de contacto actualizados!')">Guardar Cambios de Perfil</button>
+ </div>
+ </div>
+
+ <!-- 8. PANEL DE ADMINISTRACIÓN MASTER & MONITOREO DE RED / IP -->
+ <div id="tab-admin" class="section-container">
+ <div class="card">
+ <h2>🛠️ Panel de Administración Master (Admin huioapp.com)</h2>
+ <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:20px;">Control general de licencias, cuentas corporativas ilimitadas, generador de códigos de regalo y estadísticas de red.</p>
+ 
+ <div style="background:#1f2937; padding:15px; border-radius:10px; border:1px solid #374151; margin-bottom:20px;">
+ <h3 style="color:#f59e0b; font-size:1rem; margin-bottom:8px;">📊 Monitoreo de Red & Pool de IPs Rotativas</h3>
+ <p style="color:#9ca3af; font-size:0.85rem; margin-bottom:12px;">Estado del backend proxy y caché de búsqueda.</p>
+ <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; text-align:center;">
+ <div style="background:#111827; padding:10px; border-radius:8px;">
+ <span style="font-size:0.75rem; color:#9ca3af;">IPs en Rotación</span>
+ <p style="font-size:1.1rem; color:#34d399; font-weight:bold; margin-top:4px;">999</p>
+ </div>
+ <div style="background:#111827; padding:10px; border-radius:8px;">
+ <span style="font-size:0.75rem; color:#9ca3af;">Búsquedas en Caché</span>
+ <p id="statCacheCount" style="font-size:1.1rem; color:#60a5fa; font-weight:bold; margin-top:4px;">0</p>
+ </div>
+ <div style="background:#111827; padding:10px; border-radius:8px;">
+ <span style="font-size:0.75rem; color:#9ca3af;">Pruebas de 14 Días (Básico)</span>
+ <p id="statTrialCount" style="font-size:1.1rem; color:#f59e0b; font-weight:bold; margin-top:4px;">1</p>
+ </div>
+ </div>
+ </div>
+
+ <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
+ <div style="background:#1f2937; padding:15px; border-radius:10px; border:1px solid #374151;">
+ <h3 style="color:#60a5fa; font-size:1rem; margin-bottom:8px;">🎁 Códigos PRO de Regalo</h3>
+ <p style="color:#9ca3af; font-size:0.8rem; margin-bottom:10px;">100 códigos generados automáticamente.</p>
+ <button class="btn btn-ai" style="font-size:0.8rem; padding:8px;" onclick="mostrarListaCodigos('pro')">Ver Lista PRO</button>
+ </div>
+ <div style="background:#1f2937; padding:15px; border-radius:10px; border:1px solid #374151;">
+ <h3 style="color:#60a5fa; font-size:1rem; margin-bottom:8px;">🎁 Códigos Básico de Regalo</h3>
+ <p style="color:#9ca3af; font-size:0.8rem; margin-bottom:10px;">100 códigos generados automáticamente.</p>
+ <button class="btn btn-secondary" style="font-size:0.8rem; padding:8px;" onclick="mostrarListaCodigos('basico')">Ver Lista Básico</button>
+ </div>
+ </div>
+
+ <div style="background:#1f2937; padding:15px; border-radius:10px; border:1px solid #374151; margin-bottom:15px;">
+ <h3 style="color:#34d399; font-size:1rem; margin-bottom:8px;">🌟 Cuentas PRO Ilimitadas Activas</h3>
+ <p style="color:#9ca3af; font-size:0.85rem; margin-bottom:10px;">Lista de correos con acceso ilimitado corporativo:</p>
+ <div id="listaCuentasProIlimitadas" style="font-family:monospace; font-size:0.85rem; color:#e5e7eb; line-height: 1.6;">
+ 1. admin@huioapp.com (Super Administrador)<br>
+ 2. vip1@partiflow.app<br>
+ 3. vip2@partiflow.app<br>
+ 4. vip3@partiflow.app<br>
+ 5. vip4@partiflow.app<br>
+ 6. vip5@partiflow.app<br>
+ 7. vip6@partiflow.app<br>
+ 8. vip7@partiflow.app<br>
+ 9. vip8@partiflow.app<br>
+ 10. vip9@partiflow.app<br>
+ 11. vip10@partiflow.app
+ </div>
+ </div>
+
+ <div id="contenedorGenerador" style="display:none; background:#111827; padding:15px; border-radius:10px; border:1px solid #374151;">
+ <h3 id="tituloListaCodigos" style="color:#f59e0b; font-size:0.95rem; margin-bottom:10px;">📋 Códigos</h3>
+ <textarea id="txtAreaCodigos" rows="6" style="width:100%; background:#1f2937; color:#34d399; border:1px solid #374151; border-radius:8px; padding:10px; font-family:monospace;" readonly></textarea>
+ </div>
+ </div>
+ </div>
+
+ <div class="footer-links">
+ <a href="#" onclick="mostrarNotificacion('Términos y condiciones corporativos aplicados.')">Términos y Condiciones</a>
+ <a href="#" onclick="navigator.clipboard.writeText(window.location.href); mostrarNotificacion('Enlace de la plataforma copiado al portapapeles.');">Copiar Enlace</a>
+ </div>
+ </div>
+
+ <script>
+ let planActual = 'basico';
+ let usuarioActualEmail = '';
+ let deviceFingerprint = 'dev_' + Math.random().toString(36).substring(2);
+ const codigosProRegalo = Array.from({length: 100}, (_, i) => `PRO-REGALO-${1000 + i}`);
+ const codigosBasicoRegalo = Array.from({length: 100}, (_, i) => `BASICO-REGALO-${2000 + i}`);
+ const cuentasIlimitadasPro = [
+ "admin@huioapp.com",
+ "vip1@partiflow.app", "vip2@partiflow.app", "vip3@partiflow.app", 
+ "vip4@partiflow.app", "vip5@partiflow.app", "vip6@partiflow.app", 
+ "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
+ ];
+
+ const idsYouTubeReales = {
+ "shakira": { id: "pXRviuL6vMY", nombre: "Shakira - Waka Waka (Canción Oficial)" },
+ "luis miguel": { id: "Q4v1H88U5a8", nombre: "Luis Miguel - La Incondicional (Balada)" },
+ "mexicanos": { id: "7a75u9g46rQ", nombre: "Vicente Fernández - Hermoso Cariño (Ranchera)" },
+ "80": { id: "uC3V52f7V9g", nombre: "Hombres G - Devuélveme a mi Chica (Pop Rock 80s)" },
+ "90": [
+ { id: "v14f_v1Q79g", nombre: "Maná - Rayando el Sol (Rock Pop 90s)" },
+ { id: "4jV7vE0P_9U", nombre: "Enanitos Verdes - Lamento Boliviano (Rock 90s)" }
+ ],
+ "salsa": { id: "98H5x578a_4", nombre: "Salsa Romántica - Mix Éxitos" },
+ "default": { id: "kJQP7kiw5Fk", nombre: "Luis Fonsi - Despacito ft. Daddy Yankee" }
+ };
+
+ let pistaActualUniversal = { tipo: 'youtube', id: "kJQP7kiw5Fk", nombre: "Luis Fonsi - Despacito", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" };
+ let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
+ let fiestasCreadas = JSON.parse(localStorage.getItem('partiflow_fiestas')) || ["Cumpleaños / Reunión"];
+ let modoKaraokeActivo = false;
+ let modoIaActivo = true;
+ const fechaActual = new Date();
+ const fechaLimitePromo = new Date('2027-01-01');
+ const esOfertaLanzamiento = fechaActual < fechaLimitePromo;
+ let playlistsGuardados = JSON.parse(localStorage.getItem('partiflow_sets_dj')) || [
+ { nombre: "Set Fiesta Pro", pistas: "Shakira, Luis Miguel", spotify: "", calificacion: 5}
+ ];
+ let pasesInvitados = JSON.parse(localStorage.getItem('partiflow_pases')) || [];
+
+ function inicializarPreciosDinamicos() {
+ const containerBasico = document.getElementById('precioBasicoContainer');
+ const containerPro = document.getElementById('precioProContainer');
+ if (esOfertaLanzamiento) {
+ containerBasico.innerHTML = `$9.90 + IGV <span style="font-size:0.75rem; color:#34d399;">/ mes</span>`;
+ containerPro.innerHTML = `$19.90 + IGV <span style="font-size:0.75rem; color:#60a5fa;">/ mes</span>`;
+ } else {
+ containerBasico.innerHTML = `$12.38 + IGV <span style="font-size:0.75rem; color:#34d399;">/ mes</span>`;
+ containerPro.innerHTML = `$24.88 + IGV <span style="font-size:0.75rem; color:#60a5fa;">/ mes</span>`;
+ }
+ actualizarContadorCacheUI();
+ }
+
+ function actualizarContadorCacheUI() {
+ const elem = document.getElementById('statCacheCount');
+ if(elem) elem.textContent = Object.keys(cacheBusquedas).length;
+ }
+
+ function cambiarFuenteAudio() {
+ const fuente = document.getElementById('selectFuenteAudio').value;
+ const visorYT = document.getElementById('contenedorVisorYouTube');
+ if (fuente === 'youtube') {
+ visorYT.style.display = 'flex';
+ mostrarNotificacion('📺 Modo YouTube Activo (Artistas Reales)');
+ } else {
+ visorYT.style.display = 'none';
+ mostrarNotificacion('☁️ Modo Nube / Archivos Propios Activo (.mp3)');
+ }
+ }
+
+ function ejecutarBusquedaUniversal() {
+ const input = document.getElementById('inputBusqueda');
+ const query = input.value.trim().toLowerCase();
+ const fuente = document.getElementById('selectFuenteAudio').value;
+ 
+ if (!query) return mostrarNotificacion('Escribe el nombre de una canción o artista o un enlace.');
+
+ if (fuente === 'nube' || query.startsWith('http')) {
+ // Reproducción desde la Nube / Enlace Directo de Audio
+ const urlAudio = query.startsWith('http') ? query : "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3";
+ pistaActualUniversal = { tipo: 'nube', nombre: input.value, url: urlAudio };
+ 
+ const deckA = document.getElementById('audioDeckA');
+ deckA.src = urlAudio;
+ deckA.volume = document.getElementById('volA').value / 100;
+ deckA.play().catch(e => console.log(e));
+
+ document.getElementById('txtDeckASong').textContent = input.value;
+ document.getElementById('txtEstadoCancion').textContent = input.value;
+ mostrarNotificacion(`☁️ Reproduciendo desde Nube: ${input.value}`);
+ } else {
+ // Búsqueda en YouTube con el truco del clic fantasma
+ let resultado = idsYouTubeReales.default;
+ if (query.includes('shakira')) {
+ resultado = idsYouTubeReales.shakira;
+ } else if (query.includes('luis miguel') || query.includes('miguel')) {
+ resultado = idsYouTubeReales["luis miguel"];
+ } else if (query.includes('mexicanos') || query.includes('mexicana') || query.includes('vicente')) {
+ resultado = idsYouTubeReales.mexicanos;
+ } else if (query.includes('80') || query.includes('hombres g') || query.includes('rock')) {
+ resultado = idsYouTubeReales["80"];
+ } else if (query.includes('90') || query.includes('maná') || query.includes('enanitos')) {
+ let lista90 = idsYouTubeReales["90"];
+ resultado = lista90[Math.floor(Math.random() * lista90.length)];
+ } else if (query.includes('salsa') || query.includes('reggaeton')) {
+ resultado = idsYouTubeReales.salsa;
+ } else {
+ resultado = { id: "kJQP7kiw5Fk", nombre: `${input.value} (Hit Global con Voz)` };
+ }
+
+ pistaActualUniversal = { tipo: 'youtube', id: resultado.id, nombre: resultado.nombre };
+ cacheBusquedas[query] = resultado.id;
+ localStorage.setItem('partiflow_cache_busquedas', JSON.stringify(cacheBusquedas));
+ actualizarContadorCacheUI();
+
+ const iframe = document.getElementById('iframeYouTubeReal');
+ iframe.src = `https://www.youtube.com/embed/${resultado.id}?autoplay=1&enablejsapi=1`;
+ 
+ document.getElementById('lblVisorTitulo').textContent = `📺 Reproductor Activo: ${resultado.nombre}`;
+ document.getElementById('txtDeckASong').textContent = resultado.nombre;
+ document.getElementById('txtEstadoCancion').textContent = resultado.nombre;
+ mostrarNotificacion(`▶️ Reproduciendo YouTube: ${resultado.nombre}`);
+ }
+ }
+
+ function cargarDeck(deck) {
+ if (pistaActualUniversal.tipo === 'nube') {
+ const audio = document.getElementById(`audioDeck${deck}`);
+ audio.src = pistaActualUniversal.url;
+ audio.volume = document.getElementById(`vol${deck}`).value / 100;
+ audio.play().catch(e => console.log(e));
+ document.getElementById(`txtDeck${deck}Song`).textContent = pistaActualUniversal.nombre;
+ mostrarNotificacion(`Deck ${deck} (Nube) cargado con: ${pistaActualUniversal.nombre}`);
+ } else {
+ mostrarNotificacion(`Deck ${deck} sincronizado con YouTube activo.`);
+ }
+ }
+
+ function aplicarMezclaHTML5() {
+ const volA = document.getElementById('volA').value / 100;
+ const volB = document.getElementById('volB').value / 100;
+ const cross = document.getElementById('crossfader').value / 100;
+ 
+ const deckA = document.getElementById('audioDeckA');
+ const deckB = document.getElementById('audioDeckB');
+ 
+ deckA.volume = volA * (1 - cross);
+ deckB.volume = volB * cross;
+ }
+
+ function siguienteDeckMix() {
+ const fuente = document.getElementById('selectFuenteAudio').value;
+ if (fuente === 'youtube') {
+ const keys = Object.keys(idsYouTubeReales);
+ const randomKey = keys[Math.floor(Math.random() * keys.length)];
+ const item = idsYouTubeReales[randomKey];
+ const res = Array.isArray(item) ? item[0] : item;
+ pistaActualUniversal = { tipo: 'youtube', id: res.id, nombre: res.nombre };
+ 
+ const iframe = document.getElementById('iframeYouTubeReal');
+ iframe.src = `https://www.youtube.com/embed/${res.id}?autoplay=1&enablejsapi=1`;
+ document.getElementById('txtDeckASong').textContent = res.nombre;
+ document.getElementById('txtEstadoCancion').textContent = res.nombre;
+ mostrarNotificacion(`⏭️ Siguiente Mix YouTube: ${res.nombre}`);
+ } else {
+ const urlMix = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3";
+ const deckA = document.getElementById('audioDeckA');
+ deckA.src = urlMix;
+ deckA.play();
+ document.getElementById('txtDeckASong').textContent = "Mix Automático Nube";
+ document.getElementById('txtEstadoCancion').textContent = "Mix Automático Nube";
+ mostrarNotificacion("⏭️ Siguiente Mix Nube cargado.");
+ }
+ }
+
+ function detenerTodoAudio() {
+ const deckA = document.getElementById('audioDeckA');
+ const deckB = document.getElementById('audioDeckB');
+ deckA.pause(); deckA.currentTime = 0;
+ deckB.pause(); deckB.currentTime = 0;
+ 
+ const iframe = document.getElementById('iframeYouTubeReal');
+ iframe.src = "about:blank";
+ 
+ document.getElementById('txtEstadoCancion').textContent = "Detenido";
+ mostrarNotificacion('⏹️ Audio detenido.');
+ }
+
+ function alternarModoAuth(modo) {
+ const formLogin = document.getElementById('formLogin');
+ const formRegistro = document.getElementById('formRegistro');
+ const title = document.getElementById('authTitle');
+ if (modo === 'registro') {
+ formLogin.style.display = 'none';
+ formRegistro.style.display = 'block';
+ title.textContent = 'Registro (14 Días Básico)';
+ } else {
+ formRegistro.style.display = 'none';
+ formLogin.style.display = 'block';
+ title.textContent = 'Partiflow PRO';
+ }
+ }
+
+ function completarRegistroConPrueba() {
+ const nombre = document.getElementById('regNombre').value.trim();
+ const email = document.getElementById('regEmail').value.trim();
+ const pass = document.getElementById('regPassword').value.trim();
+ const tarjeta = document.getElementById('regTarjeta').value.trim();
+ if (!nombre || !email || !pass || !tarjeta) {
+ mostrarNotificacion('Completa todos los campos y la tarjeta de verificación.');
+ return;
+ }
+ usuarioActualEmail = email;
+ planActual = 'basico';
+ document.getElementById('perfilNombre').value = nombre;
+ document.getElementById('perfilCorreo').value = email;
+ document.getElementById('authScreen').style.display = 'none';
+ document.getElementById('appScreen').style.display = 'flex';
+ 
+ verificarAccesoAdminMaster();
+ aplicarRestriccionesPlan();
+ actualizarSelectorEventos();
+ mostrarNotificacion('🎉 ¡Bienvenido! Tus 14 días de prueba en el Plan Básico están activos.');
+ }
+
+ function iniciarSesion() {
+ const email = document.getElementById('txtEmail').value.trim();
+ const pass = document.getElementById('txtPassword').value.trim();
+ if (!email || !pass) { mostrarNotificacion('Ingresa tus datos.'); return; }
+ usuarioActualEmail = email;
+ document.getElementById('perfilCorreo').value = email;
+ if (cuentasIlimitadasPro.includes(email)) {
+ planActual = 'pro';
+ } else {
+ planActual = 'basico'; 
+ }
+ document.getElementById('authScreen').style.display = 'none';
+ document.getElementById('appScreen').style.display = 'flex';
+ 
+ verificarAccesoAdminMaster();
+ aplicarRestriccionesPlan();
+ actualizarSelectorEventos();
+ mostrarNotificacion(`Sesión iniciada: ${email}`);
+ }
+
+ function verificarAccesoAdminMaster() {
+ const tabAdminBtn = document.getElementById('tabAdminBtn');
+ if (usuarioActualEmail === 'admin@huioapp.com') {
+ tabAdminBtn.style.display = 'inline-block';
+ } else {
+ tabAdminBtn.style.display = 'none';
+ }
+ }
+
+ function cambiarPlanUsuario(nuevoPlan) {
+ planActual = nuevoPlan;
+ aplicarRestriccionesPlan();
+ if (nuevoPlan === 'pro') {
+ mostrarNotificacion('💳 Redirigiendo a pasarela dLocal Go para pago inmediato de Plan PRO...');
+ } else {
+ mostrarNotificacion('🎉 Suscripción actualizada a Plan Básico (14 días gratis)');
+ }
+ }
+
+ function canjearCodigoRegalo() {
+ const codigo = document.getElementById('inputCodigoCanje').value.trim();
+ if (!codigo) { mostrarNotificacion('Ingresa un código válido.'); return; }
+ if (codigosProRegalo.includes(codigo)) {
+ planActual = 'pro';
+ mostrarNotificacion('🎁 ¡Código PRO canjeado con éxito (1 mes gratis)!');
+ aplicarRestriccionesPlan();
+ } else if (codigosBasicoRegalo.includes(codigo)) {
+ planActual = 'basico';
+ mostrarNotificacion('🎁 ¡Código Básico canjeado con éxito!');
+ aplicarRestriccionesPlan();
+ } else {
+ mostrarNotificacion('❌ Código inválido.');
+ }
+ document.getElementById('inputCodigoCanje').value = '';
+ }
+
+ function aplicarRestriccionesPlan() {
+ const btnKaraoke = document.getElementById('btnModoKaraoke');
+ const bloqueInvRest = document.getElementById('bloqueInvitadosRestringido');
+ const bloqueInvAct = document.getElementById('bloqueInvitadosActivo');
+ const bloqueHardRest = document.getElementById('bloqueHardwareRestringido');
+ const bloqueHardAct = document.getElementById('bloqueHardwareActivo');
+ const cardBasico = document.getElementById('cardPlanBasico');
+ const cardPro = document.getElementById('cardPlanPro');
+ const btnBasico = document.getElementById('btnElegirBasico');
+ const btnPro = document.getElementById('btnElegirPro');
+ const esProIlimitado = cuentasIlimitadasPro.includes(usuarioActualEmail);
+ if (esProIlimitado) planActual = 'pro';
+ 
+ if (planActual === 'basico') {
+ btnKaraoke.className = "btn btn-locked";
+ btnKaraoke.innerHTML = "🔒 Karaoke (Exclusivo PRO)";
+ bloqueInvRest.style.display = 'block';
+ bloqueInvAct.style.display = 'none';
+ bloqueHardRest.style.display = 'block';
+ bloqueHardAct.style.display = 'none';
+ cardBasico.classList.add('active-plan');
+ cardPro.classList.remove('active-plan');
+ btnBasico.className = "btn btn-success";
+ btnBasico.innerHTML = "Prueba Activa (14 Días)";
+ btnPro.className = "btn";
+ btnPro.innerHTML = "Contratar Plan PRO";
+ } else {
+ btnKaraoke.className = "btn btn-warning";
+ btnKaraoke.innerHTML = "🎤 Karaoke";
+ bloqueInvRest.style.display = 'none';
+ bloqueInvAct.style.display = 'block';
+ bloqueHardRest.style.display = 'none';
+ bloqueHardAct.style.display = 'block';
+ cardPro.classList.add('active-plan');
+ cardBasico.classList.remove('active-plan');
+ btnPro.className = "btn btn-success";
+ btnPro.innerHTML = esProIlimitado ? "Acceso Admin Ilimitado" : "Plan PRO Activo";
+ btnBasico.className = "btn btn-secondary";
+ btnBasico.innerHTML = "Cambiar a Básico";
+ }
+ actualizarMensajeFiestaSemanal();
+ }
+
+ function toggleModoIA() {
+ if (planActual === 'basico' && !cuentasIlimitadasPro.includes(usuarioActualEmail)) {
+ mostrarNotificacion('🔒 La IA Copiloto requiere Plan PRO.');
+ switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5]);
+ return;
+ }
+ modoIaActivo = !modoIaActivo;
+ const btn = document.getElementById('btnModoIA');
+ if (modoIaActivo) {
+ btn.className = "btn btn-ai";
+ btn.innerHTML = "🤖 IA Copiloto: ON";
+ mostrarNotificacion("🤖 IA Copiloto activada.");
+ } else {
+ btn.className = "btn btn-secondary";
+ btn.innerHTML = "🛠️ Manual: ON";
+ mostrarNotificacion("🛠️ Modo Manual activado.");
+ }
+ }
+
+ window.onload = function() {
+ inicializarPreciosDinamicos();
+ renderizarPlaylists();
+ actualizarSelectorEventos();
+ renderizarPases();
+ };
+
+ function actualizarMensajeFiestaSemanal() {
+ const msg = document.getElementById('txtMensajeLimiteFiesta');
+ if (planActual === 'basico') {
+ msg.textContent = "ℹ️ Plan Básico (Prueba 14 Días): 1 fiesta semanal permitida.";
+ } else {
+ msg.textContent = "✨ Plan PRO: Fiestas ilimitadas semanales.";
+ }
+ }
+
+ function guardarConfiguracionFiesta() {
+ const nombreFiesta = document.getElementById('txtNombre').value.trim();
+ if (!nombreFiesta) { mostrarNotificacion('Ingresa el nombre de la fiesta.'); return; }
+ if (planActual === 'basico' && fiestasCreadas.length >= 1 && !fiestasCreadas.includes(nombreFiesta)) {
+ mostrarNotificacion('❌ El Plan Básico solo permite 1 fiesta semanal.');
+ return;
+ }
+ if (!fiestasCreadas.includes(nombreFiesta)) {
+ fiestasCreadas.push(nombreFiesta);
+ localStorage.setItem('partiflow_fiestas', JSON.stringify(fiestasCreadas));
+ }
+ actualizarSelectorEventos();
+ actualizarMensajeFiestaSemanal();
+ mostrarNotificacion(`🎉 Fiesta "${nombreFiesta}" guardada.`);
+ }
+
+ function actualizarSelectorEventos() {
+ const select = document.getElementById('selectEventoInvitado');
+ if(!select) return;
+ select.innerHTML = '';
+ fiestasCreadas.forEach(f => {
+ const opt = document.createElement('option');
+ opt.value = f;
+ opt.textContent = f;
+ select.appendChild(opt);
+ });
+ }
+
+ function activarReconocimientoVozIA() {
+ if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+ mostrarNotificacion('⚠️ Navegador sin soporte de voz.');
+ return;
+ }
+ const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+ const recognition = new SpeechRecognition();
+ recognition.lang = 'es-ES';
+ mostrarNotificacion('🎤 IA escuchando...');
+ recognition.onresult = function(event) {
+ const speechResult = event.results[0][0].transcript;
+ document.getElementById('inputBusqueda').value = speechResult;
+ ejecutarBusquedaUniversal();
+ };
+ recognition.start();
+ }
+
+ function buscarCancionEnVivo(e) {
+ const query = e.target.value.toLowerCase().trim();
+ const box = document.getElementById('resultadosBusqueda');
+ const lista = document.getElementById('listaSugerencias');
+ lista.innerHTML = '';
+ if (query.length < 2) { box.style.display = 'none'; return; }
+ box.style.display = 'block';
+ lista.innerHTML = `
+ <div style="display:flex; justify-content:space-between; align-items:center; background:#111827; padding:8px; border-radius:6px; cursor:pointer;" onclick="document.getElementById('inputBusqueda').value='${e.target.value}'; ejecutarBusquedaUniversal(); document.getElementById('resultadosBusqueda').style.display='none';">
+ <span>🎵 Buscar: "${e.target.value}"</span> 
+ <span style="color:#34d399; font-size:0.75rem;">Seleccionar</span>
+ </div>
+ `;
+ }
+
+ function toggleModoKaraoke() {
+ if (planActual === 'basico' && !cuentasIlimitadasPro.includes(usuarioActualEmail)) {
+ mostrarNotificacion('🔒 El modo Karaoke requiere Plan PRO.');
+ switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5]);
+ return;
+ }
+ modoKaraokeActivo = !modoKaraokeActivo;
+ document.getElementById('karaokeMonitor').style.display = modoKaraokeActivo ? 'block' : 'none';
+ mostrarNotificacion(modoKaraokeActivo ? '🎤 Karaoke activado.' : '🎤 Karaoke desactivado.');
+ }
+
+ function mostrarNotificacion(mensaje) {
+ const toast = document.getElementById('toastNotification');
+ toast.textContent = mensaje;
+ toast.style.display = 'block';
+ toast.style.opacity = '1';
+ setTimeout(() => {
+ toast.style.opacity = '0';
+ setTimeout(() => { toast.style.display = 'none'; }, 300);
+ }, 3000);
+ }
+
+ function switchTab(tabId, btnElement) {
+ document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
+ document.querySelectorAll('.hub-tab').forEach(tab => tab.classList.remove('active'));
+ document.getElementById(tabId).classList.add('active');
+ if (btnElement) btnElement.classList.add('active');
+ }
+
+ function cerrarSesion() {
+ detenerTodoAudio();
+ document.getElementById('appScreen').style.display = 'none';
+ document.getElementById('authScreen').style.display = 'flex';
+ alternarModoAuth('login');
+ mostrarNotificacion('Sesión cerrada.');
+ }
+
+ function mostrarListaCodigos(tipo) {
+ const contenedor = document.getElementById('contenedorGenerador');
+ const titulo = document.getElementById('tituloListaCodigos');
+ const textarea = document.getElementById('txtAreaCodigos');
+ contenedor.style.display = 'block';
+ if (tipo === 'pro') {
+ titulo.textContent = "📋 Lista de 100 Códigos PRO:";
+ textarea.value = codigosProRegalo.join('\n');
+ } else {
+ titulo.textContent = "📋 Lista de 100 Códigos Básico:";
+ textarea.value = codigosBasicoRegalo.join('\n');
+ }
+ }
+
+ function renderizarPlaylists() {
+ const tabla = document.getElementById('tablaPlaylistsGuardados');
+ if(!tabla) return;
+ tabla.innerHTML = '';
+ playlistsGuardados.forEach((pl, index) => {
+ let estrellas = '';
+ for (let i = 1; i <= 5; i++) {
+ let color = i <= pl.calificacion ? '#f59e0b' : '#4b5563';
+ estrellas += `<span style="cursor:pointer; color:${color};" onclick="calificarPlaylist(${index}, ${i})">★</span>`;
+ }
+ tabla.innerHTML += `<tr><td><strong>${pl.nombre}</strong></td><td style="color:#9ca3af; font-size:0.85rem;">${pl.pistas}</td><td>${estrellas}</td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="playlistsGuardados.splice(${index},1); renderizarPlaylists();">Eliminar</button></td></tr>`;
+ });
+ }
+
+ function guardarNuevoPlaylist() {
+ const nombre = document.getElementById('inputNombrePlaylist').value.trim();
+ const pistas = document.getElementById('inputPistasPlaylist').value.trim();
+ if (!nombre || !pistas) return mostrarNotificacion('Ingresa nombre y pistas.');
+ playlistsGuardados.push({ nombre, pistas, calificacion: 5 });
+ localStorage.setItem('partiflow_sets_dj', JSON.stringify(playlistsGuardados));
+ renderizarPlaylists();
+ mostrarNotificacion('💾 Playlist guardado.');
+ }
+
+ function calificarPlaylist(index, val) {
+ playlistsGuardados[index].calificacion = val;
+ localStorage.setItem('partiflow_sets_dj', JSON.stringify(playlistsGuardados));
+ renderizarPlaylists();
+ }
+
+ function renderizarPases() {
+ const tabla = document.getElementById('tablaPases');
+ if(!tabla) return;
+ tabla.innerHTML = '';
+ if (pasesInvitados.length === 0) { 
+ tabla.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#9ca3af;">Sin invitados registrados.</td></tr>';
+ return;
+ }
+ pasesInvitados.forEach((p, i) => {
+ tabla.innerHTML += `<tr><td>${p.nombre}</td><td><span style="color:#38bdf8;">🎉 ${p.evento}</span></td><td><code style="color:#34d399;">${p.codigo}</code></td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="pasesInvitados.splice(${i},1); renderizarPases();">Borrar</button></td></tr>`;
+ });
+ }
+
+ function generarPaseQR() {
+ if (planActual === 'basico' && !cuentasIlimitadasPro.includes(usuarioActualEmail)) {
+ mostrarNotificacion('🔒 Los pases QR requieren Plan PRO.');
+ switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5]);
+ return;
+ }
+ const input = document.getElementById('inputInvitado');
+ const nombre = input.value.trim();
+ const fiestaSeleccionada = document.getElementById('selectEventoInvitado').value;
+ if (!nombre) return mostrarNotificacion('Escribe el nombre.');
+ pasesInvitados.push({ nombre, evento: fiestaSeleccionada, codigo: 'VIP-' + Math.floor(1000 + Math.random() * 9000) });
+ localStorage.setItem('partiflow_pases', JSON.stringify(pasesInvitados));
+ input.value = '';
+ renderizarPases();
+ mostrarNotificacion(`🎫 Pase VIP generado para "${fiestaSeleccionada}".`);
+ }
+ </script>
 </body>
 </html>
