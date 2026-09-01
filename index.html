@@ -277,10 +277,10 @@
  <div class="card">
  <h2>🎧 Cabina Inteligente con Consola de DJ y Cola</h2>
 
- <!-- Visor multimedia limpio y compacto (permitido por navegador para evitar bloqueos de audio) -->
+ <!-- Visor multimedia limpio y compacto autorizado por el navegador -->
  <div style="margin-bottom: 12px; width: 100%; display: flex; flex-direction: column; align-items: center;">
  <div style="width: 100%; max-width: 320px; height: 140px; background: #111827; border-radius: 10px; border: 1px solid #374151; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
- <iframe id="iframeYouTubeReal" width="100%" height="100%" src="https://www.youtube.com/embed/kJQP7kiw5Fk?enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+ <iframe id="iframeYouTubeReal" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
  </div>
  </div>
 
@@ -331,7 +331,7 @@
  
  <div class="input-group" style="margin-bottom: 12px;">
  <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🔍 Añadir Canción, Artista o Género a la Cola:</label>
- <input type="text" id="inputBusqueda" placeholder="Ej. Pop 80s, Música brasileña, salsa, rock...">
+ <input type="text" id="inputBusqueda" placeholder="Ej. Pop 80s en Español, Música brasileña, salsa...">
  </div>
 
  <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -770,7 +770,7 @@
  mostrarNotificacion(`🎧 Transición de set continuo aplicada para: "${itemActual}"`);
  }
 
- // Carga exacta del término escrito por el usuario en el visor multimedia compacto autorizado
+ // Carga exacta del término escrito por el usuario en el visor multimedia limpio
  const iframe = document.getElementById('iframeYouTubeReal');
  iframe.src = `https://www.youtube.com/embed?listType=search&list=${queryCodificada}&autoplay=1&enablejsapi=1`;
 
@@ -1014,7 +1014,7 @@
 
  function toggleModoKaraoke() {
  if (planActual === 'basico' && !cuentasIlimitadasPro.includes(usuarioActualEmail)) {
- mostrarNotificacion('🔒 El modo Karaoke requiere Plan PRO.');
+ mostrarNotificacion('🔒 Le modo Karaoke requiere Plan PRO.');
  switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5]);
  return;
  }
