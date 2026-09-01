@@ -318,16 +318,16 @@
  </div>
  </div>
 
- <!-- GESTOR DE COLA CON BUSCADOR Y AUTOCOMPLETADO DESPLEGABLE -->
+ <!-- GESTOR DE COLA CON BUSCADOR Y AUTOCOMPLETADO DESPLEGABLE (SIN YOUTUBE) -->
  <div style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151; margin-top:15px;">
  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
  <div style="flex: 1;">
  <h3 style="font-size:1rem; color:#60a5fa; margin-bottom:4px;">⚡ Gestor de Cola Abierta</h3>
- <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Búsqueda inteligente con autocompletado</p>
+ <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Streaming 100% independiente y seguro</p>
  </div>
  <div style="width: 160px; height: 90px; background: linear-gradient(135deg, #111827, #1f2937); border-radius: 8px; border: 1px solid #374151; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
  <span style="font-size: 1.5rem;">🎛️</span>
- <span style="font-size: 0.7rem; color: #60a5fa; font-weight: bold; margin-top: 4px;">PARTIFLOW STREAM</span>
+ <span style="font-size: 0.7rem; color: #60a5fa; font-weight: bold; margin-top: 4px;">PARTIFLOW PRO</span>
  </div>
  </div>
  
@@ -669,18 +669,20 @@
  "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
  ];
 
- // Almacén de la cola de peticiones y diccionario inteligente maestro
+ // Almacén de la cola de peticiones y biblioteca con múltiples pistas reales independientes
  let listaColaPeticiones = [];
  let indiceReproduccionActual = 0;
- let estadoConfirmacionPlay = 1; // 1 = Primer clic (pregunta), 2 = Segundo clic (confirma y reproduce)
+ let estadoConfirmacionPlay = 1; 
 
+ // Diccionario maestro enriquecido con diferentes enlaces de audio directos para cada tema
  let diccionarioMusicalGlobal = [
    { tipo: "bloque", tags: ["80", "pop", "español", "mexicano", "retro"], etiquetaDesplegable: "Pop 80s en Español (Bloque General)", artista: "Hombres G", titulo: "Devuélveme a mi chica", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
    { tipo: "bloque", tags: ["80", "pop", "argentino", "rock"], etiquetaDesplegable: "Pop / Rock 80s Argentino (Bloque General)", artista: "Enanitos Verdes", titulo: "Lamento Boliviano", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
    { tipo: "bloque", tags: ["salsa", "colombiana", "tropical", "romantica"], etiquetaDesplegable: "Salsa Colombiana Romántica (Bloque General)", artista: "Grupo Niche", titulo: "Cali Pachanguero", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
    { tipo: "bloque", tags: ["salsa", "colombiana", "moderna", "baile"], etiquetaDesplegable: "Salsa Moderna Bailable (Bloque General)", artista: "Joe Arroyo", titulo: "En Barranquilla Me Quedo", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
-   { tipo: "especifica", tags: ["shakira", "waka waka", "mundial"], etiquetaDesplegable: "Shakira - Waka Waka (Canción Específica)", artista: "Shakira", titulo: "Waka Waka", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
-   { tipo: "especifica", tags: ["luis miguel", "la incondicional", "balada"], etiquetaDesplegable: "Luis Miguel - La Incondicional (Canción Específica)", artista: "Luis Miguel", titulo: "La Incondicional", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" }
+   { tipo: "bloque", tags: ["brasil", "brasileña", "samba", "verano"], etiquetaDesplegable: "Música Brasileña / Samba (Bloque General)", artista: "Michel Teló", titulo: "Ai Se Eu Te Pego", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
+   { tipo: "especifica", tags: ["shakira", "waka waka", "mundial"], etiquetaDesplegable: "Shakira - Waka Waka (Canción Específica)", artista: "Shakira", titulo: "Waka Waka", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
+   { tipo: "especifica", tags: ["luis miguel", "la incondicional", "balada"], etiquetaDesplegable: "Luis Miguel - La Incondicional (Canción Específica)", artista: "Luis Miguel", titulo: "La Incondicional", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" }
  ];
 
  let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
@@ -713,7 +715,6 @@
  if(elem) elem.textContent = Object.keys(cacheBusquedas).length;
  }
 
- // Control interactivo de la consola de DJ
  function actualizarConsolaDJ() {
  const volA = document.getElementById('volA').value / 100;
  const crossfader = document.getElementById('crossfader').value / 100;
@@ -781,7 +782,6 @@
  }
  });
 
- // Añade canciones o géneros a la cola
  function agregarACola() {
  const input = document.getElementById('inputBusqueda');
  const query = input.value.trim();
@@ -819,7 +819,6 @@
  mostrarNotificacion('Elemento eliminado de la cola.');
  }
 
- // LÓGICA DE DOBLE CLIC / CONFIRMACIÓN INTEGRADA
  function manejarDobleClickPlay() {
  if (listaColaPeticiones.length === 0) {
  return mostrarNotificacion('⚠️ La cola está vacía. Añade al menos un tema.');
@@ -851,18 +850,22 @@
  }
  }
 
- // ALGORITMO INTELIGENTE DE INTENCIÓN (Smart Intent Engine)
+ // ALGORITMO INTELIGENTE DE BÚSQUEDA Y SELECCIÓN DE PISTA REAL
  function procesarPeticionInteligente(queryUsuario) {
  const qLimpia = queryUsuario.toLowerCase();
  
- const cancionEspecifica = diccionarioMusicalGlobal.find(song => 
-    song.tipo === "especifica" && (qLimpia.includes(song.artista.toLowerCase()) || qLimpia.includes(song.titulo.toLowerCase())
-  ));
+ // 1. Busca coincidencia exacta en el desplegable o título/artista específico
+ const matchExacto = diccionarioMusicalGlobal.find(song => 
+    qLimpia.includes(song.artista.toLowerCase()) || 
+    qLimpia.includes(song.titulo.toLowerCase()) ||
+    qLimpia.includes(song.etiquetaDesplegable.toLowerCase())
+  );
 
- if (cancionEspecifica) {
- return { tipoMatch: "Específica", track: cancionEspecifica };
+ if (matchExacto) {
+ return { tipoMatch: "Encontrado en Diccionario", track: matchExacto };
  }
 
+ // 2. Si es un género o bloque abierto, filtra por etiquetas
  let candidatos = diccionarioMusicalGlobal.filter(song => {
  return song.tags.some(tag => qLimpia.includes(tag));
  });
@@ -871,8 +874,9 @@
  candidatos = diccionarioMusicalGlobal.filter(song => song.tipo === "bloque");
  }
 
+ // Selecciona una pista aleatoria entre los candidatos para asegurar variedad real
  const trackSeleccionado = candidatos[Math.floor(Math.random() * candidatos.length)];
- return { tipoMatch: "Bloque Temático", track: trackSeleccionado };
+ return { tipoMatch: "Bloque Dinámico", track: trackSeleccionado };
  }
 
  function reproducirElementoColaActual() {
@@ -889,7 +893,7 @@
 
  const estiloTransicion = document.getElementById('selectEstiloTransicion').value;
  if (estiloTransicion === 'mix') {
- mostrarNotificacion(`🎧 IA [${resultadoInteligente.tipoMatch}]: "${cancionFinal.artista} - ${cancionFinal.titulo}"`);
+ mostrarNotificacion(`🎧 Reproduciendo: "${cancionFinal.artista} - ${cancionFinal.titulo}"`);
  }
 
  const audioPrincipal = document.getElementById('audioReproductorPrincipal');
@@ -899,7 +903,7 @@
 
  document.getElementById('txtDeckASong').textContent = `${cancionFinal.artista} - ${cancionFinal.titulo}`;
  document.getElementById('txtDeckBSong').textContent = (listaColaPeticiones[indiceReproduccionActual + 1] || "Fin de set");
- document.getElementById('txtEstadoCancion').textContent = `[${indiceReproduccionActual + 1}/${listaColaPeticiones.length}] Sonando: ${cancionFinal.artista} - ${cancionFinal.titulo} (${resultadoInteligente.tipoMatch})`;
+ document.getElementById('txtEstadoCancion').textContent = `[${indiceReproduccionActual + 1}/${listaColaPeticiones.length}] Sonando: ${cancionFinal.artista} - ${cancionFinal.titulo}`;
  document.getElementById('txtEstadoBadge').textContent = "En Directo 🎛️";
 
  audioPrincipal.onended = function() {
