@@ -277,11 +277,6 @@
  <div class="card">
  <h2>🎧 Cabina Inteligente con Consola de DJ y Cola</h2>
 
- <!-- TRUCO FANTASMA: Iframe totalmente oculto fuera de la pantalla sin dejar rastro visual -->
- <div style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden; opacity: 0.001; pointer-events: none;">
- <iframe id="iframeYouTubeReal" width="100%" height="100%" src="" frameborder="0" allow="autoplay"></iframe>
- </div>
-
  <!-- CONSOLA DJ COMPLETA -->
  <div class="mixer-console">
  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -322,10 +317,18 @@
  </div>
  </div>
 
- <!-- GESTOR DE COLA CON BUSCADOR ANCHO AL 100% -->
+ <!-- GESTOR DE COLA CON LA MINIATURA DE VIDEO EN LA ZONA LATERAL -->
  <div style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151; margin-top:15px;">
+ <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
+ <div style="flex: 1;">
  <h3 style="font-size:1rem; color:#60a5fa; margin-bottom:4px;">⚡ Gestor de Cola Abierta</h3>
  <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Arma tu set y dale play cuando esté listo</p>
+ </div>
+ <!-- Miniatura compacta (1/4 de tamaño: 160x90px) en la zona lateral derecha -->
+ <div style="width: 160px; height: 90px; background: #111827; border-radius: 8px; border: 1px solid #374151; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
+ <iframe id="iframeYouTubeReal" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+ </div>
+ </div>
  
  <div class="input-group" style="margin-bottom: 12px;">
  <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🔍 Añadir Canción, Artista o Género a la Cola:</label>
@@ -768,7 +771,7 @@
  mostrarNotificacion(`🎧 Transición de set continuo aplicada para: "${itemActual}"`);
  }
 
- // Carga exacta del término escrito por el usuario en el iframe fantasma fuera de pantalla (sin parpadeos ni recuadros)
+ // Carga exacta del término escrito por el usuario en la miniatura lateral (160x90px)
  const iframe = document.getElementById('iframeYouTubeReal');
  iframe.src = `https://www.youtube.com/embed?listType=search&list=${queryCodificada}&autoplay=1&enablejsapi=1`;
 
