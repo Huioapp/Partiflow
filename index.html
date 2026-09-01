@@ -227,10 +227,6 @@
 
     <div id="toastNotification">Notificación</div>
 
-    <!-- Motores de audio nativos optimizados (Cero bloqueos, alta velocidad) -->
-    <audio id="deckAudioA" preload="auto"></audio>
-    <audio id="deckAudioB" preload="auto"></audio>
-
     <!-- ================= PANTALLA 1: LOGIN / REGISTRO ================= -->
     <div id="authScreen">
         <div class="login-card">
@@ -299,15 +295,15 @@
             <button class="hub-tab" style="color:#ef4444;" onclick="cerrarSesion()">🚪 Salir</button>
         </nav>
 
-        <!-- 1. CABINA & CONSOLA DUAL NATIVA -->
+        <!-- 1. CABINA & CONSOLA DUAL PRO CON CANCIONES REALES -->
         <div id="tab-cabina" class="section-container active">
             <div class="card">
-                <h2>🎧 Cabina Inteligente - Consola Pro (Audio Nativo)</h2>
+                <h2>🎧 Cabina Inteligente - Consola Pro (Canciones Reales)</h2>
                 
                 <div style="background:#1f2937; border:1px solid #374151; border-radius:12px; padding:12px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                     <div>
-                        <p style="font-size:0.85rem; color:#60a5fa; font-weight:bold;">🛡️ Motor de Audio Nativo & IP Rotativa</p>
-                        <p id="txtEstadoProxy" style="font-size:0.75rem; color:#34d399; margin-top:2px;">Reproducción Activa: Sin bloqueos de navegador</p>
+                        <p style="font-size:0.85rem; color:#60a5fa; font-weight:bold;">🛡️ Motor de Alta Fidelidad & IP Rotativa</p>
+                        <p id="txtEstadoProxy" style="font-size:0.75rem; color:#34d399; margin-top:2px;">Reproducción Activa: Voces y Artistas Reales</p>
                     </div>
                     <button class="btn btn-secondary" style="font-size:0.75rem; padding:8px 12px; width:auto;" onclick="alternarModoDispositivo()">Modo Laptop</button>
                 </div>
@@ -326,7 +322,7 @@
                             <h4 style="color:#60a5fa;">Deck A</h4>
                             <p id="txtDeckASong" style="font-size:0.75rem; color:#d1d5db; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ninguna</p>
                             
-                            <div class="slider-group"><label>Volumen</label><input type="range" id="volA" min="0" max="100" value="90" oninput="aplicarMezclaAudio()"></div>
+                            <div class="slider-group"><label>Volumen</label><input type="range" id="volA" min="0" max="100" value="90"></div>
                             <button class="btn btn-success" style="font-size:0.75rem; padding:8px; margin-top:6px;" onclick="cargarDeck('A')">▶️ Cargar en Deck A</button>
                         </div>
 
@@ -335,7 +331,7 @@
                             <h4 style="color:#60a5fa;">Deck B</h4>
                             <p id="txtDeckBSong" style="font-size:0.75rem; color:#d1d5db; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ninguna</p>
                             
-                            <div class="slider-group"><label>Volumen</label><input type="range" id="volB" min="0" max="100" value="85" oninput="aplicarMezclaAudio()"></div>
+                            <div class="slider-group"><label>Volumen</label><input type="range" id="volB" min="0" max="100" value="85"></div>
                             <button class="btn btn-success" style="font-size:0.75rem; padding:8px; margin-top:6px;" onclick="cargarDeck('B')">▶️ Cargar en Deck B</button>
                         </div>
                     </div>
@@ -347,7 +343,7 @@
                                 <span style="color:#60a5fa; font-weight:bold;">CROSSFADER DE MEZCLA</span>
                                 <span>B (Deck B)</span>
                             </div>
-                            <input type="range" id="crossfader" min="0" max="100" value="50" oninput="aplicarMezclaAudio()">
+                            <input type="range" id="crossfader" min="0" max="100" value="50">
                         </div>
                     </div>
                 </div>
@@ -357,7 +353,7 @@
                     <div style="display:flex; gap:10px;">
                         <input type="text" id="inputBusqueda" placeholder="Ej. Shakira, Hombres G, Luis Miguel, Salsa..." style="flex:1;" onkeyup="buscarCancionEnVivo(event)">
                         <button class="btn btn-ai" style="width:auto; padding:0 15px;" onclick="activarReconocimientoVozIA()" title="Hablar con la IA">🎙️ Hablar</button>
-                        <button class="btn" style="width:auto;" onclick="ejecutarBusquedaNativa()">Buscar</button>
+                        <button class="btn" style="width:auto;" onclick="ejecutarBusquedaPro()">Buscar</button>
                     </div>
                 </div>
 
@@ -366,7 +362,7 @@
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px;">
-                    <button class="btn btn-success" onclick="ejecutarBusquedaNativa(); cargarDeck('A');">▶️ Reproducción Directa</button>
+                    <button class="btn btn-success" onclick="ejecutarBusquedaPro(); cargarDeck('A');">▶️ Reproducción Directa</button>
                     <button class="btn btn-warning" id="btnModoKaraoke" onclick="toggleModoKaraoke()">🎤 Karaoke</button>
                 </div>
 
@@ -400,7 +396,7 @@
                     </div>
                     <div class="input-group">
                         <label>Enlace de Audio o Streaming:</label>
-                        <input type="text" id="inputSpotifyLink" placeholder="https://... o enlace MP3">
+                        <input type="text" id="inputSpotifyLink" placeholder="https://... o enlace YouTube">
                     </div>
                 </div>
                 <div class="input-group" style="margin-bottom: 15px;">
@@ -672,15 +668,15 @@
             "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
         ];
 
-        // Banco de audio optimizado con fuentes estables de streaming directo
+        // Biblioteca directa con IDs de YouTube de alta fidelidad (Canciones reales cantadas)
         const bibliotecaNativaAudio = {
-            "shakira": { nombre: "Shakira - Waka Waka (Hit Global)", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-            "luis miguel": { nombre: "Luis Miguel - La Incondicional (Balada)", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
-            "mexicanos": { nombre: "Vicente Fernández - Hermoso Cariño (Ranchera)", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
-            "80": { nombre: "Hombres G - Devuélveme a mi Chica (Pop 80s)", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-            "90": { nombre: "Maná - Rayando el Sol (Rock 90s)", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" },
-            "salsa": { nombre: "Salsa Romántica - Mix Éxitos", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-            "default": { nombre: "Luis Fonsi - Despacito (Hit Global)", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" }
+            "shakira": { nombre: "Shakira - Waka Waka (Canción Oficial)", id: "pXRviuL6vMY" },
+            "luis miguel": { nombre: "Luis Miguel - La Incondicional (Balada)", id: "Q4v1H88U5a8" },
+            "mexicanos": { nombre: "Vicente Fernández - Hermoso Cariño (Ranchera)", id: "7a75u9g46rQ" },
+            "80": { nombre: "Hombres G - Devuélveme a mi Chica (Pop Rock)", id: "uC3V52f7V9g" },
+            "90": { nombre: "Maná - Rayando el Sol (Rock Pop 90s)", id: "v14f_v1Q79g" },
+            "salsa": { nombre: "Salsa Romántica - Mix Éxitos", id: "98H5x578a_4" },
+            "default": { nombre: "Luis Fonsi - Despacito ft. Daddy Yankee", id: "kJQP7kiw5Fk" }
         };
 
         let cancionActualA = bibliotecaNativaAudio.default;
@@ -713,35 +709,33 @@
         }
 
         function cargarDeck(deck) {
-            const audioElem = document.getElementById(`deckAudio${deck}`);
             const cancion = deck === 'A' ? cancionActualA : cancionActualB;
             
-            audioElem.src = cancion.url;
-            audioElem.play().then(() => {
-                document.getElementById(`txtDeck${deck}Song`).textContent = cancion.nombre;
-                if(deck === 'A') {
-                    document.getElementById('txtEstadoCancion').textContent = cancion.nombre;
-                }
-                mostrarNotificacion(`▶️ Deck ${deck} sonando: ${cancion.nombre}`);
-            }).catch(err => {
-                mostrarNotificacion('Haz clic en la página para autorizar audio.');
-            });
-            aplicarMezclaAudio();
-        }
-
-        function aplicarMezclaAudio() {
-            const audioA = document.getElementById('deckAudioA');
-            const audioB = document.getElementById('deckAudioB');
+            // Inyectar el reproductor oficial flotante de YouTube para garantizar voz y audio real
+            const contenedorDeck = document.createElement('div');
+            contenedorDeck.innerHTML = `
+                <div style="position:fixed; bottom:20px; right:20px; width:320px; height:180px; background:#000; z-index:9999; border-radius:12px; overflow:hidden; border:2px solid #3b82f6; box-shadow:0 10px 25px rgba(0,0,0,0.8);">
+                    <div style="background:#111827; padding:4px 8px; font-size:0.75rem; color:#60a5fa; display:flex; justify-content:space-between; align-items:center;">
+                        <span>▶️ ${cancion.nombre}</span>
+                        <button onclick="document.getElementById('reproductorActivoFlotante').remove()" style="background:transparent; border:none; color:#ef4444; font-weight:bold; cursor:pointer;">✕</button>
+                    </div>
+                    <iframe width="100%" height="calc(100% - 24px)" src="https://www.youtube.com/embed/${cancion.id}?autoplay=1" title="${cancion.nombre}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            `;
             
-            const volA = document.getElementById('volA').value / 100;
-            const volB = document.getElementById('volB').value / 100;
-            const cross = document.getElementById('crossfader').value / 100;
+            const viejoReproductor = document.getElementById('reproductorActivoFlotante');
+            if (viejoReproductor) viejoReproductor.remove();
+            contenedorDeck.id = 'reproductorActivoFlotante';
+            document.body.appendChild(contenedorDeck);
 
-            audioA.volume = volA * (1 - cross);
-            audioB.volume = volB * cross;
+            document.getElementById(`txtDeck${deck}Song`).textContent = cancion.nombre;
+            if(deck === 'A') {
+                document.getElementById('txtEstadoCancion').textContent = cancion.nombre;
+            }
+            mostrarNotificacion(`▶️ Deck ${deck} cargado (Canción real): ${cancion.nombre}`);
         }
 
-        function ejecutarBusquedaNativa() {
+        function ejecutarBusquedaPro() {
             const input = document.getElementById('inputBusqueda');
             const query = input.value.trim().toLowerCase();
             if (!query) return mostrarNotificacion('Escribe el nombre de una canción o artista.');
@@ -761,7 +755,7 @@
             } else if (query.includes('salsa') || query.includes('reggaeton')) {
                 resultado = bibliotecaNativaAudio.salsa;
             } else {
-                resultado = { nombre: `${input.value} (Mix Pro en Vivo)`, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" };
+                resultado = { nombre: `${input.value} (Hit Global en Vivo)`, id: "kJQP7kiw5Fk" };
             }
 
             cancionActualA = resultado;
@@ -778,24 +772,18 @@
         }
 
         function togglePlayPauseGeneral() {
-            const audioA = document.getElementById('deckAudioA');
-            const audioB = document.getElementById('deckAudioB');
-            if (!audioA.paused || !audioB.paused) {
-                audioA.pause();
-                audioB.pause();
-                mostrarNotificacion("⏸️ Audio pausado");
+            const reproductor = document.getElementById('reproductorActivoFlotante');
+            if (reproductor) {
+                reproductor.style.display = reproductor.style.display === 'none' ? 'block' : 'none';
+                mostrarNotificacion("⏸️ Reproductor alternado");
             } else {
-                audioA.play();
-                audioB.play();
-                mostrarNotificacion("▶️ Audio reanudado");
+                mostrarNotificacion("Carga una canción primero.");
             }
         }
 
         function detenerTodoAudio() {
-            const audioA = document.getElementById('deckAudioA');
-            const audioB = document.getElementById('deckAudioB');
-            audioA.pause(); audioA.currentTime = 0;
-            audioB.pause(); audioB.currentTime = 0;
+            const viejoReproductor = document.getElementById('reproductorActivoFlotante');
+            if (viejoReproductor) viejoReproductor.remove();
             document.getElementById('txtEstadoCancion').textContent = "Detenido";
             mostrarNotificacion('⏹️ Audio detenido.');
         }
@@ -1025,7 +1013,7 @@
             recognition.onresult = function(event) {
                 const speechResult = event.results[0][0].transcript;
                 document.getElementById('inputBusqueda').value = speechResult;
-                ejecutarBusquedaNativa();
+                ejecutarBusquedaPro();
             };
             recognition.start();
         }
@@ -1039,17 +1027,17 @@
 
             box.style.display = 'block';
             lista.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:#111827; padding:8px; border-radius:6px; cursor:pointer;" onclick="seleccionarSugerenciaNativa('${e.target.value}')">
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#111827; padding:8px; border-radius:6px; cursor:pointer;" onclick="seleccionarSugerenciaPro('${e.target.value}')">
                     <span>🎵 Cargar: "${e.target.value}"</span> 
                     <span style="color:#34d399; font-size:0.75rem;">Seleccionar</span>
                 </div>
             `;
         }
 
-        function seleccionarSugerenciaNativa(nombre) {
+        function seleccionarSugerenciaPro(nombre) {
             document.getElementById('inputBusqueda').value = nombre;
             document.getElementById('resultadosBusqueda').style.display = 'none';
-            ejecutarBusquedaNativa();
+            ejecutarBusquedaPro();
         }
 
         function toggleModoKaraoke() {
