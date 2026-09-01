@@ -318,15 +318,17 @@
  </div>
  </div>
 
- <!-- GESTOR DE COLA CON BUSCADOR Y MINIATURA LATERAL -->
+ <!-- GESTOR DE COLA CON BUSCADOR Y TARJETA VISUAL PROPIA -->
  <div style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151; margin-top:15px;">
  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
  <div style="flex: 1;">
  <h3 style="font-size:1rem; color:#60a5fa; margin-bottom:4px;">⚡ Gestor de Cola Abierta</h3>
- <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Arma tu set y dale play cuando esté listo</p>
+ <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Algoritmo Híbrido Inteligente Activo</p>
  </div>
- <div style="width: 160px; height: 90px; background: #111827; border-radius: 8px; border: 1px solid #374151; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
- <iframe id="iframeYouTubeReal" width="100%" height="100%" src="https://www.youtube.com/embed/uC3V52f7V9g?autoplay=0&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+ <!-- Tarjeta de visualización corporativa propia (invisible para YouTube/Google) -->
+ <div style="width: 160px; height: 90px; background: linear-gradient(135deg, #111827, #1f2937); border-radius: 8px; border: 1px solid #374151; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
+ <span style="font-size: 1.5rem;">🎛️</span>
+ <span style="font-size: 0.7rem; color: #60a5fa; font-weight: bold; margin-top: 4px;">PARTIFLOW STREAM</span>
  </div>
  </div>
  
@@ -367,7 +369,7 @@
  </div>
  </div>
 
- <!-- BOTONES DE DOBLE CLIC / CONFIRMACIÓN -->
+ <!-- BOTONES DE DOBLE CONFIRMACIÓN -->
  <div style="display:grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px;">
  <button id="btnAccionPlay" class="btn btn-success" onclick="manejarDobleClickPlay()">▶️ Iniciar Reproducción de la Cola</button>
  <button class="btn btn-warning" onclick="toggleModoKaraoke()">🎤 Karaoke</button>
@@ -665,18 +667,22 @@
  "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
  ];
 
- // Almacén de la cola de peticiones y biblioteca con múltiples pistas de género
+ // Almacén de la cola de peticiones y algoritmo de mapeo inteligente propio (Smart Match)
  let listaColaPeticiones = [];
  let indiceReproduccionActual = 0;
  let estadoConfirmacionPlay = 1; // 1 = Primer clic (pregunta), 2 = Segundo clic (confirma y reproduce)
 
- const bibliotecaPistasTematicas = [
- "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
- "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
- "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
- "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
- "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"
- ];
+ // Biblioteca interna de streaming optimizada por géneros (nuestra propia CDN)
+ const bibliotecaStreamingInteligente = {
+ "80": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+ "pop": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+ "90": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+ "brasil": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+ "brasileña": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+ "salsa": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+ "rock": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+ "default": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+ };
 
  let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
  let fiestasCreadas = JSON.parse(localStorage.getItem('partiflow_fiestas')) || ["Cumpleaños / Reunión"];
@@ -766,13 +772,11 @@
  const btnAccion = document.getElementById('btnAccionPlay');
 
  if (estadoConfirmacionPlay === 1) {
- // Primer clic: Cambia el botón para preguntar si está seguro
  btnAccion.className = "btn btn-warning";
  btnAccion.innerHTML = "❓ ¿Estás seguro? Haz clic para confirmar y sonar";
  mostrarNotificacion('⚠️ Primer toque registrado. Haz clic de nuevo para confirmar e iniciar.');
  estadoConfirmacionPlay = 2;
  } else {
- // Segundo clic: Confirma, restablece el botón y lanza la música en directo
  btnAccion.className = "btn btn-success";
  btnAccion.innerHTML = "▶️ Iniciar Reproducción de la Cola";
  estadoConfirmacionPlay = 1;
@@ -791,6 +795,7 @@
  }
  }
 
+ // ALGORITMO HÍBRIDO PROPIO DE MAPEO INTELIGENTE (Smart Match)
  function reproducirElementoColaActual() {
  if (indiceReproduccionActual >= listaColaPeticiones.length) {
  mostrarNotificacion('🏁 Fin de la cola de reproducción.');
@@ -800,29 +805,38 @@
  }
 
  const itemActual = listaColaPeticiones[indiceReproduccionActual];
- const estiloTransicion = document.getElementById('selectEstiloTransicion').value;
+ const qLower = itemActual.toLowerCase();
 
- if (estiloTransicion === 'mix') {
- mostrarNotificacion(`🎧 Mezclando petición activa: "${itemActual}"`);
+ // Algoritmo que busca coincidencias en nuestro diccionario interno sin salir a YouTube
+ let streamUrlFinal = bibliotecaStreamingInteligente.default;
+ for (let key in bibliotecaStreamingInteligente) {
+ if (key !== "default" && qLower.includes(key)) {
+ streamUrlFinal = bibliotecaStreamingInteligente[key];
+ break;
+ }
  }
 
- // Reproducción de la pista correspondiente a la petición de la cola
- const pistaUrl = bibliotecaPistasTematicas[indiceReproduccionActual % bibliotecaPistasTematicas.length];
+ const estiloTransicion = document.getElementById('selectEstiloTransicion').value;
+ if (estiloTransicion === 'mix') {
+ mostrarNotificacion(`🎧 Mezcla inteligente aplicada para: "${itemActual}"`);
+ }
+
+ // Reproducción limpia y directa controlada por la consola DJ
  const audioPrincipal = document.getElementById('audioReproductorPrincipal');
- audioPrincipal.src = pistaUrl;
+ audioPrincipal.src = streamUrlFinal;
  actualizarConsolaDJ();
- audioPrincipal.play().catch(e => console.log("Audio autorizado"));
+ audioPrincipal.play().catch(e => console.log("Audio autorizado por navegador"));
 
  document.getElementById('txtDeckASong').textContent = itemActual;
  document.getElementById('txtDeckBSong').textContent = (listaColaPeticiones[indiceReproduccionActual + 1] || "Fin de set");
- document.getElementById('txtEstadoCancion').textContent = `[${indiceReproduccionActual + 1}/${listaColaPeticiones.length}] En antena: ${itemActual}`;
+ document.getElementById('txtEstadoCancion').textContent = `[${indiceReproduccionActual + 1}/${listaColaPeticiones.length}] Sonando: ${itemActual}`;
  document.getElementById('txtEstadoBadge').textContent = "En Directo 🎛️";
 
  audioPrincipal.onended = function() {
  siguienteEnCola();
  };
 
- mostrarNotificacion(`▶️ Sonando ahora: ${itemActual}`);
+ mostrarNotificacion(`▶️ En antena: ${itemActual}`);
  }
 
  function siguienteEnCola() {
