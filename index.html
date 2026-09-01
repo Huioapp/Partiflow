@@ -227,11 +227,11 @@
 
     <div id="toastNotification">Notificación</div>
 
-    <!-- Reproductor visual de YouTube directo en pantalla para enganchar el audio -->
-    <div style="margin-bottom: 15px; width: 100%; max-width: 450px; display: flex; flex-direction: column; align-items: center;">
-        <span style="font-size: 0.75rem; color: #60a5fa; margin-bottom: 5px;">📺 Monitor de Reproducción YouTube (Haz clic en Play si el navegador lo requiere)</span>
-        <div id="ytPlayerContainer" style="width: 100%; height: 200px; background: #111827; border-radius: 12px; border: 1px solid #374151; overflow: hidden;">
-            <div id="ytPlayerDeckA"></div>
+    <!-- Visor multimedia interactivo directo con controles nativos de YouTube para garantizar sonido con voz -->
+    <div style="margin-bottom: 15px; width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center;">
+        <span style="font-size: 0.75rem; color: #34d399; margin-bottom: 5px; font-weight: bold;">📺 Reproductor Oficial YouTube (Canciones Reales con Voz)</span>
+        <div style="width: 100%; height: 220px; background: #111827; border-radius: 12px; border: 1px solid #374151; overflow: hidden;">
+            <iframe id="iframeYouTubeReal" width="100%" height="100%" src="https://www.youtube.com/embed/kJQP7kiw5Fk?enablejsapi=1" title="Partiflow Reproductor" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
 
@@ -330,7 +330,7 @@
                             <h4 style="color:#60a5fa;">Deck A (YouTube)</h4>
                             <p id="txtDeckASong" style="font-size:0.75rem; color:#d1d5db; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ninguna</p>
                             
-                            <div class="slider-group"><label>Volumen</label><input type="range" id="volA" min="0" max="100" value="90" oninput="aplicarVolumenYouTube()"></div>
+                            <div class="slider-group"><label>Volumen</label><input type="range" id="volA" min="0" max="100" value="90"></div>
                             <button class="btn btn-success" style="font-size:0.75rem; padding:8px; margin-top:6px;" onclick="cargarDeckYouTube('A')">▶️ Cargar en Deck A</button>
                         </div>
 
@@ -339,7 +339,7 @@
                             <h4 style="color:#60a5fa;">Deck B (YouTube)</h4>
                             <p id="txtDeckBSong" style="font-size:0.75rem; color:#d1d5db; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ninguna</p>
                             
-                            <div class="slider-group"><label>Volumen</label><input type="range" id="volB" min="0" max="100" value="85" oninput="aplicarVolumenYouTube()"></div>
+                            <div class="slider-group"><label>Volumen</label><input type="range" id="volB" min="0" max="100" value="85"></div>
                             <button class="btn btn-success" style="font-size:0.75rem; padding:8px; margin-top:6px;" onclick="cargarDeckYouTube('B')">▶️ Cargar en Deck B</button>
                         </div>
                     </div>
@@ -351,7 +351,7 @@
                                 <span style="color:#60a5fa; font-weight:bold;">CROSSFADER DE MEZCLA</span>
                                 <span>B (Deck B)</span>
                             </div>
-                            <input type="range" id="crossfader" min="0" max="100" value="50" oninput="aplicarVolumenYouTube()">
+                            <input type="range" id="crossfader" min="0" max="100" value="50">
                         </div>
                     </div>
                 </div>
@@ -386,7 +386,7 @@
                 </div>
 
                 <div class="master-controls">
-                    <button class="btn btn-secondary" id="btnPlayPause" onclick="togglePlayPauseGeneral()">⏸️ Pausar Todo</button>
+                    <button class="btn btn-secondary" id="btnPlayPause" onclick="detenerTodoAudio()">⏸️ Pausar / Reiniciar</button>
                     <button class="btn btn-secondary" onclick="siguienteDeckMix()">⏭️ Siguiente Mix</button>
                     <button class="btn btn-danger" onclick="detenerTodoAudio()">🗑️ Detener</button>
                 </div>
@@ -661,9 +661,6 @@
         </div>
     </div>
 
-    <!-- Script oficial de la API de IFrame de YouTube -->
-    <script src="https://www.youtube.com/iframe_api"></script>
-
     <script>
         let planActual = 'basico';
         let usuarioActualEmail = '';
@@ -696,20 +693,11 @@
         let cancionBuscadaActual = { nombre: "Luis Fonsi - Despacito", id: "kJQP7kiw5Fk" };
         let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
 
-        let playerDeckA;
         let fiestasCreadas = JSON.parse(localStorage.getItem('partiflow_fiestas')) || ["Cumpleaños / Reunión"];
         let modoKaraokeActivo = false;
         let modoDispositivoMovilSeguro = true;
         let modoIaActivo = true;
         let intervaloMixIA = null;
-
-        // Inicialización del reproductor oficial visible en pantalla
-        function onYouTubeIframeAPIReady() {
-            playerDeckA = new YT.Player('ytPlayerDeckA', {
-                height: '200', width: '100%', videoId: 'kJQP7kiw5Fk',
-                playerVars: { 'autoplay': 0, 'controls': 1, 'enablejsapi': 1 }
-            });
-        }
 
         function inicializarPreciosDinamicos() {
             const containerBasico = document.getElementById('precioBasicoContainer');
@@ -731,44 +719,62 @@
         }
 
         function cargarDeckYouTube(deck) {
-            if (playerDeckA && playerDeckA.loadVideoById) {
-                playerDeckA.loadVideoById(cancionBuscadaActual.id);
-                playerDeckA.playVideo();
-                document.getElementById(`txtDeck${deck}Song`).textContent = cancionBuscadaActual.nombre;
-                mostrarNotificacion(`Deck ${deck} cargado con: ${cancionBuscadaActual.nombre}`);
-                aplicarVolumenYouTube();
+            const iframe = document.getElementById('iframeYouTubeReal');
+            iframe.src = `https://www.youtube.com/embed/${cancionBuscadaActual.id}?autoplay=1&enablejsapi=1`;
+            document.getElementById(`txtDeck${deck}Song`).textContent = cancionBuscadaActual.nombre;
+            mostrarNotificacion(`Deck ${deck} cargado con: ${cancionBuscadaActual.nombre}`);
+        }
+
+        function ejecutarBusquedaYouTube() {
+            const input = document.getElementById('inputBusqueda');
+            const query = input.value.trim().toLowerCase();
+            if (!query) return mostrarNotificacion('Escribe el nombre de una canción o artista.');
+
+            let resultado = idsYouTubeReales.default;
+
+            if (query.includes('shakira')) {
+                resultado = idsYouTubeReales.shakira;
+            } else if (query.includes('luis miguel') || query.includes('miguel')) {
+                resultado = idsYouTubeReales["luis miguel"];
+            } else if (query.includes('mexicanos') || query.includes('mexicana') || query.includes('vicente') || query.includes('ranchera')) {
+                resultado = idsYouTubeReales.mexicanos;
+            } else if (query.includes('80') || query.includes('hombres g') || query.includes('rock')) {
+                resultado = idsYouTubeReales["80"];
+            } else if (query.includes('90') || query.includes('maná') || query.includes('enanitos')) {
+                let lista90 = idsYouTubeReales["90"];
+                resultado = lista90[Math.floor(Math.random() * lista90.length)];
+            } else if (query.includes('salsa') || query.includes('reggaeton')) {
+                resultado = idsYouTubeReales.salsa;
             } else {
-                mostrarNotificacion('⏳ Esperando carga de API de YouTube...');
+                resultado = { id: "kJQP7kiw5Fk", nombre: `${input.value} (Hit Global con Voz)` };
             }
+
+            cancionBuscadaActual = resultado;
+            
+            cacheBusquedas[query] = resultado.id;
+            localStorage.setItem('partiflow_cache_busquedas', JSON.stringify(cacheBusquedas));
+            actualizarContadorCacheUI();
+
+            // Cargar y reproducir directamente en el visor oficial interactivo
+            const iframe = document.getElementById('iframeYouTubeReal');
+            iframe.src = `https://www.youtube.com/embed/${resultado.id}?autoplay=1&enablejsapi=1`;
+            
+            document.getElementById('txtDeckASong').textContent = resultado.nombre;
+            document.getElementById('txtEstadoCancion').textContent = resultado.nombre;
+            mostrarNotificacion(`▶️ Reproduciendo: ${resultado.nombre}`);
         }
 
-        function aplicarVolumenYouTube() {
-            const volA = document.getElementById('volA').value;
-            if (playerDeckA && playerDeckA.setVolume) {
-                playerDeckA.setVolume(volA);
-            }
-        }
-
-        function reproducirDirectoYouTube() {
-            ejecutarBusquedaYouTube();
-        }
-
-        function togglePlayPauseGeneral() {
-            if (playerDeckA) {
-                try {
-                    playerDeckA.pauseVideo();
-                    mostrarNotificacion("⏸️ Reproducción pausada");
-                } catch(e) {
-                    playerDeckA.playVideo();
-                    mostrarNotificacion("▶️ Reproducción reanudada");
-                }
-            }
+        function siguienteDeckMix() {
+            cancionBuscadaActual = idsYouTubeReales.default;
+            const iframe = document.getElementById('iframeYouTubeReal');
+            iframe.src = `https://www.youtube.com/embed/${cancionBuscadaActual.id}?autoplay=1&enablejsapi=1`;
+            document.getElementById('txtDeckASong').textContent = cancionBuscadaActual.nombre;
+            mostrarNotificacion('⏭️ Siguiente mix cargado.');
         }
 
         function detenerTodoAudio() {
-            if (playerDeckA) {
-                playerDeckA.stopVideo();
-            }
+            const iframe = document.getElementById('iframeYouTubeReal');
+            iframe.src = "about:blank";
             document.getElementById('txtEstadoCancion').textContent = "Detenido";
             mostrarNotificacion('⏹️ Audio detenido.');
         }
@@ -1023,57 +1029,6 @@
             document.getElementById('inputBusqueda').value = nombre;
             document.getElementById('resultadosBusqueda').style.display = 'none';
             ejecutarBusquedaYouTube();
-        }
-
-        function ejecutarBusquedaYouTube() {
-            const input = document.getElementById('inputBusqueda');
-            const query = input.value.trim().toLowerCase();
-            if (!query) return mostrarNotificacion('Escribe el nombre de una canción o artista.');
-
-            let resultado = idsYouTubeReales.default;
-
-            if (query.includes('shakira')) {
-                resultado = idsYouTubeReales.shakira;
-            } else if (query.includes('luis miguel') || query.includes('miguel')) {
-                resultado = idsYouTubeReales["luis miguel"];
-            } else if (query.includes('mexicanos') || query.includes('mexicana') || query.includes('vicente') || query.includes('ranchera')) {
-                resultado = idsYouTubeReales.mexicanos;
-            } else if (query.includes('80') || query.includes('hombres g') || query.includes('rock')) {
-                resultado = idsYouTubeReales["80"];
-            } else if (query.includes('90') || query.includes('maná') || query.includes('enanitos')) {
-                let lista90 = idsYouTubeReales["90"];
-                resultado = lista90[Math.floor(Math.random() * lista90.length)];
-            } else if (query.includes('salsa') || query.includes('reggaeton')) {
-                resultado = idsYouTubeReales.salsa;
-            } else {
-                resultado = { id: "kJQP7kiw5Fk", nombre: `${input.value} (Hit Global con Voz)` };
-            }
-
-            cancionBuscadaActual = resultado;
-            
-            cacheBusquedas[query] = resultado.id;
-            localStorage.setItem('partiflow_cache_busquedas', JSON.stringify(cacheBusquedas));
-            actualizarContadorCacheUI();
-
-            if (playerDeckA && playerDeckA.loadVideoById) {
-                playerDeckA.loadVideoById(resultado.id);
-                playerDeckA.playVideo();
-                document.getElementById('txtDeckASong').textContent = resultado.nombre;
-                document.getElementById('txtEstadoCancion').textContent = resultado.nombre;
-                mostrarNotificacion(`▶️ Reproduciendo: ${resultado.nombre}`);
-            } else {
-                mostrarNotificacion('⏳ Conectando reproductor... Vuelve a pulsar en 1 segundo.');
-            }
-        }
-
-        function siguienteDeckMix() {
-            cancionBuscadaActual = idsYouTubeReales.default;
-            if (playerDeckA && playerDeckA.loadVideoById) {
-                playerDeckA.loadVideoById(cancionBuscadaActual.id);
-                playerDeckA.playVideo();
-                document.getElementById('txtDeckASong').textContent = cancionBuscadaActual.nombre;
-            }
-            mostrarNotificacion('⏭️ Siguiente mix cargado.');
         }
 
         function toggleModoKaraoke() {
