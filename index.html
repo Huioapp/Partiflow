@@ -277,10 +277,11 @@
  <div class="card">
  <h2>🎧 Cabina Inteligente con Consola de DJ y Cola</h2>
 
- <!-- Truco Fantasma 1x1 píxel en segundo plano para evitar bloqueo de YouTube y eliminar el recuadro blanco -->
- <div style="width: 1px; height: 1px; overflow: hidden; position: absolute; opacity: 0.001; pointer-events: none;">
- <div id="ytPlayerDiv"></div>
- <iframe id="iframeYouTubeReal" width="100%" height="100%" src="" frameborder="0" allow="autoplay"></iframe>
+ <!-- Visor multimedia limpio y compacto (permitido por navegador para evitar bloqueos de audio) -->
+ <div style="margin-bottom: 12px; width: 100%; display: flex; flex-direction: column; align-items: center;">
+ <div style="width: 100%; max-width: 320px; height: 140px; background: #111827; border-radius: 10px; border: 1px solid #374151; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
+ <iframe id="iframeYouTubeReal" width="100%" height="100%" src="https://www.youtube.com/embed/kJQP7kiw5Fk?enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+ </div>
  </div>
 
  <!-- CONSOLA DJ COMPLETA -->
@@ -497,7 +498,7 @@
  <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px;">
  <h3>📺 Pantallas y TVs (Wi-Fi)</h3>
  <p style="color:#9ca3af; font-size:0.85rem; margin-top:5px;">Envía la señal visual hacia los televisores de la fiesta o tu propia pantalla.</p>
- <button class="btn btn-success" style="margin-top:10px;" onclick="mostrarNotificacion('📺 Pantalla de TV / Fiesta vinculada a la salida principal.')">Conectar Pantalla TV</button>
+ <button class="btn btn-success" style="margin-top:10px;" onclick="mostrarNotificacion('📺 Pantallas de TV / Fiesta vinculadas a la salida principal.')">Conectar Pantalla TV</button>
  </div>
  </div>
  </div>
@@ -649,8 +650,6 @@
  </div>
  </div>
 
- <!-- Script oficial de la API de IFrame de YouTube -->
- <script src="https://www.youtube.com/iframe_api"></script>
  <script>
  let planActual = 'basico';
  let usuarioActualEmail = '';
@@ -664,19 +663,9 @@
  "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
  ];
 
- // Almacén de la cola y reproductor oficial YouTube API con truco fantasma 1x1
+ // Almacén de la cola de peticiones
  let listaColaPeticiones = [];
  let indiceReproduccionActual = 0;
- let playerYT = null;
-
- function onYouTubeIframeAPIReady() {
- playerYT = new YT.Player('ytPlayerDiv', {
- height: '100%',
- width: '100%',
- videoId: 'kJQP7kiw5Fk',
- playerVars: { 'autoplay': 0, 'controls': 1, 'enablejsapi': 1 }
- });
- }
 
  let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
  let fiestasCreadas = JSON.parse(localStorage.getItem('partiflow_fiestas')) || ["Cumpleaños / Reunión"];
@@ -781,16 +770,9 @@
  mostrarNotificacion(`🎧 Transición de set continuo aplicada para: "${itemActual}"`);
  }
 
- // Carga exacta del término escrito por el usuario mediante API oficial o iframe fantasma
- if (playerYT && playerYT.loadVideoByUrl) {
- // Búsqueda directa integrada
+ // Carga exacta del término escrito por el usuario en el visor multimedia compacto autorizado
  const iframe = document.getElementById('iframeYouTubeReal');
  iframe.src = `https://www.youtube.com/embed?listType=search&list=${queryCodificada}&autoplay=1&enablejsapi=1`;
- playerYT.playVideo();
- } else {
- const iframe = document.getElementById('iframeYouTubeReal');
- iframe.src = `https://www.youtube.com/embed?listType=search&list=${queryCodificada}&autoplay=1&enablejsapi=1`;
- }
 
  document.getElementById('txtDeckASong').textContent = itemActual;
  document.getElementById('txtDeckBSong').textContent = (listaColaPeticiones[indiceReproduccionActual + 1] || "Fin de set");
@@ -809,9 +791,6 @@
  function detenerTodoAudio() {
  const iframe = document.getElementById('iframeYouTubeReal');
  iframe.src = "about:blank";
- if (playerYT && playerYT.stopVideo) {
- playerYT.stopVideo();
- }
  document.getElementById('txtEstadoCancion').textContent = "Detenido";
  document.getElementById('txtEstadoBadge').textContent = "En Espera";
  mostrarNotificacion('⏹️ Reproducción detenida.');
