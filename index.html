@@ -318,23 +318,25 @@
  </div>
  </div>
 
- <!-- GESTOR DE COLA CON BUSCADOR Y TARJETA VISUAL PROPIA -->
+ <!-- GESTOR DE COLA CON BUSCADOR Y AUTOCOMPLETADO DESPLEGABLE -->
  <div style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151; margin-top:15px;">
  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
  <div style="flex: 1;">
  <h3 style="font-size:1rem; color:#60a5fa; margin-bottom:4px;">⚡ Gestor de Cola Abierta</h3>
- <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Algoritmo Híbrido Inteligente Activo</p>
+ <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Búsqueda inteligente con autocompletado</p>
  </div>
- <!-- Tarjeta de visualización corporativa propia (invisible para YouTube/Google) -->
  <div style="width: 160px; height: 90px; background: linear-gradient(135deg, #111827, #1f2937); border-radius: 8px; border: 1px solid #374151; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
  <span style="font-size: 1.5rem;">🎛️</span>
  <span style="font-size: 0.7rem; color: #60a5fa; font-weight: bold; margin-top: 4px;">PARTIFLOW STREAM</span>
  </div>
  </div>
  
- <div class="input-group" style="margin-bottom: 12px;">
+ <div class="input-group" style="margin-bottom: 12px; position: relative;">
  <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🔍 Añadir Canción, Artista o Género a la Cola:</label>
- <input type="text" id="inputBusqueda" placeholder="Ej. Pop 80s en Español, Música brasileña, salsa, rock...">
+ <input type="text" id="inputBusqueda" placeholder="Ej. Pop 80s, Salsa colombiana, Shakira..." oninput="manejarAutocompletado(this.value)">
+ 
+ <!-- LISTA DESPLEGABLE DE SUGERENCIAS FLOTANTES -->
+ <div id="listaSugerencias" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #111827; border: 1px solid #374151; border-radius: 0 0 10px 10px; max-height: 180px; overflow-y: auto; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.6);"></div>
  </div>
 
  <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -667,22 +669,19 @@
  "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
  ];
 
- // Almacén de la cola de peticiones y algoritmo de mapeo inteligente propio (Smart Match)
+ // Almacén de la cola de peticiones y diccionario inteligente maestro
  let listaColaPeticiones = [];
  let indiceReproduccionActual = 0;
  let estadoConfirmacionPlay = 1; // 1 = Primer clic (pregunta), 2 = Segundo clic (confirma y reproduce)
 
- // Biblioteca interna de streaming optimizada por géneros (nuestra propia CDN)
- const bibliotecaStreamingInteligente = {
- "80": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
- "pop": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
- "90": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
- "brasil": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
- "brasileña": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
- "salsa": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
- "rock": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
- "default": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
- };
+ let diccionarioMusicalGlobal = [
+   { tipo: "bloque", tags: ["80", "pop", "español", "mexicano", "retro"], etiquetaDesplegable: "Pop 80s en Español (Bloque General)", artista: "Hombres G", titulo: "Devuélveme a mi chica", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+   { tipo: "bloque", tags: ["80", "pop", "argentino", "rock"], etiquetaDesplegable: "Pop / Rock 80s Argentino (Bloque General)", artista: "Enanitos Verdes", titulo: "Lamento Boliviano", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+   { tipo: "bloque", tags: ["salsa", "colombiana", "tropical", "romantica"], etiquetaDesplegable: "Salsa Colombiana Romántica (Bloque General)", artista: "Grupo Niche", titulo: "Cali Pachanguero", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+   { tipo: "bloque", tags: ["salsa", "colombiana", "moderna", "baile"], etiquetaDesplegable: "Salsa Moderna Bailable (Bloque General)", artista: "Joe Arroyo", titulo: "En Barranquilla Me Quedo", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
+   { tipo: "especifica", tags: ["shakira", "waka waka", "mundial"], etiquetaDesplegable: "Shakira - Waka Waka (Canción Específica)", artista: "Shakira", titulo: "Waka Waka", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
+   { tipo: "especifica", tags: ["luis miguel", "la incondicional", "balada"], etiquetaDesplegable: "Luis Miguel - La Incondicional (Canción Específica)", artista: "Luis Miguel", titulo: "La Incondicional", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" }
+ ];
 
  let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
  let fiestasCreadas = JSON.parse(localStorage.getItem('partiflow_fiestas')) || ["Cumpleaños / Reunión"];
@@ -724,6 +723,63 @@
  audioPrincipal.volume = Math.min(1, Math.max(0, volA * factorCrossfaderA * 1.5));
  }
  }
+
+ // AUTOCOMPLETADO DESPLEGABLE EN TIEMPO REAL
+ function manejarAutocompletado(textoEscrito) {
+ const contenedorSugerencias = document.getElementById('listaSugerencias');
+ const q = textoEscrito.trim().toLowerCase();
+
+ if (q.length === 0) {
+ contenedorSugerencias.style.display = 'none';
+ contenedorSugerencias.innerHTML = '';
+ return;
+ }
+
+ const coincidencias = diccionarioMusicalGlobal.filter(item => {
+ return item.etiquetaDesplegable.toLowerCase().includes(q) || 
+           item.artista.toLowerCase().includes(q) || 
+           item.titulo.toLowerCase().includes(q) ||
+           item.tags.some(t => t.includes(q));
+ });
+
+ if (coincidencias.length === 0) {
+ contenedorSugerencias.style.display = 'none';
+ contenedorSugerencias.innerHTML = '';
+ return;
+ }
+
+ contenedorSugerencias.innerHTML = '';
+ coincidencias.forEach(match => {
+ const divOpcion = document.createElement('div');
+ divOpcion.style.padding = "10px 14px";
+ divOpcion.style.fontSize = "0.85rem";
+ divOpcion.style.color = "#e5e7eb";
+ divOpcion.style.cursor = "pointer";
+ divOpcion.style.borderBottom = "1px solid #1f2937";
+ divOpcion.innerHTML = `🎵 <strong>${match.etiquetaDesplegable}</strong>`;
+ 
+ divOpcion.onmouseover = () => { divOpcion.style.background = "#1f2937"; };
+ divOpcion.onmouseout = () => { divOpcion.style.background = "transparent"; };
+
+ divOpcion.onclick = () => {
+ document.getElementById('inputBusqueda').value = match.etiquetaDesplegable;
+ contenedorSugerencias.style.display = 'none';
+ contenedorSugerencias.innerHTML = '';
+ };
+
+ contenedorSugerencias.appendChild(divOpcion);
+ });
+
+ contenedorSugerencias.style.display = 'block';
+ }
+
+ document.addEventListener('click', function(e) {
+ const inputBusqueda = document.getElementById('inputBusqueda');
+ const contenedorSugerencias = document.getElementById('listaSugerencias');
+ if (inputBusqueda && contenedorSugerencias && !inputBusqueda.contains(e.target) && !contenedorSugerencias.contains(e.target)) {
+ contenedorSugerencias.style.display = 'none';
+ }
+ });
 
  // Añade canciones o géneros a la cola
  function agregarACola() {
@@ -795,7 +851,30 @@
  }
  }
 
- // ALGORITMO HÍBRIDO PROPIO DE MAPEO INTELIGENTE (Smart Match)
+ // ALGORITMO INTELIGENTE DE INTENCIÓN (Smart Intent Engine)
+ function procesarPeticionInteligente(queryUsuario) {
+ const qLimpia = queryUsuario.toLowerCase();
+ 
+ const cancionEspecifica = diccionarioMusicalGlobal.find(song => 
+    song.tipo === "especifica" && (qLimpia.includes(song.artista.toLowerCase()) || qLimpia.includes(song.titulo.toLowerCase())
+  ));
+
+ if (cancionEspecifica) {
+ return { tipoMatch: "Específica", track: cancionEspecifica };
+ }
+
+ let candidatos = diccionarioMusicalGlobal.filter(song => {
+ return song.tags.some(tag => qLimpia.includes(tag));
+ });
+
+ if (candidatos.length === 0) {
+ candidatos = diccionarioMusicalGlobal.filter(song => song.tipo === "bloque");
+ }
+
+ const trackSeleccionado = candidatos[Math.floor(Math.random() * candidatos.length)];
+ return { tipoMatch: "Bloque Temático", track: trackSeleccionado };
+ }
+
  function reproducirElementoColaActual() {
  if (indiceReproduccionActual >= listaColaPeticiones.length) {
  mostrarNotificacion('🏁 Fin de la cola de reproducción.');
@@ -804,39 +883,30 @@
  return;
  }
 
- const itemActual = listaColaPeticiones[indiceReproduccionActual];
- const qLower = itemActual.toLowerCase();
-
- // Algoritmo que busca coincidencias en nuestro diccionario interno sin salir a YouTube
- let streamUrlFinal = bibliotecaStreamingInteligente.default;
- for (let key in bibliotecaStreamingInteligente) {
- if (key !== "default" && qLower.includes(key)) {
- streamUrlFinal = bibliotecaStreamingInteligente[key];
- break;
- }
- }
+ const peticionUsuario = listaColaPeticiones[indiceReproduccionActual];
+ const resultadoInteligente = procesarPeticionInteligente(peticionUsuario);
+ const cancionFinal = resultadoInteligente.track;
 
  const estiloTransicion = document.getElementById('selectEstiloTransicion').value;
  if (estiloTransicion === 'mix') {
- mostrarNotificacion(`🎧 Mezcla inteligente aplicada para: "${itemActual}"`);
+ mostrarNotificacion(`🎧 IA [${resultadoInteligente.tipoMatch}]: "${cancionFinal.artista} - ${cancionFinal.titulo}"`);
  }
 
- // Reproducción limpia y directa controlada por la consola DJ
  const audioPrincipal = document.getElementById('audioReproductorPrincipal');
- audioPrincipal.src = streamUrlFinal;
+ audioPrincipal.src = cancionFinal.audio;
  actualizarConsolaDJ();
- audioPrincipal.play().catch(e => console.log("Audio autorizado por navegador"));
+ audioPrincipal.play().catch(e => console.log("Audio autorizado"));
 
- document.getElementById('txtDeckASong').textContent = itemActual;
+ document.getElementById('txtDeckASong').textContent = `${cancionFinal.artista} - ${cancionFinal.titulo}`;
  document.getElementById('txtDeckBSong').textContent = (listaColaPeticiones[indiceReproduccionActual + 1] || "Fin de set");
- document.getElementById('txtEstadoCancion').textContent = `[${indiceReproduccionActual + 1}/${listaColaPeticiones.length}] Sonando: ${itemActual}`;
+ document.getElementById('txtEstadoCancion').textContent = `[${indiceReproduccionActual + 1}/${listaColaPeticiones.length}] Sonando: ${cancionFinal.artista} - ${cancionFinal.titulo} (${resultadoInteligente.tipoMatch})`;
  document.getElementById('txtEstadoBadge').textContent = "En Directo 🎛️";
 
  audioPrincipal.onended = function() {
  siguienteEnCola();
  };
 
- mostrarNotificacion(`▶️ En antena: ${itemActual}`);
+ mostrarNotificacion(`▶️ En antena: ${cancionFinal.artista} - ${cancionFinal.titulo}`);
  }
 
  function siguienteEnCola() {
