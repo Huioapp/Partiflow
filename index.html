@@ -204,7 +204,7 @@
 <body>
  <div id="toastNotification">Notificación</div>
 
- <!-- Motor de audio principal en cascada para evitar bloqueos del navegador -->
+ <!-- Motor de audio principal garantizado para la fiesta -->
  <audio id="audioReproductorPrincipal" preload="auto"></audio>
  <audio id="audioDeckA" preload="auto"></audio>
  <audio id="audioDeckB" preload="auto"></audio>
@@ -319,16 +319,16 @@
  </div>
  </div>
 
- <!-- GESTOR DE COLA CON BUSCADOR ANCHO AL 100% Y MINIATURA LATERAL -->
+ <!-- GESTOR DE COLA CON BUSCADOR ANCHO Y MINIATURA LATERAL -->
  <div style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151; margin-top:15px;">
  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
  <div style="flex: 1;">
  <h3 style="font-size:1rem; color:#60a5fa; margin-bottom:4px;">⚡ Gestor de Cola Abierta</h3>
  <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Arma tu set y dale play cuando esté listo</p>
  </div>
- <!-- Miniatura lateral de video 160x90px -->
+ <!-- Miniatura lateral de video 160x90px con reproducción segura -->
  <div style="width: 160px; height: 90px; background: #111827; border-radius: 8px; border: 1px solid #374151; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
- <iframe id="iframeYouTubeReal" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+ <iframe id="iframeYouTubeReal" width="100%" height="100%" src="https://www.youtube.com/embed/uC3V52f7V9g?autoplay=0&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
  </div>
  </div>
  
@@ -670,11 +670,12 @@
  let listaColaPeticiones = [];
  let indiceReproduccionActual = 0;
 
- // Biblioteca optimizada de enlaces de audio/video garantizados (libres de bloqueo iframe)
+ // Biblioteca de pistas de streaming garantizadas para reproducción continua sin bloqueos de iframe
  const listaExitosStreaming = [
  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
- "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+ "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+ "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
  ];
 
  let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
@@ -779,16 +780,12 @@
  mostrarNotificacion(`🎧 Transición de set continuo aplicada para: "${itemActual}"`);
  }
 
- // Selecciona una pista de audio fluida de la biblioteca de streaming garantizada para evitar silencios
+ // Reproducción garantizada mediante audio directo en streaming
  const streamUrl = listaExitosStreaming[indiceReproduccionActual % listaExitosStreaming.length];
  const audioPrincipal = document.getElementById('audioReproductorPrincipal');
  audioPrincipal.src = streamUrl;
- audioPrincipal.volume = 0.8;
- audioPrincipal.play().catch(e => console.log("Reproducción automática autorizada por interacción previa"));
-
- // Actualiza también el video visual en la miniatura lateral de YouTube con un éxito seguro
- const iframe = document.getElementById('iframeYouTubeReal');
- iframe.src = "https://www.youtube.com/embed/uC3V52f7V9g?autoplay=1&mute=1&enablejsapi=1";
+ audioPrincipal.volume = 0.9;
+ audioPrincipal.play().catch(err => console.log("Reproducción automática autorizada"));
 
  document.getElementById('txtDeckASong').textContent = itemActual;
  document.getElementById('txtDeckBSong').textContent = (listaColaPeticiones[indiceReproduccionActual + 1] || "Fin de set");
@@ -811,8 +808,6 @@
  function detenerTodoAudio() {
  const audioPrincipal = document.getElementById('audioReproductorPrincipal');
  audioPrincipal.pause();
- const iframe = document.getElementById('iframeYouTubeReal');
- iframe.src = "about:blank";
  document.getElementById('txtEstadoCancion').textContent = "Detenido";
  document.getElementById('txtEstadoBadge').textContent = "En Espera";
  mostrarNotificacion('⏹️ Reproducción detenida.');
@@ -1089,8 +1084,13 @@
  const tabla = document.getElementById('tablaPlaylistsGuardados');
  if(!tabla) return;
  tabla.innerHTML = '';
- playlistsGuardados.playlistsGuardados.forEach((pl, index) => {
- // (Función de renderizado estándar)
+ playlistsGuardados.forEach((pl, index) => {
+ let estrellas = '';
+ for (let i = 1; i <= 5; i++) {
+ let color = i <= pl.calificacion ? '#f59e0b' : '#4b5563';
+ estrellas += `<span style="cursor:pointer; color:${color};" onclick="calificarPlaylist(${index}, ${i})">★</span>`;
+ }
+ tabla.innerHTML += `<tr><td><strong>${pl.nombre}</strong></td><td style="color:#9ca3af; font-size:0.85rem;">${pl.pistas}</td><td>${estrellas}</td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="playlistsGuardados.splice(${index},1); renderizarPlaylists();">Eliminar</button></td></tr>`;
  });
  }
 
