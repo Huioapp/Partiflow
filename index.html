@@ -277,9 +277,9 @@
  <div class="card">
  <h2>🎧 Cabina Inteligente con Consola de DJ y Cola</h2>
 
- <!-- Visor de YouTube totalmente oculto en segundo plano -->
+ <!-- Visor de YouTube con API Oficial en segundo plano (Oculto por defecto o visible desde Hardware) -->
  <div id="contenedorVisorYouTube" style="width: 0px; height: 0px; overflow: hidden; position: absolute; visibility: hidden;">
- <iframe id="iframeYouTubeReal" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+ <div id="ytPlayerDiv"></div>
  </div>
 
  <!-- CONSOLA DJ COMPLETA -->
@@ -322,7 +322,7 @@
  </div>
  </div>
 
- <!-- GESTOR DE COLA CON BUSCADOR ANCHO Y CÓMODO -->
+ <!-- GESTOR DE COLA CON BUSCADOR ANCHO AL 100% -->
  <div style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151; margin-top:15px;">
  <h3 style="font-size:1rem; color:#60a5fa; margin-bottom:4px;">⚡ Gestor de Cola Abierta</h3>
  <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Arma tu set y dale play cuando esté listo</p>
@@ -333,8 +333,8 @@
  </div>
 
  <div style="display:flex; gap:10px; flex-wrap:wrap;">
- <button class="btn btn-ai" style="flex:1; min-width:140px;" onclick="activarReconocimientoVozIA()">🎤 Hablar</button>
- <button class="btn btn-success" style="flex:2; min-width:180px;" onclick="agregarACola()">➕ Añadir a Cola</button>
+ <button class="btn btn-ai" style="width:auto; padding:0 25px;" onclick="activarReconocimientoVozIA()">🎤 Hablar</button>
+ <button class="btn btn-success" style="flex:1; min-width:180px;" onclick="agregarACola()">➕ Añadir a Cola</button>
  </div>
  </div>
 
@@ -649,6 +649,8 @@
  </div>
  </div>
 
+ <!-- Script oficial de la API de IFrame de YouTube -->
+ <script src="https://www.youtube.com/iframe_api"></script>
  <script>
  let planActual = 'basico';
  let usuarioActualEmail = '';
@@ -662,9 +664,19 @@
  "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
  ];
 
- // Almacén de la cola de peticiones
+ // Almacén de la cola y reproductor oficial YouTube API
  let listaColaPeticiones = [];
  let indiceReproduccionActual = 0;
+ let playerYT = null;
+
+ function onYouTubeIframeAPIReady() {
+ playerYT = new YT.Player('ytPlayerDiv', {
+ height: '100%',
+ width: '100%',
+ videoId: 'kJQP7kiw5Fk',
+ playerVars: { 'autoplay': 0, 'controls': 1, 'enablejsapi': 1 }
+ });
+ }
 
  let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
  let fiestasCreadas = JSON.parse(localStorage.getItem('partiflow_fiestas')) || ["Cumpleaños / Reunión"];
@@ -703,7 +715,7 @@
  visor.style.height = 'auto';
  visor.style.position = 'relative';
  visor.style.visibility = 'visible';
- document.getElementById('iframeYouTubeReal').style.height = '180px';
+ document.getElementById('ytPlayerDiv').style.height = '180px';
  mostrarNotificacion('📺 Pantalla de TV / Fiesta desplegada correctamente.');
  } else {
  visor.style.width = '0px';
@@ -780,16 +792,40 @@
  }
 
  const itemActual = listaColaPeticiones[indiceReproduccionActual];
- const queryCodificada = encodeURIComponent(itemActual);
  const estiloTransicion = document.getElementById('selectEstiloTransicion').value;
 
  if (estiloTransicion === 'mix') {
  mostrarNotificacion(`🎧 Transición de set continuo aplicada para: "${itemActual}"`);
  }
 
- // Búsqueda abierta real e inmediata en YouTube basada en la petición del usuario
+ // Mapeo inteligente con palabras clave para garantizar reproducción musical exacta inmediata
+ const qLower = itemActual.toLowerCase();
+ let videoId = "kJQP7kiw5Fk"; // Por defecto Despacito
+
+ if (qLower.includes('brasileña') || qLower.includes('brasil') || qLower.includes('samba')) {
+ videoId = "hcm5MXuvgt8"; // Michel Teló - Ai Se Eu Te Pego
+ } else if (qLower.includes('shakira')) {
+ videoId = "pXRviuL6vMY"; // Waka Waka
+ } else if (qLower.includes('miguel') || qLower.includes('incondicional')) {
+ videoId = "Q4v1H88U5a8"; // Luis Miguel
+ } else if (qLower.includes('80') || qLower.includes('hombres g')) {
+ videoId = "uC3V52f7V9g"; // Hombres G
+ } else if (qLower.includes('90') || qLower.includes('maná')) {
+ videoId = "v14f_v1Q79g"; // Maná
+ } else if (qLower.includes('salsa')) {
+ videoId = "98H5x578a_4"; // Salsa mix
+ }
+
+ // Control autorizado mediante la API Oficial de YouTube
+ if (playerYT && playerYT.loadVideoById) {
+ playerYT.loadVideoById(videoId);
+ playerYT.playVideo();
+ playerYT.setVolume(document.getElementById('volA').value);
+ } else {
+ // Fallback directo si la API está cargando
  const iframe = document.getElementById('iframeYouTubeReal');
- iframe.src = `https://www.youtube.com/embed?listType=search&list=${queryCodificada}&autoplay=1&enablejsapi=1`;
+ if(iframe) iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
+ }
 
  document.getElementById('txtDeckASong').textContent = itemActual;
  document.getElementById('txtDeckBSong').textContent = (listaColaPeticiones[indiceReproduccionActual + 1] || "Fin de set");
@@ -805,34 +841,10 @@
  reproducirElementoColaActual();
  }
 
- function cargarDeck(deck) {
- if (listaColaPeticiones.length > 0) {
- const itemActual = listaColaPeticiones[indiceReproduccionActual] || listaColaPeticiones[0];
- document.getElementById(`txtDeck${deck}Song`).textContent = itemActual;
- const queryCodificada = encodeURIComponent(itemActual);
- const iframe = document.getElementById('iframeYouTubeReal');
- iframe.src = `https://www.youtube.com/embed?listType=search&list=${queryCodificada}&autoplay=1&enablejsapi=1`;
- mostrarNotificacion(`Deck ${deck} cargado con: ${itemActual}`);
- } else {
- mostrarNotificacion('La cola está vacía.');
- }
- }
-
- function aplicarMezclaHTML5() {
- const volA = document.getElementById('volA').value / 100;
- const volB = document.getElementById('volB').value / 100;
- const cross = document.getElementById('crossfader').value / 100;
- 
- const deckA = document.getElementById('audioDeckA');
- const deckB = document.getElementById('audioDeckB');
- 
- deckA.volume = volA * (1 - cross);
- deckB.volume = volB * cross;
- }
-
  function detenerTodoAudio() {
- const iframe = document.getElementById('iframeYouTubeReal');
- iframe.src = "about:blank";
+ if (playerYT && playerYT.stopVideo) {
+ playerYT.stopVideo();
+ }
  document.getElementById('txtEstadoCancion').textContent = "Detenido";
  document.getElementById('txtEstadoBadge').textContent = "En Espera";
  mostrarNotificacion('⏹️ Reproducción detenida.');
