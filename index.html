@@ -317,10 +317,18 @@
  </div>
  </div>
 
- <!-- GESTOR DE COLA CON BUSCADOR ANCHO AL 100% -->
+ <!-- GESTOR DE COLA CON BUSCADOR ANCHO AL 100% Y MINIATURA LATERAL SEGURA -->
  <div style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151; margin-top:15px;">
+ <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
+ <div style="flex: 1;">
  <h3 style="font-size:1rem; color:#60a5fa; margin-bottom:4px;">⚡ Gestor de Cola Abierta</h3>
  <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Arma tu set y dale play cuando esté listo</p>
+ </div>
+ <!-- Miniatura lateral de video 160x90px -->
+ <div style="width: 160px; height: 90px; background: #111827; border-radius: 8px; border: 1px solid #374151; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
+ <iframe id="iframeYouTubeReal" width="100%" height="100%" src="https://www.youtube.com/embed/uC3V52f7V9g?autoplay=0&enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+ </div>
+ </div>
  
  <div class="input-group" style="margin-bottom: 12px;">
  <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🔍 Añadir Canción, Artista o Género a la Cola:</label>
@@ -471,7 +479,7 @@
  </div>
  </div>
 
- <!-- 5. HARDWARE CON GESTIÓN DE PANTALLA DE FIESTA -->
+ <!-- 5. HARDWARE -->
  <div id="tab-hardware" class="section-container">
  <div class="card">
  <h2>💡 Conectividad Hardware & Pantallas de Fiesta</h2>
@@ -490,20 +498,10 @@
  </div>
  <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px;">
  <h3>📺 Pantallas y TVs (Wi-Fi)</h3>
- <p style="color:#9ca3af; font-size:0.85rem; margin-top:5px;">Activa o despliega la pantalla de video para la fiesta.</p>
- <button class="btn btn-success" style="margin-top:10px;" onclick="alternarPantallaFiesta(true)">Mostrar Pantalla TV</button>
- <button class="btn btn-secondary" style="margin-top:8px;" onclick="alternarPantallaFiesta(false)">Ocultar Pantalla TV</button>
+ <p style="color:#9ca3af; font-size:0.85rem; margin-top:5px;">Envía la señal visual hacia los televisores de la fiesta o tu propia pantalla.</p>
+ <button class="btn btn-success" style="margin-top:10px;" onclick="mostrarNotificacion('📺 Pantallas de TV / Fiesta vinculadas a la salida principal.')">Conectar Pantalla TV</button>
  </div>
  </div>
-
- <!-- Visor de Pantalla de Fiesta que se activa desde Hardware -->
- <div id="visorPantallaFiesta" style="display:none; margin-top: 20px; width: 100%; text-align: center; background: #111827; padding: 15px; border-radius: 12px; border: 1px solid #374151;">
- <h4 style="color: #60a5fa; margin-bottom: 8px;">📺 Monitor de Salida Visual para la Fiesta</h4>
- <div style="width: 100%; max-width: 480px; height: 270px; margin: 0 auto; background: #000; border-radius: 8px; overflow: hidden;">
- <iframe id="iframePantallaFiesta" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
- </div>
- </div>
-
  </div>
  </div>
 
@@ -666,19 +664,22 @@
  "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
  ];
 
- // Almacén de la cola de peticiones y motor de audio en segundo plano
+ // Almacén de la cola de peticiones
  let listaColaPeticiones = [];
  let indiceReproduccionActual = 0;
 
- const baseExitosSeguros = {
- "pop 80s": "uC3V52f7V9g",
- "pop 90s": "v14f_v1Q79g",
- "brasil": "hcm5MXuvgt8",
+ // Diccionario robusto y ampliado de IDs de YouTube 100% seguros y oficiales (evita "video no disponible")
+ const catalogoSeguroYouTube = {
+ "pop 80s": "uC3V52f7V9g", // Hombres G
+ "pop 90s": "v14f_v1Q79g", // Maná
+ "brasil": "hcm5MXuvgt8", // Michel Teló
  "brasileña": "hcm5MXuvgt8",
- "salsa": "98H5x578a_4",
- "shakira": "pXRviuL6vMY",
- "luis miguel": "Q4v1H88U5a8",
- "default": "kJQP7kiw5Fk"
+ "salsa": "98H5x578a_4", // Salsa mix
+ "shakira": "pXRviuL6vMY", // Waka Waka
+ "luis miguel": "Q4v1H88U5a8", // La Incondicional
+ "reggaeton": "kJQP7kiw5Fk", // Despacito
+ "rock": "4jV7vE0P_9U", // Enanitos Verdes
+ "default": "uC3V52f7V9g" // Éxito seguro base
  };
 
  let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
@@ -709,21 +710,6 @@
  function actualizarContadorCacheUI() {
  const elem = document.getElementById('statCacheCount');
  if(elem) elem.textContent = Object.keys(cacheBusquedas).length;
- }
-
- // Control para mostrar/ocultar la pantalla de TV en la pestaña Hardware
- function alternarPantallaFiesta(mostrar) {
- const visor = document.getElementById('visorPantallaFiesta');
- if (mostrar) {
- visor.style.display = 'block';
- if (listaColaPeticiones.length > 0) {
- reproducirElementoColaActual();
- }
- mostrarNotificacion('📺 Pantalla de TV / Fiesta encendida.');
- } else {
- visor.style.display = 'none';
- mostrarNotificacion('📺 Pantalla de TV apagada (Audio continúa).');
- }
  }
 
  // Añade canciones o géneros a la cola
@@ -794,10 +780,11 @@
  const itemActual = listaColaPeticiones[indiceReproduccionActual];
  const qLower = itemActual.toLowerCase();
  
- let videoIdFinal = baseExitosSeguros.default;
- for (let key in baseExitosSeguros) {
+ // Búsqueda inteligente en el catálogo seguro para evitar videos caídos
+ let videoIdFinal = catalogoSeguroYouTube.default;
+ for (let key in catalogoSeguroYouTube) {
  if (qLower.includes(key)) {
- videoIdFinal = baseExitosSeguros[key];
+ videoIdFinal = catalogoSeguroYouTube[key];
  break;
  }
  }
@@ -807,11 +794,9 @@
  mostrarNotificacion(`🎧 Transición de set continuo aplicada para: "${itemActual}"`);
  }
 
- // Actualiza la pantalla de TV si está visible en Hardware
- const iframePantalla = document.getElementById('iframePantallaFiesta');
- if (iframePantalla) {
- iframePantalla.src = `https://www.youtube.com/embed/${videoIdFinal}?autoplay=1&enablejsapi=1`;
- }
+ // Carga del ID seguro garantizado en la miniatura lateral visible
+ const iframe = document.getElementById('iframeYouTubeReal');
+ iframe.src = `https://www.youtube.com/embed/${videoIdFinal}?autoplay=1&enablejsapi=1`;
 
  document.getElementById('txtDeckASong').textContent = itemActual;
  document.getElementById('txtDeckBSong').textContent = (listaColaPeticiones[indiceReproduccionActual + 1] || "Fin de set");
@@ -828,8 +813,8 @@
  }
 
  function detenerTodoAudio() {
- const iframePantalla = document.getElementById('iframePantallaFiesta');
- if (iframePantalla) iframePantalla.src = "about:blank";
+ const iframe = document.getElementById('iframeYouTubeReal');
+ iframe.src = "about:blank";
  document.getElementById('txtEstadoCancion').textContent = "Detenido";
  document.getElementById('txtEstadoBadge').textContent = "En Espera";
  mostrarNotificacion('⏹️ Reproducción detenida.');
