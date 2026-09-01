@@ -85,6 +85,7 @@
  font-size: 0.95rem;
  outline: none;
  font-family: inherit;
+ width: 100%;
  }
  .btn-login {
  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
@@ -321,17 +322,19 @@
  </div>
  </div>
 
- <!-- GESTOR DE COLA ABIERTA LIMPIO SIN BOTONES DE TV -->
+ <!-- GESTOR DE COLA CON BUSCADOR ANCHO Y CÓMODO -->
  <div style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151; margin-top:15px;">
  <h3 style="font-size:1rem; color:#60a5fa; margin-bottom:4px;">⚡ Gestor de Cola Abierta</h3>
  <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Arma tu set y dale play cuando esté listo</p>
- <div class="input-group" style="margin-bottom: 0;">
+ 
+ <div class="input-group" style="margin-bottom: 12px;">
  <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🔍 Añadir Canción, Artista o Género a la Cola:</label>
- <div style="display:flex; gap:10px;">
- <input type="text" id="inputBusqueda" placeholder="Ej. Pop 80s, Música brasileña, salsa...">
- <button class="btn btn-ai" style="width:auto; padding:0 15px;" onclick="activarReconocimientoVozIA()">🎤 Hablar</button>
- <button class="btn btn-success" style="width:auto;" onclick="agregarACola()">➕ Añadir a Cola</button>
+ <input type="text" id="inputBusqueda" placeholder="Ej. Pop 80s, Música brasileña, salsa, rock...">
  </div>
+
+ <div style="display:flex; gap:10px; flex-wrap:wrap;">
+ <button class="btn btn-ai" style="flex:1; min-width:140px;" onclick="activarReconocimientoVozIA()">🎤 Hablar</button>
+ <button class="btn btn-success" style="flex:2; min-width:180px;" onclick="agregarACola()">➕ Añadir a Cola</button>
  </div>
  </div>
 
@@ -473,7 +476,7 @@
  </div>
  </div>
 
- <!-- 5. HARDWARE CON CONTROL DE PANTALLAS Y TV -->
+ <!-- 5. HARDWARE -->
  <div id="tab-hardware" class="section-container">
  <div class="card">
  <h2>💡 Conectividad Hardware & Pantallas de Fiesta</h2>
@@ -494,7 +497,7 @@
  <h3>📺 Pantallas y TVs (Wi-Fi)</h3>
  <p style="color:#9ca3af; font-size:0.85rem; margin-top:5px;">Envía la señal visual hacia los televisores de la fiesta o tu propia pantalla.</p>
  <button class="btn btn-success" style="margin-top:10px;" onclick="toggleVisorYouTube(true); mostrarNotificacion('📺 Pantallas de TV / Fiesta activadas y visibles.')">Mostrar Pantalla TV</button>
- <button class="btn btn-secondary" style="margin-top:8px;" onclick="toggleVisorYouTube(false); mostrarNotificacion('📺 Pantalla oculta (Audio en segundo plano).')">Ocultar Pantalla TV</button>
+ <button class="btn btn-secondary" style="margin-top:8px;" onclick="toggleVisorYouTube(false); mostrarNotificacion('📺 Pantalla oculta (Audio reproduciéndose en cabina).')">Ocultar Pantalla TV</button>
  </div>
  </div>
  </div>
@@ -659,7 +662,7 @@
  "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
  ];
 
- // Almacén de la cola de peticiones y estado de mezcla
+ // Almacén de la cola de peticiones
  let listaColaPeticiones = [];
  let indiceReproduccionActual = 0;
 
@@ -693,7 +696,6 @@
  if(elem) elem.textContent = Object.keys(cacheBusquedas).length;
  }
 
- // Control centralizado de pantallas de TV desde Hardware
  function toggleVisorYouTube(mostrar) {
  const visor = document.getElementById('contenedorVisorYouTube');
  if (mostrar) {
@@ -701,7 +703,7 @@
  visor.style.height = 'auto';
  visor.style.position = 'relative';
  visor.style.visibility = 'visible';
- document.getElementById('iframeYouTubeReal').style.height = '200px';
+ document.getElementById('iframeYouTubeReal').style.height = '180px';
  mostrarNotificacion('📺 Pantalla de TV / Fiesta desplegada correctamente.');
  } else {
  visor.style.width = '0px';
@@ -712,7 +714,7 @@
  }
  }
 
- // Añade cualquier texto, artista o género a la cola
+ // Añade canciones o géneros a la cola
  function agregarACola() {
  const input = document.getElementById('inputBusqueda');
  const query = input.value.trim();
@@ -750,7 +752,7 @@
  mostrarNotificacion('Elemento eliminado de la cola.');
  }
 
- // Inicia la reproducción de la cola aplicando el orden y transición escogida
+ // Inicia la reproducción de la cola aplicando el orden y estilo de mezcla escogido
  function iniciarReproduccionCola() {
  if (listaColaPeticiones.length === 0) {
  return mostrarNotificacion('⚠️ La cola está vacía. Añade al menos un tema.');
@@ -782,7 +784,7 @@
  const estiloTransicion = document.getElementById('selectEstiloTransicion').value;
 
  if (estiloTransicion === 'mix') {
- mostrarNotificacion(`🎧 Transición de mezcla continua aplicada para: "${itemActual}"`);
+ mostrarNotificacion(`🎧 Transición de set continuo aplicada para: "${itemActual}"`);
  }
 
  // Búsqueda abierta real e inmediata en YouTube basada en la petición del usuario
@@ -801,6 +803,31 @@
  if (listaColaPeticiones.length === 0) return;
  indiceReproduccionActual++;
  reproducirElementoColaActual();
+ }
+
+ function cargarDeck(deck) {
+ if (listaColaPeticiones.length > 0) {
+ const itemActual = listaColaPeticiones[indiceReproduccionActual] || listaColaPeticiones[0];
+ document.getElementById(`txtDeck${deck}Song`).textContent = itemActual;
+ const queryCodificada = encodeURIComponent(itemActual);
+ const iframe = document.getElementById('iframeYouTubeReal');
+ iframe.src = `https://www.youtube.com/embed?listType=search&list=${queryCodificada}&autoplay=1&enablejsapi=1`;
+ mostrarNotificacion(`Deck ${deck} cargado con: ${itemActual}`);
+ } else {
+ mostrarNotificacion('La cola está vacía.');
+ }
+ }
+
+ function aplicarMezclaHTML5() {
+ const volA = document.getElementById('volA').value / 100;
+ const volB = document.getElementById('volB').value / 100;
+ const cross = document.getElementById('crossfader').value / 100;
+ 
+ const deckA = document.getElementById('audioDeckA');
+ const deckB = document.getElementById('audioDeckB');
+ 
+ deckA.volume = volA * (1 - cross);
+ deckB.volume = volB * cross;
  }
 
  function detenerTodoAudio() {
