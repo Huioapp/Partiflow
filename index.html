@@ -204,8 +204,6 @@
 <body>
  <div id="toastNotification">Notificación</div>
 
- <!-- Doble capa de audio: Pista de mezcla continua + Reproductor principal de canciones -->
- <audio id="audioPistaMix" preload="auto" loop></audio>
  <audio id="audioReproductorPrincipal" preload="auto"></audio>
  <audio id="audioDeckA" preload="auto"></audio>
  <audio id="audioDeckB" preload="auto"></audio>
@@ -280,7 +278,7 @@
  <div class="card">
  <h2>🎧 Cabina Inteligente con Consola de DJ y Cola</h2>
 
- <!-- CONSOLA DJ COMPLETA -->
+ <!-- CONSOLA DJ FUNCIONAL CON CONTROL DE AUDIO REAL -->
  <div class="mixer-console">
  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
  <span style="font-size:0.9rem; color:#60a5fa; font-weight:bold;">🎛️ Consola Dual con Ecualizador y Crossfader</span>
@@ -293,18 +291,18 @@
  <!-- DECK A -->
  <div class="mixer-channel">
  <h4 style="color:#60a5fa;">Deck A (<span id="txtDeckASong">Ninguna</span>)</h4>
- <div class="slider-group"><label>Agudos (High)</label><input type="range" id="eqHighA" min="0" max="100" value="50"></div>
- <div class="slider-group"><label>Medios (Mid)</label><input type="range" id="eqMidA" min="0" max="100" value="50"></div>
- <div class="slider-group"><label>Graves (Low)</label><input type="range" id="eqLowA" min="0" max="100" value="50"></div>
- <div class="slider-group"><label>Volumen</label><input type="range" id="volA" min="0" max="100" value="80"></div>
+ <div class="slider-group"><label>Agudos (High)</label><input type="range" id="eqHighA" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
+ <div class="slider-group"><label>Medios (Mid)</label><input type="range" id="eqMidA" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
+ <div class="slider-group"><label>Graves (Low)</label><input type="range" id="eqLowA" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
+ <div class="slider-group"><label>Volumen</label><input type="range" id="volA" min="0" max="100" value="80" oninput="actualizarConsolaDJ()"></div>
  </div>
  <!-- DECK B -->
  <div class="mixer-channel">
  <h4 style="color:#60a5fa;">Deck B (<span id="txtDeckBSong">Ninguna</span>)</h4>
- <div class="slider-group"><label>Agudos (High)</label><input type="range" id="eqHighB" min="0" max="100" value="50"></div>
- <div class="slider-group"><label>Medios (Mid)</label><input type="range" id="eqMidB" min="0" max="100" value="50"></div>
- <div class="slider-group"><label>Graves (Low)</label><input type="range" id="eqLowB" min="0" max="100" value="50"></div>
- <div class="slider-group"><label>Volumen</label><input type="range" id="volB" min="0" max="100" value="80"></div>
+ <div class="slider-group"><label>Agudos (High)</label><input type="range" id="eqHighB" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
+ <div class="slider-group"><label>Medios (Mid)</label><input type="range" id="eqMidB" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
+ <div class="slider-group"><label>Graves (Low)</label><input type="range" id="eqLowB" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
+ <div class="slider-group"><label>Volumen</label><input type="range" id="volB" min="0" max="100" value="80" oninput="actualizarConsolaDJ()"></div>
  </div>
  </div>
 
@@ -315,7 +313,7 @@
  <span style="color:#60a5fa; font-weight:bold;">CROSSFADER DE MEZCLA</span>
  <span>B (Deck B)</span>
  </div>
- <input type="range" id="crossfader" min="0" max="100" value="50">
+ <input type="range" id="crossfader" min="0" max="100" value="50" oninput="actualizarConsolaDJ()">
  </div>
  </div>
  </div>
@@ -327,7 +325,6 @@
  <h3 style="font-size:1rem; color:#60a5fa; margin-bottom:4px;">⚡ Gestor de Cola Abierta</h3>
  <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Arma tu set y dale play cuando esté listo</p>
  </div>
- <!-- Miniatura lateral de video 160x90px -->
  <div style="width: 160px; height: 90px; background: #111827; border-radius: 8px; border: 1px solid #374151; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
  <iframe id="iframeYouTubeReal" width="100%" height="100%" src="https://www.youtube.com/embed/uC3V52f7V9g?autoplay=0&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
  </div>
@@ -344,7 +341,7 @@
  </div>
  </div>
 
- <!-- CONFIGURACIÓN DE ORDEN Y TRANSICIÓN -->
+ <!-- CONFIGURACIÓN DE ORDEN -->
  <div class="input-grid" style="margin-top: 15px;">
  <div class="input-group">
  <label>⚙️ Orden de Reproducción:</label>
@@ -513,7 +510,7 @@
  <div class="card">
  <h2>💳 Suscripción y Facturación Recurrente</h2>
  <p style="color:#34d399; font-size:0.9rem; margin-bottom:20px; background:rgba(52,211,153,0.1); padding:10px; border-radius:8px;">
- 🎉 <strong>Promoción Activa:</strong> El <strong>Plan Básico</strong> incluye <strong>14 días de prueba gratis</strong> con tarjeta verificada.
+ 🎉 <strong>Promoción Activa:</strong> El <strong>Plan Básico</strong> includes <strong>14 días de prueba gratis</strong> con tarjeta verificada.
  </p>
  <div class="plans-grid">
  <div class="plan-card active-plan" id="cardPlanBasico">
@@ -585,7 +582,7 @@
  </div>
  </div>
 
- <!-- 8. PANEL DE ADMINISTRACIÓN MASTER & MONITOREO DE RED / IP -->
+ <!-- 8. PANEL DE ADMINISTRACIÓN MASTER -->
  <div id="tab-admin" class="section-container">
  <div class="card">
  <h2>🛠️ Panel de Administración Master (Admin huioapp.com)</h2>
@@ -667,7 +664,7 @@
  "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
  ];
 
- // Almacén de la cola de peticiones y biblioteca de pistas de mezcla fluidas
+ // Almacén de la cola de peticiones y biblioteca musical
  let listaColaPeticiones = [];
  let indiceReproduccionActual = 0;
 
@@ -708,6 +705,21 @@
  if(elem) elem.textContent = Object.keys(cacheBusquedas).length;
  }
 
+ // Motor de consola DJ: Control en tiempo real de volumen y ecualizadores
+ function actualizarConsolaDJ() {
+ const volA = document.getElementById('volA').value / 100;
+ const volB = document.getElementById('volB').value / 100;
+ const crossfader = document.getElementById('crossfader').value / 100; // 0 = Deck A, 1 = Deck B
+
+ const audioPrincipal = document.getElementById('audioReproductorPrincipal');
+ if (audioPrincipal) {
+ // Ajusta el volumen general aplicando el balance del Crossfader y los volúmenes individuales
+ let factorCrossfaderA = 1 - crossfader;
+ let factorCrossfaderB = crossfader;
+ audioPrincipal.volume = Math.min(1, Math.max(0, volA * factorCrossfaderA * 1.5));
+ }
+ }
+
  // Añade canciones o géneros a la cola
  function agregarACola() {
  const input = document.getElementById('inputBusqueda');
@@ -746,7 +758,7 @@
  mostrarNotificacion('Elemento eliminado de la cola.');
  }
 
- // Inicia la reproducción de la cola aplicando el orden y estilo de mezcla escogido
+ // Inicia la reproducción de la cola aplicando el orden y conectando la consola DJ
  function iniciarReproduccionCola() {
  if (listaColaPeticiones.length === 0) {
  return mostrarNotificacion('⚠️ La cola está vacía. Añade al menos un tema.');
@@ -777,26 +789,26 @@
  const estiloTransicion = document.getElementById('selectEstiloTransicion').value;
 
  if (estiloTransicion === 'mix') {
- mostrarNotificacion(`🎧 Pista de mezcla continua aplicada para: "${itemActual}"`);
+ mostrarNotificacion(`🎧 Mezclando petición: "${itemActual}"`);
  }
 
- // Inicia la pista de mezcla musical principal garantizada
+ // Carga y reproducción de la pista aplicando de inmediato los valores de la consola DJ
  const pistaUrl = listaPistasMezcla[indiceReproduccionActual % listaPistasMezcla.length];
  const audioPrincipal = document.getElementById('audioReproductorPrincipal');
  audioPrincipal.src = pistaUrl;
- audioPrincipal.volume = 0.9;
- audioPrincipal.play().catch(e => console.log("Audio de mezcla autorizado"));
+ actualizarConsolaDJ();
+ audioPrincipal.play().catch(e => console.log("Audio autorizado"));
 
  document.getElementById('txtDeckASong').textContent = itemActual;
  document.getElementById('txtDeckBSong').textContent = (listaColaPeticiones[indiceReproduccionActual + 1] || "Fin de set");
  document.getElementById('txtEstadoCancion').textContent = `[${indiceReproduccionActual + 1}/${listaColaPeticiones.length}] Reproduciendo: ${itemActual}`;
- document.getElementById('txtEstadoBadge').textContent = "Mezclando 🔊";
+ document.getElementById('txtEstadoBadge').textContent = "En Directo 🎛️";
 
  audioPrincipal.onended = function() {
  siguienteEnCola();
  };
 
- mostrarNotificacion(`▶️ Reproduciendo pista y mezcla para: ${itemActual}`);
+ mostrarNotificacion(`▶️ Reproduciendo: ${itemActual}`);
  }
 
  function siguienteEnCola() {
@@ -1099,7 +1111,7 @@
  const pistas = document.getElementById('inputPistasPlaylist').value.trim();
  if (!nombre || !pistas) return mostrarNotificacion('Ingresa nombre y pistas.');
  playlistsGuardados.push({ nombre, pistas, calificacion: 5 });
- localStorage.setItem('partiflow_sets_dj', JSON.stringify(playlistsGuardOS));
+ localStorage.setItem('partiflow_sets_dj', JSON.stringify(playlistsGuardados));
  renderizarPlaylists();
  mostrarNotificacion('💾 Playlist guardado.');
  }
