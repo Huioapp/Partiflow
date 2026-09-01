@@ -367,11 +367,10 @@
  </div>
  </div>
 
- <!-- BOTONES DE DOBLE CONFIRMACIÓN PARA INICIAR REPRODUCCIÓN -->
- <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
- <button id="btnPaso1Play" class="btn btn-success" onclick="solicitarConfirmacionPlay()">▶️ Iniciar Reproducción de la Cola</button>
- <button id="btnPaso2Confirm" class="btn btn-warning" style="display:none;" onclick="ejecutarReproduccionDefinitiva()">❓ ¿Estás seguro? Clic para Confirmar</button>
- <button class="btn btn-secondary" onclick="toggleModoKaraoke()">🎤 Karaoke</button>
+ <!-- BOTONES DE DOBLE CLIC / CONFIRMACIÓN -->
+ <div style="display:grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px;">
+ <button id="btnAccionPlay" class="btn btn-success" onclick="manejarDobleClickPlay()">▶️ Iniciar Reproducción de la Cola</button>
+ <button class="btn btn-warning" onclick="toggleModoKaraoke()">🎤 Karaoke</button>
  </div>
 
  <div id="karaokeMonitor" style="display:none; background:#111827; border:2px solid #f59e0b; border-radius:10px; padding:12px; text-align:center; margin-bottom:15px;">
@@ -666,15 +665,17 @@
  "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
  ];
 
- // Almacén de la cola de peticiones y biblioteca musical enriquecida
+ // Almacén de la cola de peticiones y biblioteca con múltiples pistas de género
  let listaColaPeticiones = [];
  let indiceReproduccionActual = 0;
+ let estadoConfirmacionPlay = 1; // 1 = Primer clic (pregunta), 2 = Segundo clic (confirma y reproduce)
 
- const listaPistasMezcla = [
+ const bibliotecaPistasTematicas = [
  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
- "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
+ "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+ "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"
  ];
 
  let cacheBusquedas = JSON.parse(localStorage.getItem('partiflow_cache_busquedas')) || {};
@@ -707,7 +708,7 @@
  if(elem) elem.textContent = Object.keys(cacheBusquedas).length;
  }
 
- // Control de consola DJ en tiempo real
+ // Control interactivo de la consola de DJ
  function actualizarConsolaDJ() {
  const volA = document.getElementById('volA').value / 100;
  const crossfader = document.getElementById('crossfader').value / 100;
@@ -756,20 +757,25 @@
  mostrarNotificacion('Elemento eliminado de la cola.');
  }
 
- // PASO 1: Primer clic - Pregunta si está seguro mostrando el segundo botón de confirmación
- function solicitarConfirmacionPlay() {
+ // LÓGICA DE DOBLE CLIC / CONFIRMACIÓN INTEGRADA
+ function manejarDobleClickPlay() {
  if (listaColaPeticiones.length === 0) {
  return mostrarNotificacion('⚠️ La cola está vacía. Añade al menos un tema.');
  }
- document.getElementById('btnPaso1Play').style.display = 'none';
- document.getElementById('btnPaso2Confirm').style.display = 'inline-flex';
- mostrarNotificacion('❓ ¿Seguro que deseas iniciar la reproducción de la cola? Haz clic nuevamente para confirmar.');
- }
 
- // PASO 2: Segundo clic - Ejecuta la reproducción definitiva de la música y la mezcla
- function ejecutarReproduccionDefinitiva() {
- document.getElementById('btnPaso2Confirm').style.display = 'none';
- document.getElementById('btnPaso1Play').style.display = 'inline-flex';
+ const btnAccion = document.getElementById('btnAccionPlay');
+
+ if (estadoConfirmacionPlay === 1) {
+ // Primer clic: Cambia el botón para preguntar si está seguro
+ btnAccion.className = "btn btn-warning";
+ btnAccion.innerHTML = "❓ ¿Estás seguro? Haz clic para confirmar y sonar";
+ mostrarNotificacion('⚠️ Primer toque registrado. Haz clic de nuevo para confirmar e iniciar.');
+ estadoConfirmacionPlay = 2;
+ } else {
+ // Segundo clic: Confirma, restablece el botón y lanza la música en directo
+ btnAccion.className = "btn btn-success";
+ btnAccion.innerHTML = "▶️ Iniciar Reproducción de la Cola";
+ estadoConfirmacionPlay = 1;
 
  const modoOrden = document.getElementById('selectModoOrdenCola').value;
  if (modoOrden === 'aleatorio') {
@@ -782,6 +788,7 @@
 
  indiceReproduccionActual = 0;
  reproducirElementoColaActual();
+ }
  }
 
  function reproducirElementoColaActual() {
@@ -799,8 +806,8 @@
  mostrarNotificacion(`🎧 Mezclando petición activa: "${itemActual}"`);
  }
 
- // Reproducción de la pista principal correspondiente a la cola
- const pistaUrl = listaPistasMezcla[indiceReproduccionActual % listaPistasMezcla.length];
+ // Reproducción de la pista correspondiente a la petición de la cola
+ const pistaUrl = bibliotecaPistasTematicas[indiceReproduccionActual % bibliotecaPistasTematicas.length];
  const audioPrincipal = document.getElementById('audioReproductorPrincipal');
  audioPrincipal.src = pistaUrl;
  actualizarConsolaDJ();
@@ -808,14 +815,14 @@
 
  document.getElementById('txtDeckASong').textContent = itemActual;
  document.getElementById('txtDeckBSong').textContent = (listaColaPeticiones[indiceReproduccionActual + 1] || "Fin de set");
- document.getElementById('txtEstadoCancion').textContent = `[${indiceReproduccionActual + 1}/${listaColaPeticiones.length}] Reproduciendo: ${itemActual}`;
+ document.getElementById('txtEstadoCancion').textContent = `[${indiceReproduccionActual + 1}/${listaColaPeticiones.length}] En antena: ${itemActual}`;
  document.getElementById('txtEstadoBadge').textContent = "En Directo 🎛️";
 
  audioPrincipal.onended = function() {
  siguienteEnCola();
  };
 
- mostrarNotificacion(`▶️ En antena: ${itemActual}`);
+ mostrarNotificacion(`▶️ Sonando ahora: ${itemActual}`);
  }
 
  function siguienteEnCola() {
@@ -829,8 +836,10 @@
  audioPrincipal.pause();
  document.getElementById('txtEstadoCancion').textContent = "Detenido";
  document.getElementById('txtEstadoBadge').textContent = "En Espera";
- document.getElementById('btnPaso2Confirm').style.display = 'none';
- document.getElementById('btnPaso1Play').style.display = 'inline-flex';
+ const btnAccion = document.getElementById('btnAccionPlay');
+ btnAccion.className = "btn btn-success";
+ btnAccion.innerHTML = "▶️ Iniciar Reproducción de la Cola";
+ estadoConfirmacionPlay = 1;
  mostrarNotificacion('⏹️ Reproducción detenida.');
  }
 
