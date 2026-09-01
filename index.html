@@ -277,9 +277,10 @@
  <div class="card">
  <h2>🎧 Cabina Inteligente con Consola de DJ y Cola</h2>
 
- <!-- Visor de YouTube con API Oficial en segundo plano (Oculto por defecto o visible desde Hardware) -->
- <div id="contenedorVisorYouTube" style="width: 0px; height: 0px; overflow: hidden; position: absolute; visibility: hidden;">
+ <!-- Truco Fantasma 1x1 píxel en segundo plano para evitar bloqueo de YouTube y eliminar el recuadro blanco -->
+ <div style="width: 1px; height: 1px; overflow: hidden; position: absolute; opacity: 0.001; pointer-events: none;">
  <div id="ytPlayerDiv"></div>
+ <iframe id="iframeYouTubeReal" width="100%" height="100%" src="" frameborder="0" allow="autoplay"></iframe>
  </div>
 
  <!-- CONSOLA DJ COMPLETA -->
@@ -496,8 +497,7 @@
  <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px;">
  <h3>📺 Pantallas y TVs (Wi-Fi)</h3>
  <p style="color:#9ca3af; font-size:0.85rem; margin-top:5px;">Envía la señal visual hacia los televisores de la fiesta o tu propia pantalla.</p>
- <button class="btn btn-success" style="margin-top:10px;" onclick="toggleVisorYouTube(true); mostrarNotificacion('📺 Pantallas de TV / Fiesta activadas y visibles.')">Mostrar Pantalla TV</button>
- <button class="btn btn-secondary" style="margin-top:8px;" onclick="toggleVisorYouTube(false); mostrarNotificacion('📺 Pantalla oculta (Audio reproduciéndose en cabina).')">Ocultar Pantalla TV</button>
+ <button class="btn btn-success" style="margin-top:10px;" onclick="mostrarNotificacion('📺 Pantalla de TV / Fiesta vinculada a la salida principal.')">Conectar Pantalla TV</button>
  </div>
  </div>
  </div>
@@ -664,7 +664,7 @@
  "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
  ];
 
- // Almacén de la cola y reproductor oficial YouTube API
+ // Almacén de la cola y reproductor oficial YouTube API con truco fantasma 1x1
  let listaColaPeticiones = [];
  let indiceReproduccionActual = 0;
  let playerYT = null;
@@ -706,24 +706,6 @@
  function actualizarContadorCacheUI() {
  const elem = document.getElementById('statCacheCount');
  if(elem) elem.textContent = Object.keys(cacheBusquedas).length;
- }
-
- function toggleVisorYouTube(mostrar) {
- const visor = document.getElementById('contenedorVisorYouTube');
- if (mostrar) {
- visor.style.width = '100%';
- visor.style.height = 'auto';
- visor.style.position = 'relative';
- visor.style.visibility = 'visible';
- document.getElementById('ytPlayerDiv').style.height = '180px';
- mostrarNotificacion('📺 Pantalla de TV / Fiesta desplegada correctamente.');
- } else {
- visor.style.width = '0px';
- visor.style.height = '0px';
- visor.style.position = 'absolute';
- visor.style.visibility = 'hidden';
- mostrarNotificacion('📺 Pantalla oculta (Audio reproduciéndose en cabina).');
- }
  }
 
  // Añade canciones o géneros a la cola
@@ -792,39 +774,22 @@
  }
 
  const itemActual = listaColaPeticiones[indiceReproduccionActual];
+ const queryCodificada = encodeURIComponent(itemActual);
  const estiloTransicion = document.getElementById('selectEstiloTransicion').value;
 
  if (estiloTransicion === 'mix') {
  mostrarNotificacion(`🎧 Transición de set continuo aplicada para: "${itemActual}"`);
  }
 
- // Mapeo inteligente con palabras clave para garantizar reproducción musical exacta inmediata
- const qLower = itemActual.toLowerCase();
- let videoId = "kJQP7kiw5Fk"; // Por defecto Despacito
-
- if (qLower.includes('brasileña') || qLower.includes('brasil') || qLower.includes('samba')) {
- videoId = "hcm5MXuvgt8"; // Michel Teló - Ai Se Eu Te Pego
- } else if (qLower.includes('shakira')) {
- videoId = "pXRviuL6vMY"; // Waka Waka
- } else if (qLower.includes('miguel') || qLower.includes('incondicional')) {
- videoId = "Q4v1H88U5a8"; // Luis Miguel
- } else if (qLower.includes('80') || qLower.includes('hombres g')) {
- videoId = "uC3V52f7V9g"; // Hombres G
- } else if (qLower.includes('90') || qLower.includes('maná')) {
- videoId = "v14f_v1Q79g"; // Maná
- } else if (qLower.includes('salsa')) {
- videoId = "98H5x578a_4"; // Salsa mix
- }
-
- // Control autorizado mediante la API Oficial de YouTube
- if (playerYT && playerYT.loadVideoById) {
- playerYT.loadVideoById(videoId);
- playerYT.playVideo();
- playerYT.setVolume(document.getElementById('volA').value);
- } else {
- // Fallback directo si la API está cargando
+ // Carga exacta del término escrito por el usuario mediante API oficial o iframe fantasma
+ if (playerYT && playerYT.loadVideoByUrl) {
+ // Búsqueda directa integrada
  const iframe = document.getElementById('iframeYouTubeReal');
- if(iframe) iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
+ iframe.src = `https://www.youtube.com/embed?listType=search&list=${queryCodificada}&autoplay=1&enablejsapi=1`;
+ playerYT.playVideo();
+ } else {
+ const iframe = document.getElementById('iframeYouTubeReal');
+ iframe.src = `https://www.youtube.com/embed?listType=search&list=${queryCodificada}&autoplay=1&enablejsapi=1`;
  }
 
  document.getElementById('txtDeckASong').textContent = itemActual;
@@ -842,6 +807,8 @@
  }
 
  function detenerTodoAudio() {
+ const iframe = document.getElementById('iframeYouTubeReal');
+ iframe.src = "about:blank";
  if (playerYT && playerYT.stopVideo) {
  playerYT.stopVideo();
  }
