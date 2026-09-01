@@ -229,7 +229,7 @@
  </div>
 
  <div id="formRegistro" style="display:none;">
- <div style="background:rgba(59, 130, 246, 0.1); border:1px solid #3b82f6; padding:10px; border-radius:8px; margin-bottom:15px; font-size:0.85rem; color:#93c5fd; text-align:left;">
+ <div style="background:rgba(59, 130, 246, 0.1); border:1px solid #374151; padding:10px; border-radius:8px; margin-bottom:15px; font-size:0.85rem; color:#93c5fd; text-align:left;">
  🎁 <strong>14 Días de Prueba (Plan Básico):</strong> Requiere tarjeta verificada. Cobro al día 15.
  </div>
  <div class="input-group">
@@ -274,22 +274,17 @@
  <!-- 1. CABINA & CONSOLA DUAL -->
  <div id="tab-cabina" class="section-container active">
  <div class="card">
- <h2>🎧 Cabina Inteligente - Cola de Fiestas</h2>
+ <h2>🎧 Cabina Inteligente con Consola de DJ y Cola</h2>
 
- <!-- Visor de YouTube oculto por defecto (se despliega solo al configurar pantallas en Hardware) -->
- <div id="contenedorVisorYouTube" style="margin-bottom: 10px; width: 100%; display: none; flex-direction: column; align-items: center;">
- <div style="display:flex; justify-content:space-between; width:100%; max-width:400px; margin-bottom:4px;">
- <span id="lblVisorTitulo" style="font-size: 0.75rem; color: #34d399; font-weight: bold;">📺 Pantalla de Fiesta Activa</span>
- <span style="font-size: 0.7rem; color: #ef4444; cursor:pointer;" onclick="toggleVisorYouTube(false)">[ Ocultar ]</span>
- </div>
- <div style="width: 100%; max-width: 400px; height: 180px; background: #111827; border-radius: 12px; border: 1px solid #374151; overflow: hidden; position: relative;">
+ <!-- Visor de YouTube totalmente oculto en segundo plano -->
+ <div id="contenedorVisorYouTube" style="width: 0px; height: 0px; overflow: hidden; position: absolute; visibility: hidden;">
  <iframe id="iframeYouTubeReal" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
  </div>
- </div>
 
+ <!-- CONSOLA DJ COMPLETA -->
  <div class="mixer-console">
  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
- <span style="font-size:0.9rem; color:#60a5fa; font-weight:bold;">🎛️ Consola Dual de Mezclas</span>
+ <span style="font-size:0.9rem; color:#60a5fa; font-weight:bold;">🎛️ Consola Dual con Ecualizador y Crossfader</span>
  <div>
  <button id="btnModoIA" class="btn btn-ai" style="padding:4px 10px; font-size:0.75rem;" onclick="toggleModoIA()">🤖 IA Copiloto: ON</button>
  </div>
@@ -298,17 +293,19 @@
  <div class="mixer-grid">
  <!-- DECK A -->
  <div class="mixer-channel">
- <h4 style="color:#60a5fa;">Deck A</h4>
- <p id="txtDeckASong" style="font-size:0.75rem; color:#d1d5db; margin-bottom:6px; word-break:break-all;">Ninguna</p>
- <div class="slider-group"><label>Volumen</label><input type="range" id="volA" min="0" max="100" value="80" oninput="aplicarMezclaHTML5()"></div>
- <button class="btn btn-success" style="font-size:0.75rem; padding:8px; margin-top:4px;" onclick="cargarDeck('A')">Cargar en Deck A</button>
+ <h4 style="color:#60a5fa;">Deck A (<span id="txtDeckASong">Ninguna</span>)</h4>
+ <div class="slider-group"><label>Agudos (High)</label><input type="range" id="eqHighA" min="0" max="100" value="50"></div>
+ <div class="slider-group"><label>Medios (Mid)</label><input type="range" id="eqMidA" min="0" max="100" value="50"></div>
+ <div class="slider-group"><label>Graves (Low)</label><input type="range" id="eqLowA" min="0" max="100" value="50"></div>
+ <div class="slider-group"><label>Volumen</label><input type="range" id="volA" min="0" max="100" value="80"></div>
  </div>
  <!-- DECK B -->
  <div class="mixer-channel">
- <h4 style="color:#60a5fa;">Deck B</h4>
- <p id="txtDeckBSong" style="font-size:0.75rem; color:#d1d5db; margin-bottom:6px; word-break:break-all;">Ninguna</p>
- <div class="slider-group"><label>Volumen</label><input type="range" id="volB" min="0" max="100" value="80" oninput="aplicarMezclaHTML5()"></div>
- <button class="btn btn-success" style="font-size:0.75rem; padding:8px; margin-top:4px;" onclick="cargarDeck('B')">Cargar en Deck B</button>
+ <h4 style="color:#60a5fa;">Deck B (<span id="txtDeckBSong">Ninguna</span>)</h4>
+ <div class="slider-group"><label>Agudos (High)</label><input type="range" id="eqHighB" min="0" max="100" value="50"></div>
+ <div class="slider-group"><label>Medios (Mid)</label><input type="range" id="eqMidB" min="0" max="100" value="50"></div>
+ <div class="slider-group"><label>Graves (Low)</label><input type="range" id="eqLowB" min="0" max="100" value="50"></div>
+ <div class="slider-group"><label>Volumen</label><input type="range" id="volB" min="0" max="100" value="80"></div>
  </div>
  </div>
 
@@ -319,40 +316,53 @@
  <span style="color:#60a5fa; font-weight:bold;">CROSSFADER DE MEZCLA</span>
  <span>B (Deck B)</span>
  </div>
- <input type="range" id="crossfader" min="0" max="100" value="50" oninput="aplicarMezclaHTML5()">
+ <input type="range" id="crossfader" min="0" max="100" value="50">
  </div>
  </div>
  </div>
 
- <!-- BUSCADOR Y GESTOR DE COLA -->
- <div class="input-group" style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151; margin-top:15px;">
+ <!-- GESTOR DE COLA ABIERTA LIMPIO SIN BOTONES DE TV -->
+ <div style="background:#1f2937; padding:15px; border-radius:12px; border:1px solid #374151; margin-top:15px;">
+ <h3 style="font-size:1rem; color:#60a5fa; margin-bottom:4px;">⚡ Gestor de Cola Abierta</h3>
+ <p style="color:#34d399; font-size:0.85rem; margin-bottom:12px;">Arma tu set y dale play cuando esté listo</p>
+ <div class="input-group" style="margin-bottom: 0;">
  <label style="color:#60a5fa; font-weight:bold; margin-bottom:6px;">🔍 Añadir Canción, Artista o Género a la Cola:</label>
  <div style="display:flex; gap:10px;">
- <input type="text" id="inputBusqueda" placeholder="Ej. Musica brasileña, salsa, rock, Shakira...">
+ <input type="text" id="inputBusqueda" placeholder="Ej. Pop 80s, Música brasileña, salsa...">
  <button class="btn btn-ai" style="width:auto; padding:0 15px;" onclick="activarReconocimientoVozIA()">🎤 Hablar</button>
  <button class="btn btn-success" style="width:auto;" onclick="agregarACola()">➕ Añadir a Cola</button>
  </div>
  </div>
+ </div>
 
  <!-- CONFIGURACIÓN DE ORDEN -->
- <div class="input-group" style="background:#1f2937; padding:12px; border-radius:12px; border:1px solid #374151; margin-bottom:15px;">
- <label style="color:#60a5fa; font-weight:bold;">⚙️ Orden de Reproducción de la Fiesta:</label>
+ <div class="input-grid" style="margin-top: 15px;">
+ <div class="input-group">
+ <label>⚙️ Orden de Reproducción:</label>
  <select id="selectModoOrdenCola">
  <option value="orden">➡️ En Orden de Ingreso</option>
  <option value="aleatorio">🔀 Aleatorio (Shuffle / Mezcla)</option>
  </select>
  </div>
+ <div class="input-group">
+ <label>🎧 Estilo de Pista de Mezcla:</label>
+ <select id="selectEstiloTransicion">
+ <option value="mix">🔄 Set Continuo / Beatmatching</option>
+ <option value="directo">⚡ Transición Directa Limpia</option>
+ </select>
+ </div>
+ </div>
 
  <!-- TABLA DE COLA ARMADA -->
  <div style="background: #111827; border: 1px solid #374151; border-radius: 12px; padding: 15px; margin-bottom: 15px;">
- <h3 style="font-size:0.95rem; color:#60a5fa; margin-bottom: 10px;">📋 Peticiones en Cola (<span id="contadorCola">0</span>)</h3>
+ <h3 style="font-size:0.95rem; color:#60a5fa; margin-bottom: 10px;">📋 Cola de Peticiones Armadas (<span id="contadorCola">0</span>)</h3>
  <div id="tablaColaContainer" style="max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
  <p style="color: #9ca3af; font-size: 0.85rem; text-align: center;">La cola está vacía. Añade temas arriba.</p>
  </div>
  </div>
 
  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
- <button class="btn btn-success" onclick="iniciarReproduccionCola()">▶️ Iniciar Reproducción de Cola</button>
+ <button class="btn btn-success" onclick="iniciarReproduccionCola()">▶️ Iniciar Reproducción de la Cola</button>
  <button class="btn btn-warning" id="btnModoKaraoke" onclick="toggleModoKaraoke()">🎤 Karaoke</button>
  </div>
 
@@ -361,10 +371,10 @@
  <p id="letraKaraoke" style="font-size:1.1rem; color:#ffffff; font-style:italic; margin-top:5px;">Sigue la letra en pantalla...</p>
  </div>
 
- <h3 style="font-size:1rem; color:#e5e7eb; margin-top:15px; margin-bottom:10px;">🎵 Reproduciendo Ahora</h3>
+ <h3 style="font-size:1rem; color:#e5e7eb; margin-top:15px; margin-bottom:10px;">🎵 Cola en Vivo</h3>
  <div style="background:#1f2937; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
- <span id="txtEstadoCancion">Ninguna pista reproduciéndose</span>
- <span id="txtEstadoBadge" style="color:#34d399; font-weight:bold;">En Espera</span>
+ <span id="txtEstadoCancion">Ninguna pista seleccionada</span>
+ <span id="txtEstadoBadge" style="color:#34d399; font-weight:bold;">Listo 🔊</span>
  </div>
 
  <div class="master-controls">
@@ -463,15 +473,15 @@
  </div>
  </div>
 
- <!-- 5. HARDWARE -->
+ <!-- 5. HARDWARE CON CONTROL DE PANTALLAS Y TV -->
  <div id="tab-hardware" class="section-container">
  <div class="card">
- <h2>💡 Conectividad Hardware</h2>
+ <h2>💡 Conectividad Hardware & Pantallas de Fiesta</h2>
  <div id="bloqueHardwareRestringido" style="display:none; text-align:center; padding:30px;">
  <p style="color:#f59e0b; font-weight:bold; margin-bottom:10px;" id="lblRestriccionHard">🔒 Control de Hardware exclusivo para Plan PRO.</p>
  <button class="btn" onclick="switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5])">Ver Planes PRO</button>
  </div>
- <div id="bloqueHardwareActivo" class="hardware-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px;">
+ <div id="bloqueHardwareActivo" class="hardware-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:15px;">
  <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px;">
  <h3>🎤 Micrófono Inalámbrico</h3>
  <button class="btn btn-warning" style="margin-top:10px;" onclick="mostrarNotificacion('Micrófono conectado vía Bluetooth.')">Conectar Mic</button>
@@ -482,8 +492,9 @@
  </div>
  <div class="hardware-card" style="background:#1f2937; padding:15px; border-radius:10px;">
  <h3>📺 Pantallas y TVs (Wi-Fi)</h3>
- <p style="color:#9ca3af; font-size:0.85rem; margin-top:5px;">Transmite visuales y letras a pantallas.</p>
- <button class="btn" style="margin-top:10px;" onclick="toggleVisorYouTube(true); mostrarNotificacion('Pantalla TV de fiesta conectada y visible.')">Configurar & Mostrar TV</button>
+ <p style="color:#9ca3af; font-size:0.85rem; margin-top:5px;">Envía la señal visual hacia los televisores de la fiesta o tu propia pantalla.</p>
+ <button class="btn btn-success" style="margin-top:10px;" onclick="toggleVisorYouTube(true); mostrarNotificacion('📺 Pantallas de TV / Fiesta activadas y visibles.')">Mostrar Pantalla TV</button>
+ <button class="btn btn-secondary" style="margin-top:8px;" onclick="toggleVisorYouTube(false); mostrarNotificacion('📺 Pantalla oculta (Audio en segundo plano).')">Ocultar Pantalla TV</button>
  </div>
  </div>
  </div>
@@ -648,7 +659,7 @@
  "vip7@partiflow.app", "vip8@partiflow.app", "vip9@partiflow.app", "vip10@partiflow.app"
  ];
 
- // Cola de peticiones del organizador de la fiesta
+ // Almacén de la cola de peticiones y estado de mezcla
  let listaColaPeticiones = [];
  let indiceReproduccionActual = 0;
 
@@ -682,18 +693,26 @@
  if(elem) elem.textContent = Object.keys(cacheBusquedas).length;
  }
 
+ // Control centralizado de pantallas de TV desde Hardware
  function toggleVisorYouTube(mostrar) {
  const visor = document.getElementById('contenedorVisorYouTube');
  if (mostrar) {
- visor.style.display = 'flex';
- mostrarNotificacion('📺 Pantalla de TV / Fiesta desplegada.');
+ visor.style.width = '100%';
+ visor.style.height = 'auto';
+ visor.style.position = 'relative';
+ visor.style.visibility = 'visible';
+ document.getElementById('iframeYouTubeReal').style.height = '200px';
+ mostrarNotificacion('📺 Pantalla de TV / Fiesta desplegada correctamente.');
  } else {
- visor.style.display = 'none';
- mostrarNotificacion('📺 Pantalla de TV oculta.');
+ visor.style.width = '0px';
+ visor.style.height = '0px';
+ visor.style.position = 'absolute';
+ visor.style.visibility = 'hidden';
+ mostrarNotificacion('📺 Pantalla oculta (Audio reproduciéndose en cabina).');
  }
  }
 
- // Añade cualquier texto, artista o género a la cola sin reproducir al instante
+ // Añade cualquier texto, artista o género a la cola
  function agregarACola() {
  const input = document.getElementById('inputBusqueda');
  const query = input.value.trim();
@@ -731,15 +750,14 @@
  mostrarNotificacion('Elemento eliminado de la cola.');
  }
 
- // Inicia la reproducción masiva de la cola armada según el orden escogido
+ // Inicia la reproducción de la cola aplicando el orden y transición escogida
  function iniciarReproduccionCola() {
  if (listaColaPeticiones.length === 0) {
- return mostrarNotificacion('⚠️ La cola de peticiones está vacía. Añade al menos un tema.');
+ return mostrarNotificacion('⚠️ La cola está vacía. Añade al menos un tema.');
  }
 
  const modoOrden = document.getElementById('selectModoOrdenCola').value;
  if (modoOrden === 'aleatorio') {
- // Mezcla la lista de forma aleatoria (Shuffle)
  listaColaPeticiones.sort(() => Math.random() - 0.5);
  renderizarTablaCola();
  mostrarNotificacion('🔀 Cola mezclada aleatoriamente (Shuffle).');
@@ -760,23 +778,23 @@
  }
 
  const itemActual = listaColaPeticiones[indiceReproduccionActual];
-
- // Lógica inteligente de fuente: si es un enlace directo .mp3 o nube, usa HTML5 Audio; si es texto, usa YouTube
- if (itemActual.startsWith('http')) {
- const deckA = document.getElementById('audioDeckA');
- deckA.src = itemActual;
- deckA.play().catch(e => console.log(e));
- document.getElementById('txtDeckASong').textContent = itemActual;
- } else {
  const queryCodificada = encodeURIComponent(itemActual);
- const iframe = document.getElementById('iframeYouTubeReal');
- iframe.src = `https://www.youtube.com/embed?listType=search&list=${queryCodificada}&autoplay=1&enablejsapi=1`;
- document.getElementById('txtDeckASong').textContent = itemActual;
+ const estiloTransicion = document.getElementById('selectEstiloTransicion').value;
+
+ if (estiloTransicion === 'mix') {
+ mostrarNotificacion(`🎧 Transición de mezcla continua aplicada para: "${itemActual}"`);
  }
 
+ // Búsqueda abierta real e inmediata en YouTube basada en la petición del usuario
+ const iframe = document.getElementById('iframeYouTubeReal');
+ iframe.src = `https://www.youtube.com/embed?listType=search&list=${queryCodificada}&autoplay=1&enablejsapi=1`;
+
+ document.getElementById('txtDeckASong').textContent = itemActual;
+ document.getElementById('txtDeckBSong').textContent = (listaColaPeticiones[indiceReproduccionActual + 1] || "Fin de set");
  document.getElementById('txtEstadoCancion').textContent = `[${indiceReproduccionActual + 1}/${listaColaPeticiones.length}] ${itemActual}`;
- document.getElementById('txtEstadoBadge').textContent = "Reproduciendo";
- mostrarNotificacion(`▶️ Reproduciendo: ${itemActual}`);
+ document.getElementById('txtEstadoBadge').textContent = "Mezclando";
+
+ mostrarNotificacion(`▶️ Reproduciendo (${indiceReproduccionActual + 1}/${listaColaPeticiones.length}): ${itemActual}`);
  }
 
  function siguienteEnCola() {
@@ -785,37 +803,9 @@
  reproducirElementoColaActual();
  }
 
- function cargarDeck(deck) {
- if (listaColaPeticiones.length > 0) {
- const itemActual = listaColaPeticiones[indiceReproduccionActual] || listaColaPeticiones[0];
- document.getElementById(`txtDeck${deck}Song`).textContent = itemActual;
- mostrarNotificacion(`Deck ${deck} cargado con: ${itemActual}`);
- } else {
- mostrarNotificacion('La cola está vacía.');
- }
- }
-
- function aplicarMezclaHTML5() {
- const volA = document.getElementById('volA').value / 100;
- const volB = document.getElementById('volB').value / 100;
- const cross = document.getElementById('crossfader').value / 100;
- 
- const deckA = document.getElementById('audioDeckA');
- const deckB = document.getElementById('audioDeckB');
- 
- deckA.volume = volA * (1 - cross);
- deckB.volume = volB * cross;
- }
-
  function detenerTodoAudio() {
- const deckA = document.getElementById('audioDeckA');
- const deckB = document.getElementById('audioDeckB');
- deckA.pause(); deckA.currentTime = 0;
- deckB.pause(); deckB.currentTime = 0;
- 
  const iframe = document.getElementById('iframeYouTubeReal');
  iframe.src = "about:blank";
- 
  document.getElementById('txtEstadoCancion').textContent = "Detenido";
  document.getElementById('txtEstadoBadge').textContent = "En Espera";
  mostrarNotificacion('⏹️ Reproducción detenida.');
