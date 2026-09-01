@@ -227,9 +227,9 @@
 
     <div id="toastNotification">Notificación</div>
 
-    <!-- Visor multimedia interactivo directo con controles nativos de YouTube para garantizar sonido con voz -->
+    <!-- Visor multimedia interactivo con controles nativos directos para evitar bloqueos del navegador -->
     <div style="margin-bottom: 15px; width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center;">
-        <span style="font-size: 0.75rem; color: #34d399; margin-bottom: 5px; font-weight: bold;">📺 Reproductor Oficial YouTube (Canciones Reales con Voz)</span>
+        <span style="font-size: 0.75rem; color: #34d399; margin-bottom: 5px; font-weight: bold;">📺 Reproductor Oficial de YouTube (Haz clic en Play para activar sonido)</span>
         <div style="width: 100%; height: 220px; background: #111827; border-radius: 12px; border: 1px solid #374151; overflow: hidden;">
             <iframe id="iframeYouTubeReal" width="100%" height="100%" src="https://www.youtube.com/embed/kJQP7kiw5Fk?enablejsapi=1" title="Partiflow Reproductor" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
@@ -755,7 +755,6 @@
             localStorage.setItem('partiflow_cache_busquedas', JSON.stringify(cacheBusquedas));
             actualizarContadorCacheUI();
 
-            // Cargar y reproducir directamente en el visor oficial interactivo
             const iframe = document.getElementById('iframeYouTubeReal');
             iframe.src = `https://www.youtube.com/embed/${resultado.id}?autoplay=1&enablejsapi=1`;
             
