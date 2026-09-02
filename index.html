@@ -136,7 +136,7 @@
         
         <div id="tab-inicio" class="section-container active">
             <div class="card">
-                <h2>⚡ Gestor de Cola & Peticiones</h2>
+                <h2>⚡ Gestor de Cola & Peticiones con IA</h2>
                 <div class="input-group" style="position: relative;">
                     <label style="color:#38bdf8; font-weight:bold;">🔍 Buscar Canción o Género:</label>
                     <input type="text" id="inputBusqueda" placeholder="Ej. Pop 80s, Salsa, Shakira..." oninput="manejarAutocompletado(this.value)">
@@ -144,7 +144,7 @@
                 </div>
 
                 <div style="display:flex; gap:10px; margin-bottom: 20px;">
-                    <button class="btn btn-ai" style="width:auto; padding:0 20px;" onclick="mostrarNotificacion('🎤 Escuchando voz...')">🎤 Hablar</button>
+                    <button class="btn btn-ai" style="width:auto; padding:0 20px;" onclick="activarReconocimientoVozIA()">🎤 Hablar (IA Voz)</button>
                     <button class="btn btn-success" style="flex:1;" onclick="agregarACola()">➕ Añadir a Cola</button>
                 </div>
 
@@ -216,7 +216,7 @@
                 <h2>📚 Playlists de Audio MP3</h2>
                 <div class="input-grid">
                     <div class="input-group"><label>Nombre del Set:</label><input type="text" id="inputNombrePlaylist" placeholder="Ej. Set Verano"></div>
-                    <div class="input-group"><label>Enlace o Artistas:</label><input type="text" id="inputPistasPlaylist" placeholder="Ej. Shakira, Tiesto"></div>
+                    <div class="input-group"><label>Artistas / Pistas:</label><input type="text" id="inputPistasPlaylist" placeholder="Ej. Shakira, Tiesto"></div>
                 </div>
                 <button class="btn" style="margin-bottom: 20px;" onclick="guardarNuevoPlaylist()">💾 Guardar Playlist</button>
                 <table>
@@ -296,25 +296,51 @@
                         <button class="btn" onclick="cambiarPlanUsuario('pro')">Contratar Plan PRO</button>
                     </div>
                 </div>
+
+                <div style="margin-top:20px; padding:18px; background:#18181b; border-radius:14px; border:1px solid #27272a;">
+                    <p style="font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-bottom:8px;">🎁 Canje de Código Promocional</p>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="inputCodigoCanje" placeholder="Ej. PRO-REGALO-1000">
+                        <button class="btn" style="width:auto;" onclick="canjearCodigoRegalo()">Canjear</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div id="tab-perfil" class="section-container">
             <div class="card">
-                <h2>👤 Mi Perfil Corporativo</h2>
+                <h2>👤 Mi Perfil Corporativo y Personal</h2>
                 <div class="input-grid">
-                    <div class="input-group"><label>Nombre:</label><input type="text" id="perfilNombre" value="Luis Enrique Ganoza Céspedes"></div>
-                    <div class="input-group"><label>Correo:</label><input type="email" id="perfilCorreo" value="admin@huioapp.com"></div>
+                    <div class="input-group"><label>Nombre Completo:</label><input type="text" id="perfilNombre" value="Luis Enrique Ganoza Céspedes"></div>
+                    <div class="input-group"><label>Correo Electrónico:</label><input type="email" id="perfilCorreo" value="admin@huioapp.com"></div>
                 </div>
-                <button class="btn" onclick="mostrarNotificacion('¡Perfil actualizado!')">Guardar Cambios</button>
+                <div class="input-grid">
+                    <div class="input-group"><label>Celular / WhatsApp:</label><input type="text" id="perfilTelefono" value="+51 999 999 999"></div>
+                    <div class="input-group"><label>Ciudad / Ubicación:</label><input type="text" id="perfilCiudad" value="Lima, Perú"></div>
+                </div>
+                <button class="btn" onclick="guardarPerfilUsuario()">Guardar Cambios de Perfil</button>
             </div>
         </div>
 
         <div id="tab-admin" class="section-container">
             <div class="card">
                 <h2>🛠️ Panel de Administración Master</h2>
-                <div style="background:#18181b; padding:18px; border-radius:14px; border:1px solid #27272a;">
-                    <p style="color:#34d399; font-weight:bold;">Sistema operativo centralizado activo y sincronizado.</p>
+                <p style="color:#a1a1aa; font-size:0.9rem; margin-bottom:20px;">Control general de licencias de audio y generador de códigos de regalo.</p>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
+                    <div style="background:#18181b; padding:18px; border-radius:14px; border:1px solid #27272a;">
+                        <h3 style="color:#38bdf8; font-size:1rem; margin-bottom:8px;">🎁 Códigos PRO</h3>
+                        <button class="btn btn-ai" style="font-size:0.8rem; padding:8px;" onclick="mostrarListaCodigos('pro')">Ver 100 Códigos</button>
+                    </div>
+                    <div style="background:#18181b; padding:18px; border-radius:14px; border:1px solid #27272a;">
+                        <h3 style="color:#38bdf8; font-size:1rem; margin-bottom:8px;">🎁 Códigos Básico</h3>
+                        <button class="btn btn-secondary" style="font-size:0.8rem; padding:8px;" onclick="mostrarListaCodigos('basico')">Ver 100 Códigos</button>
+                    </div>
+                </div>
+
+                <div id="contenedorGenerador" style="display:none; background:#18181b; padding:18px; border-radius:14px; border:1px solid #27272a;">
+                    <h3 id="tituloListaCodigos" style="color:#f59e0b; font-size:0.95rem; margin-bottom:10px;">📋 Códigos</h3>
+                    <textarea id="txtAreaCodigos" rows="6" style="width:100%; background:#121216; color:#34d399; border:1px solid #27272a; border-radius:10px; padding:10px; font-family:monospace;" readonly></textarea>
                 </div>
             </div>
         </div>
@@ -343,6 +369,9 @@
         let planActual = 'basico';
         let usuarioActualEmail = '';
         const cuentasIlimitadasPro = ["admin@huioapp.com", "vip1@partiflow.app", "vip2@partiflow.app"];
+        const codigosProRegalo = Array.from({length: 100}, (_, i) => `PRO-REGALO-${1000 + i}`);
+        const codigosBasicoRegalo = Array.from({length: 100}, (_, i) => `BASICO-REGALO-${2000 + i}`);
+        
         let listaColaPeticiones = [];
         let indiceReproduccionActual = 0;
         let estadoConfirmacionPlay = 1; 
@@ -380,7 +409,9 @@
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'flex';
             document.getElementById('navContainer').style.display = 'flex';
-            if(usuarioActualEmail === 'admin@huioapp.com') document.getElementById('tabAdminBtn').style.display = 'flex';
+            if(usuarioActualEmail === 'admin@huioapp.com' || cuentasIlimitadasPro.includes(usuarioActualEmail)) {
+                document.getElementById('tabAdminBtn').style.display = 'flex';
+            }
             mostrarNotificacion(`Sesión iniciada: ${usuarioActualEmail}`);
         }
 
@@ -403,6 +434,22 @@
             const toast = document.getElementById('toastNotification');
             toast.textContent = mensaje; toast.style.display = 'block'; toast.style.opacity = '1';
             setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => { toast.style.display = 'none'; }, 300); }, 3000);
+        }
+
+        function activarReconocimientoVozIA() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                return mostrarNotificacion('⚠️ Navegador sin soporte de voz.');
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            mostrarNotificacion('🎤 IA escuchando tu voz...');
+            recognition.onresult = function(event) {
+                const speechResult = event.results[0][0].transcript;
+                document.getElementById('inputBusqueda').value = speechResult;
+                agregarACola();
+            };
+            recognition.start();
         }
 
         function manejarAutocompletado(textoEscrito) {
@@ -472,6 +519,12 @@
             mostrarNotificacion(`🎉 Fiesta "${nombre}" (Anfitrión: ${anfitrion}) guardada.`);
         }
 
+        function guardarPerfilUsuario() {
+            const nombre = document.getElementById('perfilNombre').value;
+            const ciudad = document.getElementById('perfilCiudad').value;
+            mostrarNotificacion(`👤 Perfil de ${nombre} (${ciudad}) actualizado correctamente.`);
+        }
+
         function generarPaseQR() {
             pasesInvitados.push({ nombre: document.getElementById('inputInvitado').value, codigo: 'VIP-' + Math.floor(1000 + Math.random() * 9000) });
             renderizarPases();
@@ -508,6 +561,30 @@
         function cambiarPlanUsuario(plan) {
             planActual = plan;
             mostrarNotificacion(`🎉 Plan actualizado a: ${plan.toUpperCase()}`);
+        }
+
+        function canjearCodigoRegalo() {
+            const codigo = document.getElementById('inputCodigoCanje').value.trim();
+            if(!codigo) return mostrarNotificacion('Ingresa un código.');
+            if(codigosProRegalo.includes(codigo)) {
+                mostrarNotificacion('🎁 ¡Código PRO canjeado con éxito!');
+            } else {
+                mostrarNotificacion('❌ Código inválido.');
+            }
+        }
+
+        function mostrarListaCodigos(tipo) {
+            const contenedor = document.getElementById('contenedorGenerador');
+            const titulo = document.getElementById('tituloListaCodigos');
+            const textarea = document.getElementById('txtAreaCodigos');
+            contenedor.style.display = 'block';
+            if (tipo === 'pro') {
+                titulo.textContent = "📋 Lista de 100 Códigos PRO:";
+                textarea.value = codigosProRegalo.join('\n');
+            } else {
+                titulo.textContent = "📋 Lista de 100 Códigos Básico:";
+                textarea.value = codigosBasicoRegalo.join('\n');
+            }
         }
     </script>
 </body>
