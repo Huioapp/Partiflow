@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Partiflow PRO - Consola de Eventos</title>
-    
+    <title>Partiflow PRO - Plataforma Centralizada</title>
     <link rel="icon" href="Logo_fondo_blanco_solo_icono.png" type="image/png">
     <link rel="apple-touch-icon" href="Logo_fondo_blanco_solo_icono.png">
     <meta name="theme-color" content="#0a0a0c">
@@ -26,232 +25,85 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body {
-            min-height: 100vh;
-            background-color: #0a0a0c;
-            color: #ffffff;
+            min-height: 100vh; background-color: #0a0a0c; color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0;
-            overflow-x: hidden;
-            padding-bottom: 100px;
+            display: flex; flex-direction: column; align-items: center; padding: 0; overflow-x: hidden; padding-bottom: 100px;
         }
         #toastNotification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #18181b;
-            color: #34d399;
-            border: 1px solid #27272a;
-            padding: 12px 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-            font-size: 0.9rem;
-            z-index: 1000;
-            display: none;
-            transition: opacity 0.3s ease;
+            position: fixed; top: 20px; right: 20px; background: #18181b; color: #34d399; border: 1px solid #27272a;
+            padding: 12px 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); font-size: 0.9rem; z-index: 1000; display: none; transition: opacity 0.3s ease;
         }
-        #authScreen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            width: 100%;
-            padding: 20px;
-        }
-        .login-card {
-            width: 100%;
-            max-width: 400px;
-            background: #121216;
-            border: 1px solid #22222a;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
-            text-align: center;
-        }
-        .brand-logo {
-            max-width: 60px;
-            height: auto;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
-            margin-bottom: 15px;
-        }
-        h2 {
-            font-size: 1.3rem;
-            color: #38bdf8;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 12px;
-            text-align: left;
-        }
-        .input-group label {
-            font-size: 0.8rem;
-            color: #a1a1aa;
-        }
-        .input-group input, .input-group select {
-            background: #18181b;
-            border: 1px solid #27272a;
-            padding: 12px;
-            border-radius: 10px;
-            color: white;
-            font-size: 0.95rem;
-            outline: none;
-            font-family: inherit;
-            width: 100%;
-        }
+        #authScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; width: 100%; padding: 20px; }
+        .login-card { width: 100%; max-width: 420px; background: #121216; border: 1px solid #22222a; border-radius: 20px; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.8); text-align: center; }
+        .brand-logo { max-width: 65px; height: auto; border-radius: 12px; box-shadow: 0 0 20px rgba(6, 182, 212, 0.4); margin-bottom: 15px; }
+        h2 { font-size: 1.4rem; color: #38bdf8; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; text-align: left; }
+        .input-group label { font-size: 0.85rem; color: #a1a1aa; }
+        .input-group input, .input-group select { background: #18181b; border: 1px solid #27272a; padding: 12px; border-radius: 10px; color: white; font-size: 0.95rem; outline: none; width: 100%; }
         .input-group input:focus { border-color: #06b6d4; }
-        .btn-login {
-            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
-            margin-top: 10px;
-        }
-        .auth-link {
-            margin-top: 15px;
-            font-size: 0.85rem;
-            color: #a1a1aa;
-        }
+        .btn-login { background: linear-gradient(135deg, #06b6d4, #8b5cf6); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem; margin-top: 10px; }
+        .auth-link { margin-top: 15px; font-size: 0.85rem; color: #a1a1aa; }
         .auth-link a { color: #38bdf8; text-decoration: none; font-weight: 600; }
         
-        #appScreen {
-            display: none;
-            width: 100%;
-            max-width: 650px;
-            flex-direction: column;
-            align-items: center;
-            padding: 15px;
-        }
+        #appScreen { display: none; width: 100%; max-width: 800px; flex-direction: column; align-items: center; padding: 20px; }
 
-        /* BARRA INFERIOR FLOTANTE ESTILO SPOTIFY */
+        /* BARRA INFERIOR FLOTANTE PWA */
         .hub-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 75px;
-            background: rgba(14, 14, 18, 0.98);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid #22222a;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            padding: 0 5px;
-            z-index: 500;
-            box-shadow: 0 -10px 25px rgba(0,0,0,0.8);
+            position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background: rgba(14, 14, 18, 0.98);
+            backdrop-filter: blur(12px); border-top: 1px solid #22222a; display: flex; align-items: center; justify-content: space-around; padding: 0 5px; z-index: 500; box-shadow: 0 -10px 25px rgba(0,0,0,0.8);
         }
-        .hub-tab {
-            background: transparent;
-            border: none;
-            color: #a1a1aa;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            font-size: 0.6rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: color 0.2s;
-            padding: 4px;
-        }
+        .hub-tab { background: transparent; border: none; color: #a1a1aa; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 0.65rem; font-weight: 500; cursor: pointer; padding: 4px; }
         .hub-tab:hover, .hub-tab.active { color: #38bdf8; }
         .hub-tab svg { width: 20px; height: 20px; }
 
-        /* LOGO CENTRAL CIRCULAR "P" */
-        .btn-logo-central {
-            position: relative;
-            top: -10px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
-            padding: 2px;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 6px 15px rgba(6, 182, 212, 0.4);
-        }
-        .btn-logo-central-inner {
-            width: 100%;
-            height: 100%;
-            background: #0a0a0c;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 1.1rem;
-            color: white;
-        }
+        .btn-logo-central { position: relative; top: -10px; width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #06b6d4, #8b5cf6); padding: 2px; border: none; cursor: pointer; box-shadow: 0 6px 15px rgba(6, 182, 212, 0.4); }
+        .btn-logo-central-inner { width: 100%; height: 100%; background: #0a0a0c; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; color: white; }
 
         .section-container { display: none; width: 100%; animation: fadeIn 0.3s ease-in-out; }
         .section-container.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
         
-        .card {
-            background: #121216; border: 1px solid #22222a; border-radius: 20px;
-            padding: 20px; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-        }
-        .card h2 { font-size: 1.1rem; color: #38bdf8; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .card { background: #121216; border: 1px solid #22222a; border-radius: 20px; padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+        .card h2 { font-size: 1.2rem; color: #38bdf8; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        @media (max-width: 600px) { .input-grid { grid-template-columns: 1fr; } }
         
-        .btn {
-            background: linear-gradient(135deg, #06b6d4, #8b5cf6); color: white; border: none;
-            padding: 12px 18px; border-radius: 12px; font-weight: bold; cursor: pointer;
-            font-size: 0.95rem; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
-        }
+        .btn { background: linear-gradient(135deg, #06b6d4, #8b5cf6); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 0.95rem; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3); }
         .btn:hover { opacity: 0.95; }
-        .btn-secondary { background: #18181b; border: 1px solid #27272a; color: #e4e4e7; box-shadow: none; }
-        .btn-success { background: #059669; border: 1px solid #10b981; color: #ffffff; box-shadow: none; }
-        .btn-danger { background: #7f1d1d; border: 1px solid #991b1b; color: #fca5a5; box-shadow: none; }
-        .btn-warning { background: #d97706; border: 1px solid #f59e0b; color: #ffffff; box-shadow: none; }
+        .btn-secondary { background: #18181b; border: 1px solid #27272a; color: #e4e4e7; }
+        .btn-success { background: #059669; border: 1px solid #10b981; color: #ffffff; }
+        .btn-danger { background: #7f1d1d; border: 1px solid #991b1b; color: #fca5a5; }
+        .btn-warning { background: #d97706; border: 1px solid #f59e0b; color: #ffffff; }
         .btn-ai { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; }
+        .btn-locked { background: #27272a; color: #71717a; border: 1px dashed #3f3f46; cursor: not-allowed; }
 
-        /* PANTALLA EXCLUSIVA DE CONSOLA DJ A PANTALLA COMPLETA PARA DEDOS */
-        .dj-fullscreen-console {
-            background: #121216; border: 1px solid #22222a; border-radius: 20px; padding: 15px; width: 100%;
-        }
-        .dj-decks-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        @media(min-width: 500px) { .dj-decks-grid { grid-template-columns: 1fr 1fr; } }
-        
-        .deck-box {
-            background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; align-items: center; text-align: center;
-        }
-        .jog-wheel-big {
-            width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, #27272a 30%, #121216 70%);
-            border: 4px solid #3f3f46; display: flex; align-items: center; justify-content: center; margin: 12px 0;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.9), 0 5px 15px rgba(0,0,0,0.6); cursor: pointer;
-        }
+        /* CONSOLA PRO AVANZADA CON MÚLTIPLES VARIABLES */
+        .dj-fullscreen-console { background: #121216; border: 1px solid #22222a; border-radius: 20px; padding: 20px; width: 100%; }
+        .dj-decks-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media(min-width: 600px) { .dj-decks-grid { grid-template-columns: 1fr 1fr; } }
+        .deck-box { background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .jog-wheel-big { width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle, #27272a 30%, #121216 70%); border: 4px solid #3f3f46; display: flex; align-items: center; justify-content: center; margin: 12px 0; box-shadow: inset 0 0 15px rgba(0,0,0,0.9); cursor: pointer; }
         .jog-wheel-big:active { border-color: #06b6d4; transform: scale(0.97); }
-        .jog-inner-big {
-            width: 60px; height: 60px; border-radius: 50%; background: #0a0a0c; border: 2px solid #06b6d4; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #38bdf8;
-        }
+        .jog-inner-big { width: 55px; height: 55px; border-radius: 50%; background: #0a0a0c; border: 2px solid #06b6d4; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #38bdf8; }
+
         .slider-control { width: 100%; margin-bottom: 8px; font-size: 0.75rem; color: #a1a1aa; text-align: left; }
         .slider-control input[type=range] { width: 100%; accent-color: #06b6d4; height: 6px; background: #27272a; border-radius: 3px; cursor: pointer; margin-top: 3px; }
 
+        .plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        @media (max-width: 700px) { .plans-grid { grid-template-columns: 1fr; } }
+        .plan-card { background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 15px; }
+        .plan-card.active-plan { border-color: #06b6d4; box-shadow: 0 0 20px rgba(6,182,212,0.2); }
+
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #27272a; font-size: 0.85rem; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #27272a; font-size: 0.9rem; }
         th { color: #a1a1aa; }
         
-        .footer-links { margin-top: 15px; text-align: center; font-size: 0.8rem; color: #71717a; display: flex; gap: 12px; justify-content: center; }
+        .footer-links { margin-top: 20px; text-align: center; font-size: 0.85rem; color: #71717a; display: flex; gap: 15px; justify-content: center; }
         .footer-links a { color: #a1a1aa; text-decoration: none; }
     </style>
 </head>
 <body>
     <div id="toastNotification">Notificación</div>
-
     <audio id="audioReproductorPrincipal" preload="auto"></audio>
 
     <div id="authScreen">
@@ -260,15 +112,22 @@
             <h2 id="authTitle">Partiflow PRO</h2>
             
             <div id="formLogin">
-                <div class="input-group">
-                    <label>Correo Electrónico:</label>
-                    <input type="email" id="txtEmail" placeholder="tu@correo.com" value="admin@huioapp.com">
+                <div class="input-group"><label>Correo Electrónico:</label><input type="email" id="txtEmail" value="admin@huioapp.com"></div>
+                <div class="input-group"><label>Contraseña:</label><input type="password" id="txtPassword" value="123456"></div>
+                <button class="btn-login" onclick="iniciarSesion()">Ingresar al Centro de Control</button>
+                <div class="auth-link">¿No tienes cuenta? <a href="#" onclick="alternarModoAuth('registro')">Regístrate (14 Días Prueba)</a></div>
+            </div>
+
+            <div id="formRegistro" style="display:none;">
+                <div style="background:rgba(6, 182, 212, 0.1); border:1px solid #27272a; padding:10px; border-radius:10px; margin-bottom:15px; font-size:0.85rem; color:#38bdf8; text-align:left;">
+                    🎁 <strong>14 Días de Prueba:</strong> Requiere tarjeta verificada.
                 </div>
-                <div class="input-group">
-                    <label>Contraseña:</label>
-                    <input type="password" id="txtPassword" placeholder="••••••••" value="123456">
-                </div>
-                <button class="btn-login" onclick="iniciarSesion()">Ingresar a la App</button>
+                <div class="input-group"><label>Nombre Completo:</label><input type="text" id="regNombre" placeholder="Tu nombre"></div>
+                <div class="input-group"><label>Correo:</label><input type="email" id="regEmail" placeholder="tu@correo.com"></div>
+                <div class="input-group"><label>Contraseña:</label><input type="password" id="regPassword" placeholder="••••••••"></div>
+                <div class="input-group"><label>Tarjeta dLocal Go:</label><input type="text" id="regTarjeta" placeholder="•••• •••• •••• ••••"></div>
+                <button class="btn-login" onclick="completarRegistroConPrueba()">Activar Plan Básico</button>
+                <div class="auth-link">¿Ya tienes cuenta? <a href="#" onclick="alternarModoAuth('login')">Ingresa aquí</a></div>
             </div>
         </div>
     </div>
@@ -279,69 +138,71 @@
             <div class="card">
                 <h2>⚡ Gestor de Cola & Peticiones</h2>
                 <div class="input-group" style="position: relative;">
-                    <label style="color:#38bdf8; font-weight:bold;">🔍 Buscar Canción, Artista o Género:</label>
+                    <label style="color:#38bdf8; font-weight:bold;">🔍 Buscar Canción o Género:</label>
                     <input type="text" id="inputBusqueda" placeholder="Ej. Pop 80s, Salsa, Shakira..." oninput="manejarAutocompletado(this.value)">
-                    <div id="listaSugerencias" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121216; border: 1px solid #27272a; border-radius: 0 0 10px 10px; max-height: 160px; overflow-y: auto; z-index: 100;"></div>
+                    <div id="listaSugerencias" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121216; border: 1px solid #27272a; border-radius: 0 0 12px 12px; max-height: 180px; overflow-y: auto; z-index: 100;"></div>
                 </div>
 
-                <div style="display:flex; gap:10px; margin-bottom: 15px;">
-                    <button class="btn btn-ai" style="width:auto; padding:0 15px;" onclick="activarReconocimientoVozIA()">🎤 Hablar</button>
+                <div style="display:flex; gap:10px; margin-bottom: 20px;">
+                    <button class="btn btn-ai" style="width:auto; padding:0 20px;" onclick="mostrarNotificacion('🎤 Escuchando voz...')">🎤 Hablar</button>
                     <button class="btn btn-success" style="flex:1;" onclick="agregarACola()">➕ Añadir a Cola</button>
                 </div>
 
-                <div style="background: #18181b; border: 1px solid #27272a; border-radius: 14px; padding: 12px; margin-bottom: 15px;">
-                    <h3 style="font-size:0.9rem; color:#38bdf8; margin-bottom: 8px;">📋 Cola Activa (<span id="contadorCola">0</span>)</h3>
-                    <div id="tablaColaContainer" style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;">
-                        <p style="color: #71717a; font-size: 0.8rem; text-align: center;">La cola está vacía.</p>
+                <div style="background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 15px; margin-bottom: 15px;">
+                    <h3 style="font-size:0.95rem; color:#38bdf8; margin-bottom: 10px;">📋 Cola Activa (<span id="contadorCola">0</span>)</h3>
+                    <div id="tablaColaContainer" style="max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                        <p style="color: #71717a; font-size: 0.85rem; text-align: center;">La cola está vacía.</p>
                     </div>
                 </div>
 
-                <button id="btnAccionPlay" class="btn btn-success" style="margin-bottom: 10px;" onclick="manejarDobleClickPlay()">▶️ Iniciar Reproducción</button>
+                <button id="btnAccionPlay" class="btn btn-success" style="margin-bottom: 15px;" onclick="manejarDobleClickPlay()">▶️ Iniciar Reproducción</button>
 
-                <div style="background:#18181b; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #27272a;">
-                    <span id="txtEstadoCancion" style="font-size:0.85rem;">En espera...</span>
-                    <span id="txtEstadoBadge" style="color:#34d399; font-weight:bold; font-size:0.8rem;">Listo 🔊</span>
+                <div style="background:#18181b; padding:14px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; border:1px solid #27272a;">
+                    <span id="txtEstadoCancion" style="font-size:0.9rem;">En espera...</span>
+                    <span id="txtEstadoBadge" style="color:#34d399; font-weight:bold; font-size:0.85rem;">Listo 🔊</span>
                 </div>
             </div>
         </div>
 
         <div id="tab-consola" class="section-container">
             <div class="card">
-                <h2>🎧 Consola DJ Profesional</h2>
+                <h2>🎧 Consola DJ Profesional Pro</h2>
                 <div class="dj-fullscreen-console">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <span style="font-size:0.85rem; color:#38bdf8; font-weight:bold;">🎛️ Controles Táctiles Celular</span>
-                        <button id="btnModoIA" class="btn btn-secondary" style="padding:4px 10px; font-size:0.7rem; width:auto;" onclick="toggleModoIA()">🛠️ Manual: ON</button>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <span style="font-size:0.9rem; color:#38bdf8; font-weight:bold;">🎛️ Controles Avanzados Táctiles</span>
+                        <button class="btn btn-secondary" style="padding:6px 12px; font-size:0.75rem; width:auto;" onclick="toggleModoIA()">🤖 IA Copiloto</button>
                     </div>
 
                     <div class="dj-decks-grid">
                         <div class="deck-box">
-                            <h4 style="color:#38bdf8; font-size:0.85rem;">Deck A</h4>
-                            <span id="txtDeckASong" style="font-size: 0.7rem; color: #a1a1aa; margin-bottom: 4px;">Ninguna</span>
-                            <div class="jog-wheel-big" onclick="mostrarNotificacion('Scratch Deck A')">
-                                <div class="jog-inner-big">💿</div>
-                            </div>
-                            <div class="slider-control"><label>Agudos</label><input type="range" id="eqHighA" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
-                            <div class="slider-control"><label>Graves</label><input type="range" id="eqLowA" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
-                            <div class="slider-control"><label>Volumen</label><input type="range" id="volA" min="0" max="100" value="80" oninput="actualizarConsolaDJ()"></div>
+                            <h4 style="color:#38bdf8; font-size:0.9rem;">Deck A</h4>
+                            <span id="txtDeckASong" style="font-size: 0.75rem; color: #a1a1aa; margin-bottom: 6px;">Ninguna</span>
+                            <div class="jog-wheel-big" onclick="mostrarNotificacion('Scratch Deck A')"><div class="jog-inner-big">💿</div></div>
+                            <div class="slider-control"><label>Agudos (High)</label><input type="range" id="eqHighA" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
+                            <div class="slider-control"><label>Medios (Mid)</label><input type="range" id="eqMidA" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
+                            <div class="slider-control"><label>Graves (Low)</label><input type="range" id="eqLowA" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
+                            <div class="slider-control"><label>Ganancia (Gain)</label><input type="range" id="gainA" min="0" max="100" value="70" oninput="actualizarConsolaDJ()"></div>
+                            <div class="slider-control"><label>Pitch / Tempo</label><input type="range" id="pitchA" min="80" max="120" value="100" oninput="actualizarConsolaDJ()"></div>
+                            <div class="slider-control"><label>Volumen Canal</label><input type="range" id="volA" min="0" max="100" value="80" oninput="actualizarConsolaDJ()"></div>
                         </div>
 
                         <div class="deck-box">
-                            <h4 style="color:#38bdf8; font-size:0.85rem;">Deck B</h4>
-                            <span id="txtDeckBSong" style="font-size: 0.7rem; color: #a1a1aa; margin-bottom: 4px;">Ninguna</span>
-                            <div class="jog-wheel-big" onclick="mostrarNotificacion('Scratch Deck B')">
-                                <div class="jog-inner-big">💿</div>
-                            </div>
-                            <div class="slider-control"><label>Agudos</label><input type="range" id="eqHighB" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
-                            <div class="slider-control"><label>Graves</label><input type="range" id="eqLowB" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
-                            <div class="slider-control"><label>Volumen</label><input type="range" id="volB" min="0" max="100" value="80" oninput="actualizarConsolaDJ()"></div>
+                            <h4 style="color:#38bdf8; font-size:0.9rem;">Deck B</h4>
+                            <span id="txtDeckBSong" style="font-size: 0.75rem; color: #a1a1aa; margin-bottom: 6px;">Ninguna</span>
+                            <div class="jog-wheel-big" onclick="mostrarNotificacion('Scratch Deck B')"><div class="jog-inner-big">💿</div></div>
+                            <div class="slider-control"><label>Agudos (High)</label><input type="range" id="eqHighB" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
+                            <div class="slider-control"><label>Medios (Mid)</label><input type="range" id="eqMidB" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
+                            <div class="slider-control"><label>Graves (Low)</label><input type="range" id="eqLowB" min="0" max="100" value="50" oninput="actualizarConsolaDJ()"></div>
+                            <div class="slider-control"><label>Ganancia (Gain)</label><input type="range" id="gainB" min="0" max="100" value="70" oninput="actualizarConsolaDJ()"></div>
+                            <div class="slider-control"><label>Pitch / Tempo</label><input type="range" id="pitchB" min="80" max="120" value="100" oninput="actualizarConsolaDJ()"></div>
+                            <div class="slider-control"><label>Volumen Canal</label><input type="range" id="volB" min="0" max="100" value="80" oninput="actualizarConsolaDJ()"></div>
                         </div>
                     </div>
 
-                    <div style="margin-top: 15px; background:#121216; padding:10px; border-radius:10px; border:1px solid #22222a;">
+                    <div style="margin-top: 20px; background:#121216; padding:12px; border-radius:12px; border:1px solid #22222a;">
                         <div class="slider-control" style="margin-bottom:0;">
-                            <div style="display:flex; justify-content:space-between; font-size:0.7rem;">
-                                <span>A</span><span style="color:#38bdf8; font-weight:bold;">CROSSFADER</span><span>B</span>
+                            <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+                                <span>Deck A</span><span style="color:#38bdf8; font-weight:bold;">CROSSFADER MASTER</span><span>Deck B</span>
                             </div>
                             <input type="range" id="crossfader" min="0" max="100" value="50" oninput="actualizarConsolaDJ()">
                         </div>
@@ -350,67 +211,111 @@
             </div>
         </div>
 
-        <div id="tab-evento" class="section-container">
+        <div id="tab-playlists" class="section-container">
             <div class="card">
-                <h2>⚙️ Datos de la Fiesta y Anfitrión</h2>
-                <div class="input-group">
-                    <label>Nombre de la Fiesta:</label>
-                    <input type="text" id="txtNombre" value="Cumpleaños / Reunión">
+                <h2>📚 Playlists de Audio MP3</h2>
+                <div class="input-grid">
+                    <div class="input-group"><label>Nombre del Set:</label><input type="text" id="inputNombrePlaylist" placeholder="Ej. Set Verano"></div>
+                    <div class="input-group"><label>Enlace o Artistas:</label><input type="text" id="inputPistasPlaylist" placeholder="Ej. Shakira, Tiesto"></div>
                 </div>
-                <div class="input-group">
-                    <label>Quién Invita (Anfitrión):</label>
-                    <input type="text" id="txtAnfitrion" value="Luis Ganoza">
-                </div>
-                <div class="input-group">
-                    <label>Motivo de Reunión:</label>
-                    <input type="text" id="txtMotivo" value="Celebración Privada">
-                </div>
-                <div class="input-group">
-                    <label>Fecha del Evento:</label>
-                    <input type="date" id="txtFecha" value="2026-09-15">
-                </div>
-                <div class="input-group">
-                    <label>Ubicación (Enlace Google Maps):</label>
-                    <input type="text" id="txtUbicacion" value="https://maps.google.com/?q=Lima">
-                </div>
-                <button class="btn" onclick="guardarConfiguracionFiesta()">Guardar Datos del Evento</button>
+                <button class="btn" style="margin-bottom: 20px;" onclick="guardarNuevoPlaylist()">💾 Guardar Playlist</button>
+                <table>
+                    <thead><tr><th>Set</th><th>Pistas</th><th>Calificación</th><th>Acción</th></tr></thead>
+                    <tbody id="tablaPlaylistsGuardados"></tbody>
+                </table>
             </div>
         </div>
 
-        <div id="tab-hardware" class="section-container">
+        <div id="tab-evento" class="section-container">
             <div class="card">
-                <h2>💡 Hardware, Micrófono & Pantallas</h2>
-                <div style="display:grid; grid-template-columns: 1fr; gap: 12px;">
-                    <div style="background:#18181b; padding:14px; border-radius:12px; border:1px solid #27272a;">
-                        <h3>🎤 Micrófono Inalámbrico</h3>
-                        <button class="btn btn-warning" style="margin-top:8px; font-size:0.85rem;" onclick="mostrarNotificacion('Micrófono conectado vía Bluetooth.')">Conectar Mic</button>
-                    </div>
-                    <div style="background:#18181b; padding:14px; border-radius:12px; border:1px solid #27272a;">
-                        <h3>📺 Pantallas de TV / Proyector</h3>
-                        <button class="btn btn-ai" style="margin-top:8px; font-size:0.85rem;" onclick="mostrarNotificacion('Transmitiendo visuales a pantallas TV...')">Transmitir a TV</button>
-                    </div>
-                    <div style="background:#18181b; padding:14px; border-radius:12px; border:1px solid #27272a;">
-                        <h3>💡 Luces LED DMX</h3>
-                        <button class="btn btn-success" style="margin-top:8px; font-size:0.85rem;" onclick="mostrarNotificacion('Sincronizando luces rítmicas...')">Sincronizar Luces</button>
-                    </div>
-                </div>
+                <h2>⚙️ Datos de la Fiesta y Anfitrión</h2>
+                <div class="input-group"><label>Nombre de la Fiesta:</label><input type="text" id="txtNombre" value="Cumpleaños / Reunión"></div>
+                <div class="input-group"><label>Quién Invita (Anfitrión):</label><input type="text" id="txtAnfitrion" value="Luis Ganoza"></div>
+                <div class="input-group"><label>Motivo de Reunión:</label><input type="text" id="txtMotivo" value="Celebración Privada"></div>
+                <div class="input-group"><label>Fecha del Evento:</label><input type="date" id="txtFecha" value="2026-09-15"></div>
+                <div class="input-group"><label>Ubicación (Enlace Google Maps):</label><input type="text" id="txtUbicacion" value="https://maps.google.com/?q=Lima"></div>
+                <button class="btn" onclick="guardarConfiguracionFiesta()">Guardar Datos del Evento</button>
             </div>
         </div>
 
         <div id="tab-invitados" class="section-container">
             <div class="card">
-                <h2>🎫 Accesos y Pases QR</h2>
+                <h2>🎫 Control de Accesos y Pases QR</h2>
                 <div class="input-group">
                     <label>Registrar Invitado VIP:</label>
-                    <div style="display:flex; gap:8px;">
-                        <input type="text" id="inputInvitado" placeholder="Nombre..." style="flex:1;">
-                        <button class="btn" style="width:auto;" onclick="generarPaseQR()">Generar</button>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="inputInvitado" placeholder="Nombre completo..." style="flex:1;">
+                        <button class="btn" style="width:auto;" onclick="generarPaseQR()">Generar VIP</button>
                     </div>
                 </div>
                 <table>
                     <thead><tr><th>Invitado</th><th>Código</th><th>Acción</th></tr></thead>
-                    <tbody id="tablaPases"><tr><td colspan="3" style="text-align:center; color:#71717a;">Sin pases.</td></tr></tbody>
+                    <tbody id="tablaPases"><tr><td colspan="3" style="text-align:center; color:#71717a;">Sin invitados registrados.</td></tr></tbody>
                 </table>
+            </div>
+        </div>
+
+        <div id="tab-hardware" class="section-container">
+            <div class="card">
+                <h2>💡 Conectividad Hardware, Micrófono & Pantallas</h2>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:15px;">
+                    <div style="background:#18181b; padding:18px; border-radius:14px; border:1px solid #27272a;">
+                        <h3>🎤 Micrófono Inalámbrico</h3>
+                        <button class="btn btn-warning" style="margin-top:10px;" onclick="mostrarNotificacion('Micrófono conectado vía Bluetooth.')">Conectar Mic</button>
+                    </div>
+                    <div style="background:#18181b; padding:18px; border-radius:14px; border:1px solid #27272a;">
+                        <h3>📺 Pantallas de TV / Proyector</h3>
+                        <button class="btn btn-ai" style="margin-top:10px;" onclick="mostrarNotificacion('Transmitiendo visuales a pantallas TV...')">Transmitir a TV</button>
+                    </div>
+                    <div style="background:#18181b; padding:18px; border-radius:14px; border:1px solid #27272a;">
+                        <h3>💡 Luces LED & Discoteca</h3>
+                        <button class="btn btn-success" style="margin-top:10px;" onclick="mostrarNotificacion('Sincronizando efectos DMX...')">Sincronizar Luces</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-billing" class="section-container">
+            <div class="card">
+                <h2>💳 Suscripción y Facturación Recurrente</h2>
+                <div class="plans-grid">
+                    <div class="plan-card active-plan">
+                        <div>
+                            <h3 style="color:#a1a1aa;">Plan Básico</h3>
+                            <p style="color:#ffffff; font-weight:bold; font-size:1.15rem;">$9.90 + IGV / mes</p>
+                            <p style="color:#a1a1aa; font-size:0.85rem; margin-top:8px;">Incluye cabina de audio personal y 14 días de prueba gratis.</p>
+                        </div>
+                        <button class="btn btn-success" onclick="cambiarPlanUsuario('basico')">Prueba Activa</button>
+                    </div>
+                    <div class="plan-card">
+                        <div>
+                            <h3 style="color:#38bdf8;">Plan PRO</h3>
+                            <p style="color:#34d399; font-weight:bold; font-size:1.15rem;">$19.90 + IGV / mes</p>
+                            <p style="color:#a1a1aa; font-size:0.85rem; margin-top:8px;">Eventos ilimitados, pases QR, karaoke y control de hardware.</p>
+                        </div>
+                        <button class="btn" onclick="cambiarPlanUsuario('pro')">Contratar Plan PRO</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-perfil" class="section-container">
+            <div class="card">
+                <h2>👤 Mi Perfil Corporativo</h2>
+                <div class="input-grid">
+                    <div class="input-group"><label>Nombre:</label><input type="text" id="perfilNombre" value="Luis Enrique Ganoza Céspedes"></div>
+                    <div class="input-group"><label>Correo:</label><input type="email" id="perfilCorreo" value="admin@huioapp.com"></div>
+                </div>
+                <button class="btn" onclick="mostrarNotificacion('¡Perfil actualizado!')">Guardar Cambios</button>
+            </div>
+        </div>
+
+        <div id="tab-admin" class="section-container">
+            <div class="card">
+                <h2>🛠️ Panel de Administración Master</h2>
+                <div style="background:#18181b; padding:18px; border-radius:14px; border:1px solid #27272a;">
+                    <p style="color:#34d399; font-weight:bold;">Sistema operativo centralizado activo y sincronizado.</p>
+                </div>
             </div>
         </div>
 
@@ -421,30 +326,23 @@
     </div>
 
     <nav class="hub-nav" id="navContainer" style="display:none;">
-        <button class="hub-tab active" onclick="switchTab('tab-inicio', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            <span>Inicio</span>
-        </button>
-        <button class="hub-tab" onclick="switchTab('tab-consola', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
-            <span>Consola</span>
-        </button>
+        <button class="hub-tab active" onclick="switchTab('tab-inicio', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Inicio</span></button>
+        <button class="hub-tab" onclick="switchTab('tab-consola', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg><span>Consola</span></button>
+        <button class="hub-tab" onclick="switchTab('tab-playlists', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path></svg><span>Playlists</span></button>
         
-        <button class="btn-logo-central" onclick="switchTab('tab-hardware', document.querySelectorAll('.hub-tab')[3])">
-            <div class="btn-logo-central-inner">P</div>
-        </button>
+        <button class="btn-logo-central" onclick="switchTab('tab-hardware', document.querySelectorAll('.hub-tab')[5])"><div class="btn-logo-central-inner">P</div></button>
 
-        <button class="hub-tab" onclick="switchTab('tab-evento', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-            <span>Fiestas</span>
-        </button>
-        <button class="hub-tab" onclick="switchTab('tab-invitados', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path></svg>
-            <span>VIP</span>
-        </button>
+        <button class="hub-tab" onclick="switchTab('tab-evento', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect></svg><span>Fiestas</span></button>
+        <button class="hub-tab" onclick="switchTab('tab-invitados', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path></svg><span>VIP</span></button>
+        <button class="hub-tab" onclick="switchTab('tab-billing', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect></svg><span>Planes</span></button>
+        <button class="hub-tab" onclick="switchTab('tab-perfil', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg><span>Perfil</span></button>
+        <button class="hub-tab" id="tabAdminBtn" style="display:none; color:#60a5fa;" onclick="switchTab('tab-admin', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg><span>Admin</span></button>
     </nav>
 
     <script>
+        let planActual = 'basico';
+        let usuarioActualEmail = '';
+        const cuentasIlimitadasPro = ["admin@huioapp.com", "vip1@partiflow.app", "vip2@partiflow.app"];
         let listaColaPeticiones = [];
         let indiceReproduccionActual = 0;
         let estadoConfirmacionPlay = 1; 
@@ -454,19 +352,57 @@
             { tipo: "bloque", tags: ["salsa", "colombiana"], etiquetaDesplegable: "Salsa Colombiana Romántica", artista: "Grupo Niche", titulo: "Cali Pachanguero", audio: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=salsa-latina-101452.mp3" }
         ];
 
-        let pasesInvitados = [];
+        let playlistsGuardados = JSON.parse(localStorage.getItem('partiflow_sets_dj')) || [{ nombre: "Set Fiesta Pro", pistas: "Shakira, Luis Miguel" }];
+        let pasesInvitados = JSON.parse(localStorage.getItem('partiflow_pases')) || [];
 
         function actualizarConsolaDJ() {
             const volA = document.getElementById('volA').value / 100;
             const crossfader = document.getElementById('crossfader').value / 100;
+            const pitchA = document.getElementById('pitchA').value / 100;
             const audioPrincipal = document.getElementById('audioReproductorPrincipal');
             if (audioPrincipal) {
                 audioPrincipal.volume = Math.min(1, Math.max(0, volA * (1 - crossfader) * 1.5));
+                audioPrincipal.playbackRate = pitchA;
             }
         }
 
         function toggleModoIA() {
-            mostrarNotificacion("🛠️ Modo Manual Activo: Deslizadores y perillas funcionales.");
+            mostrarNotificacion("🎛️ Consola Manual Pro Activa.");
+        }
+
+        function alternarModoAuth(modo) {
+            document.getElementById('formLogin').style.display = modo === 'registro' ? 'none' : 'block';
+            document.getElementById('formRegistro').style.display = modo === 'registro' ? 'block' : 'none';
+        }
+
+        function iniciarSesion() {
+            usuarioActualEmail = document.getElementById('txtEmail').value.trim();
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'flex';
+            document.getElementById('navContainer').style.display = 'flex';
+            if(usuarioActualEmail === 'admin@huioapp.com') document.getElementById('tabAdminBtn').style.display = 'flex';
+            mostrarNotificacion(`Sesión iniciada: ${usuarioActualEmail}`);
+        }
+
+        function completarRegistroConPrueba() {
+            usuarioActualEmail = document.getElementById('regEmail').value.trim();
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'flex';
+            document.getElementById('navContainer').style.display = 'flex';
+            mostrarNotificacion('🎉 ¡Bienvenido! 14 días de prueba activos.');
+        }
+
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.hub-tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if (btnElement) btnElement.classList.add('active');
+        }
+
+        function mostrarNotificacion(mensaje) {
+            const toast = document.getElementById('toastNotification');
+            toast.textContent = mensaje; toast.style.display = 'block'; toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => { toast.style.display = 'none'; }, 300); }, 3000);
         }
 
         function manejarAutocompletado(textoEscrito) {
@@ -499,10 +435,10 @@
         function renderizarTablaCola() {
             const container = document.getElementById('tablaColaContainer');
             document.getElementById('contadorCola').textContent = listaColaPeticiones.length;
-            if (listaColaPeticiones.length === 0) { container.innerHTML = '<p style="color: #71717a; font-size: 0.8rem; text-align: center;">La cola está vacía.</p>'; return; }
+            if (listaColaPeticiones.length === 0) { container.innerHTML = '<p style="color: #71717a; font-size: 0.85rem; text-align: center;">La cola está vacía.</p>'; return; }
             container.innerHTML = '';
             listaColaPeticiones.forEach((item, index) => {
-                container.innerHTML += `<div style="display: flex; justify-content: space-between; align-items: center; background: #18181b; padding: 6px 10px; border-radius: 6px; font-size: 0.8rem;"><span>#${index + 1} - ${item}</span><button class="btn btn-danger" style="width: auto; padding: 2px 6px; font-size: 0.7rem;" onclick="listaColaPeticiones.splice(${index},1); renderizarTablaCola();">X</button></div>`;
+                container.innerHTML += `<div style="display: flex; justify-content: space-between; align-items: center; background: #18181b; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem;"><span>#${index + 1} - ${item}</span><button class="btn btn-danger" style="width: auto; padding: 2px 8px; font-size: 0.75rem;" onclick="listaColaPeticiones.splice(${index},1); renderizarTablaCola();">X</button></div>`;
             });
         }
 
@@ -522,33 +458,12 @@
 
         function reproducirElementoColaActual() {
             if (indiceReproduccionActual >= listaColaPeticiones.length) return;
-            const peticion = listaColaPeticiones[indiceReproduccionActual];
             const track = diccionarioMusicalGlobal[0];
             document.getElementById('txtDeckASong').textContent = `${track.artista} - ${track.titulo}`;
             const audio = document.getElementById('audioReproductorPrincipal');
             audio.src = track.audio;
             audio.play().catch(e => console.log(e));
             document.getElementById('txtEstadoCancion').textContent = `Sonando: ${track.artista}`;
-        }
-
-        function iniciarSesion() {
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'flex';
-            document.getElementById('navContainer').style.display = 'flex';
-            mostrarNotificacion('¡Bienvenido a Partiflow PRO!');
-        }
-
-        function switchTab(tabId, btnElement) {
-            document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.hub-tab').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if (btnElement) btnElement.classList.add('active');
-        }
-
-        function mostrarNotificacion(mensaje) {
-            const toast = document.getElementById('toastNotification');
-            toast.textContent = mensaje; toast.style.display = 'block'; toast.style.opacity = '1';
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => { toast.style.display = 'none'; }, 300); }, 3000);
         }
 
         function guardarConfiguracionFiesta() {
@@ -568,8 +483,31 @@
             if(!tabla) return;
             tabla.innerHTML = '';
             pasesInvitados.forEach((p, i) => {
-                tabla.innerHTML += `<tr><td>${p.nombre}</td><td><code>${p.codigo}</code></td><td><button class="btn btn-danger" style="padding:2px 6px; font-size:0.7rem;" onclick="pasesInvitados.splice(${i},1); renderizarPases();">X</button></td></tr>`;
+                tabla.innerHTML += `<tr><td>${p.nombre}</td><td><code>${p.codigo}</code></td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="pasesInvitados.splice(${i},1); renderizarPases();">X</button></td></tr>`;
             });
+        }
+
+        function renderizarPlaylists() {
+            const tabla = document.getElementById('tablaPlaylistsGuardados');
+            if(!tabla) return;
+            tabla.innerHTML = '';
+            playlistsGuardados.forEach((pl, index) => {
+                tabla.innerHTML += `<tr><td><strong>${pl.nombre}</strong></td><td>${pl.pistas}</td><td>★ 5</td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="playlistsGuardados.splice(${index},1); renderizarPlaylists();">Eliminar</button></td></tr>`;
+            });
+        }
+
+        function guardarNuevoPlaylist() {
+            const nombre = document.getElementById('inputNombrePlaylist').value.trim();
+            const pistas = document.getElementById('inputPistasPlaylist').value.trim();
+            if(!nombre || !pistas) return mostrarNotificacion('Completa los campos.');
+            playlistsGuardados.push({ nombre, pistas });
+            renderizarPlaylists();
+            mostrarNotificacion('💾 Playlist guardado.');
+        }
+
+        function cambiarPlanUsuario(plan) {
+            planActual = plan;
+            mostrarNotificacion(`🎉 Plan actualizado a: ${plan.toUpperCase()}`);
         }
     </script>
 </body>
