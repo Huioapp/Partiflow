@@ -18,6 +18,7 @@
             align-items: center;
             padding: 0;
             overflow-x: hidden;
+            padding-bottom: 110px;
         }
         #toastNotification {
             position: fixed;
@@ -117,20 +118,19 @@
         #appScreen {
             display: none;
             width: 100%;
-            max-width: 1100px;
+            max-width: 900px;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            padding-bottom: 110px;
+            padding: 20px;
         }
 
-        /* BARRA INFERIOR FLOTANTE (ESTILO SPOTIFY + LOGO CENTRAL) */
+        /* BARRA INFERIOR FLOTANTE ESTILO SPOTIFY + LOGO CENTRAL */
         .hub-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            height: 85px;
+            height: 80px;
             background: rgba(14, 14, 18, 0.95);
             backdrop-filter: blur(12px);
             border-top: 1px solid #22222a;
@@ -149,7 +149,7 @@
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 500;
             cursor: pointer;
             transition: color 0.2s;
@@ -158,12 +158,12 @@
         .hub-tab:hover, .hub-tab.active { color: #38bdf8; }
         .hub-tab svg { width: 22px; height: 22px; }
 
-        /* BOTÓN LOGOTIPO CENTRAL FLOTANTE */
+        /* LOGO CENTRAL CIRCULAR "P" */
         .btn-logo-central {
             position: relative;
             top: -12px;
-            width: 56px;
-            height: 56px;
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
             background: linear-gradient(135deg, #06b6d4, #8b5cf6);
             padding: 2px;
@@ -187,7 +187,7 @@
             letter-spacing: -1px;
         }
 
-        .section-container { display: none; width: 100%; padding: 20px; animation: fadeIn 0.3s ease-in-out; }
+        .section-container { display: none; width: 100%; animation: fadeIn 0.3s ease-in-out; }
         .section-container.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
         
@@ -213,7 +213,6 @@
         .btn-ai { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; }
         .btn-locked { background: #27272a; color: #71717a; border: 1px dashed #3f3f46; cursor: not-allowed; box-shadow: none; }
         
-        /* ESTILOS DE LA CONSOLA TÁCTIL */
         .mixer-console { background: #18181b; border: 1px solid #27272a; border-radius: 20px; padding: 20px; margin-top: 15px; }
         .mixer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px; }
         @media (max-width: 768px) { .mixer-grid { grid-template-columns: 1fr; } }
@@ -477,7 +476,7 @@
                 <h2>🎫 Control de Accesos y Pases QR</h2>
                 <div id="bloqueInvitadosRestringido" style="display:none; text-align:center; padding:30px;">
                     <p style="color:#d97706; font-weight:bold; margin-bottom:10px;" id="lblRestriccionInv">🔒 Sección exclusiva para Plan PRO.</p>
-                    <button class="btn" onclick="switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5])">Ver Planes PRO</button>
+                    <button class="btn" onclick="switchTab('tab-billing', document.querySelectorAll('.hub-tab')[6])">Ver Planes PRO</button>
                 </div>
                 <div id="bloqueInvitadosActivo">
                     <p style="color:#a1a1aa; font-size:0.9rem; margin-bottom:15px;">Selecciona a qué fiesta corresponde el invitado VIP:</p>
@@ -505,7 +504,7 @@
                 <h2>💡 Conectividad Hardware de Audio & Iluminación</h2>
                 <div id="bloqueHardwareRestringido" style="display:none; text-align:center; padding:30px;">
                     <p style="color:#d97706; font-weight:bold; margin-bottom:10px;" id="lblRestriccionHard">🔒 Control de Hardware exclusivo para Plan PRO.</p>
-                    <button class="btn" onclick="switchTab('tab-billing', document.querySelectorAll('.hub-tab')[5])">Ver Planes PRO</button>
+                    <button class="btn" onclick="switchTab('tab-billing', document.querySelectorAll('.hub-tab')[6])">Ver Planes PRO</button>
                 </div>
                 <div id="bloqueHardwareActivo" class="hardware-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:15px;">
                     <div class="hardware-card" style="background:#18181b; padding:18px; border-radius:14px; border:1px solid #27272a;">
